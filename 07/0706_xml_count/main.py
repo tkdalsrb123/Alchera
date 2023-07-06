@@ -47,7 +47,8 @@ for root, dirs, files in os.walk(xml_dir):
                             label_dict[poly['@label']] += 1
                     else:
                         label_dict[image['polygon']['@label']] += 1
-            all_list.append(label_dict.values())
+
+            all_list.append([label_dict[v] for v in class_list])
 
 
 count_df = pd.DataFrame(all_list).transpose()
