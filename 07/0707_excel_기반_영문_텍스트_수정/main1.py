@@ -13,7 +13,6 @@ group = dict(list(input2.groupby('속성')['단어']))
 
 df_raw_list = []
 for idx in tqdm(range(input1.shape[0])):
-# for idx in tqdm(range(118)):
     property = input1.loc[idx]['속성']
     property_group = group[property].tolist()   # input1에 속성값인 group에 key값의 단어들을 리스트 형태로 불러옴
     

@@ -25,34 +25,134 @@ for idx in tqdm(range(input1.shape[0])):
     for i in property_group:
         word = i.lower()
         if word in lower_sentence:    # 단어가 해당 문장에 있을 경우
-            if sample == df['문장']:    # 매칭된 단어가 없어 변경이 되지 않았을 경우
-                if lower_sentence.count(word) == 1:    # 문장에 단어가 한개일 경우
-                    df['문장'] = sample.replace(i, f'${i}$')    
-                    df_raw_list.append(df)
-                else:
-                    index = -1
-                    while True:     # 한 개 이상일 경우 중복되지 않게 한 문장을 여러 문장으로 전처리하여 생성
-                        index = lower_sentence.find(word, index+1)     # 단어의 인덱스를 찾는다. 찾는 문자가 존재하면 해당 위치의 index를 반환, 존재하지 않다면 -1을 반환
-                        if index == -1: 
-                            break
-                        df['문장'] = sample[:index] + sample[index:index+len(i)].replace(i, f'${i}$') + sample[index+len(i):]   # 문장의 단어를 전처리하여 저장 
-                        df2 = df.copy()
-                        df_raw_list.append(df2)
+            if len(word.split(' ')) == 1:   # word가 한 단어일 때
+                if word in lower_sentence.split(' '):
+                    if sample == df['문장']:    # 매칭된 단어가 없어 변경이 되지 않았을 경우
+                        if lower_sentence.count(word) == 1:    # 문장에 단어가 한개일 경우
                         
-            else:   # 매칭된 단어가 존재해 변경이 되었을 경우
-                if lower_sentence.count(word) == 1:
-                    sample_df['문장'] = sample.replace(i, f'${i}$')
-                    sample_df2 = sample_df.copy()
-                    df_raw_list.append(sample_df2)
-                else:
-                    index = -1
-                    while True:
-                        index = lower_sentence.find(word, index+1)
-                        if index == -1:
-                            break
-                        sample_df['문장'] = sample[:index] + sample[index:index+len(i)].replace(i, f'${i}$') + sample[index+len(i):]
-                        sample_df2 = sample_df.copy()
-                        df_raw_list.append(sample_df2)
+                            index = -1
+                            while True:     # 한 개 이상일 경우 중복되지 않게 한 문장을 여러 문장으로 전처리하여 생성
+                                index = lower_sentence.find(word, index+1)     # 단어의 인덱스를 찾는다. 찾는 문자가 존재하면 해당 위치의 index를 반환, 존재하지 않다면 -1을 반환
+                                if index == -1: 
+                                    break
+                                df['문장'] = sample[:index] + '$' + sample[index:index+len(i)] + '$' + sample[index+len(i):]   # 문장의 단어를 전처리하여 저장 
+                                df2 = df.copy()
+                                df_raw_list.append(df2)
+                        else:
+                            index = -1
+                            while True:     
+                                index = lower_sentence.find(word, index+1) 
+                                if index == -1: 
+                                    break
+                                df['문장'] = sample[:index] + '$' + sample[index:index+len(i)] + '$' + sample[index+len(i):] 
+                                df2 = df.copy()
+                                df_raw_list.append(df2)
+                                
+                    else:   # 매칭된 단어가 존재해 변경이 되었을 경우
+                        if lower_sentence.count(word) == 1:
+                            index = -1
+                            while True:
+                                index = lower_sentence.find(word, index+1)
+                                if index == -1:
+                                    break
+                                sample_df['문장'] = sample[:index] +  '$' + sample[index:index+len(i)] + '$' + sample[index+len(i):]
+                                sample_df2 = sample_df.copy()
+                                df_raw_list.append(sample_df2)
+                        else:
+                            index = -1
+                            while True:
+                                index = lower_sentence.find(word, index+1)
+                                if index == -1:
+                                    break
+                                sample_df['문장'] = sample[:index] +  '$' + sample[index:index+len(i)] + '$' + sample[index+len(i):]
+                                sample_df2 = sample_df.copy()
+                                df_raw_list.append(sample_df2)
+                                
+                elif f"{word}'s" in lower_sentence.split(' ') or f"{word}," in lower_sentence.split(' ') or f"{word}." in lower_sentence.split(' '):
+                    if sample == df['문장']:    # 매칭된 단어가 없어 변경이 되지 않았을 경우
+                        if lower_sentence.count(word) == 1:    # 문장에 단어가 한개일 경우
+                        
+                            index = -1
+                            while True:     # 한 개 이상일 경우 중복되지 않게 한 문장을 여러 문장으로 전처리하여 생성
+                                index = lower_sentence.find(word, index+1)     # 단어의 인덱스를 찾는다. 찾는 문자가 존재하면 해당 위치의 index를 반환, 존재하지 않다면 -1을 반환
+                                if index == -1: 
+                                    break
+                                df['문장'] = sample[:index] + '$' + sample[index:index+len(i)] + '$' + sample[index+len(i):]   # 문장의 단어를 전처리하여 저장 
+                                df2 = df.copy()
+                                df_raw_list.append(df2)
+                        else:
+                            index = -1
+                            while True:     
+                                index = lower_sentence.find(word, index+1) 
+                                if index == -1: 
+                                    break
+                                df['문장'] = sample[:index] + '$' + sample[index:index+len(i)] + '$' + sample[index+len(i):] 
+                                df2 = df.copy()
+                                df_raw_list.append(df2)
+                                
+                    else:   # 매칭된 단어가 존재해 변경이 되었을 경우
+                        if lower_sentence.count(word) == 1:
+                            index = -1
+                            while True:
+                                index = lower_sentence.find(word, index+1)
+                                if index == -1:
+                                    break
+                                sample_df['문장'] = sample[:index] +  '$' + sample[index:index+len(i)] + '$' + sample[index+len(i):]
+                                sample_df2 = sample_df.copy()
+                                df_raw_list.append(sample_df2)
+                        else:
+                            index = -1
+                            while True:
+                                index = lower_sentence.find(word, index+1)
+                                if index == -1:
+                                    break
+                                sample_df['문장'] = sample[:index] +  '$' + sample[index:index+len(i)] + '$' + sample[index+len(i):]
+                                sample_df2 = sample_df.copy()
+                                df_raw_list.append(sample_df2)
+                                
+                                
+            else:   # word가 두 단어 이상일 때
+                if sample == df['문장']:    # 매칭된 단어가 없어 변경이 되지 않았을 경우
+                    if lower_sentence.count(word) == 1:    # 문장에 단어가 한개일 경우
+                    
+                        index = -1
+                        while True:     # 한 개 이상일 경우 중복되지 않게 한 문장을 여러 문장으로 전처리하여 생성
+                            index = lower_sentence.find(word, index+1)     # 단어의 인덱스를 찾는다. 찾는 문자가 존재하면 해당 위치의 index를 반환, 존재하지 않다면 -1을 반환
+                            if index == -1: 
+                                break
+                            df['문장'] = sample[:index] + '$' + sample[index:index+len(i)] + '$' + sample[index+len(i):]   # 문장의 단어를 전처리하여 저장 
+                            df2 = df.copy()
+                            df_raw_list.append(df2)
+                    else:
+                        index = -1
+                        while True:     
+                            index = lower_sentence.find(word, index+1) 
+                            if index == -1: 
+                                break
+                            df['문장'] = sample[:index] + '$' + sample[index:index+len(i)] + '$' + sample[index+len(i):] 
+                            df2 = df.copy()
+                            df_raw_list.append(df2)
+                            
+                else:   # 매칭된 단어가 존재해 변경이 되었을 경우
+                    if lower_sentence.count(word) == 1:
+                        index = -1
+                        while True:
+                            index = lower_sentence.find(word, index+1)
+                            if index == -1:
+                                break
+                            sample_df['문장'] = sample[:index] +  '$' + sample[index:index+len(i)] + '$' + sample[index+len(i):]
+                            sample_df2 = sample_df.copy()
+                            df_raw_list.append(sample_df2)
+                    else:
+                        index = -1
+                        while True:
+                            index = lower_sentence.find(word, index+1)
+                            if index == -1:
+                                break
+                            sample_df['문장'] = sample[:index] +  '$' + sample[index:index+len(i)] + '$' + sample[index+len(i):]
+                            sample_df2 = sample_df.copy()
+                            df_raw_list.append(sample_df2)
+            
 
     # 문장에 매칭 단어가 없을 경우
     if input1.loc[idx]['문장'] == df['문장']:
@@ -64,6 +164,6 @@ raw_df = pd.DataFrame(df_raw_list)
 raw_df = raw_df.sort_values('key값')
 
 
-raw_df.to_excel(f'{save_dir}/new.xlsx', index=False)
+raw_df.to_excel(f'{save_dir}/new2.xlsx', index=False)
 
 
