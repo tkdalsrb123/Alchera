@@ -27,13 +27,16 @@ for idx in tqdm(range(input1.shape[0])):
             if len(word.split(' ')) == 1:   # word가 한 단어일 때
                 if word in lower_sentence.split(' ') or f"{word}'s" in lower_sentence.split(' ') or f"{word}," in lower_sentence.split(' ') or f"{word}." in lower_sentence.split(' ') or f"{word}s" in lower_sentence.split(' '):
                     index = -1
+                    c=0
                     while True:     # 한 개 이상일 경우 중복되지 않게 한 문장을 여러 문장으로 전처리하여 생성
-                        index = lower_sentence.find(word, index+1)     # 단어의 인덱스를 찾는다. 찾는 문자가 존재하면 해당 위치의 index를 반환, 존재하지 않다면 -1을 반환
+                        index = lower_sentence.find(word, index+1) # 단어의 인덱스를 찾는다. 찾는 문자가 존재하면 해당 위치의 index를 반환, 존재하지 않다면 -1을 반환
                         if index == -1: 
                             break
                         df['문장'] = sample[:index] + '$' + sample[index:index+len(i)] + '$' + sample[index+len(i):]   # 문장의 단어를 전처리하여 저장 
                         df2 = df.copy()
-                        df_raw_list.append(df2)           
+
+                        df_raw_list.append(df2)
+                        c+=1       
                                 
             else:   # word가 두 단어 이상일 때
                 index = -1

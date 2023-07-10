@@ -43,7 +43,7 @@ for root, dirs, files in os.walk(image_dir):
                         font = ImageFont.truetype(fontpath, 13)
                         draw = ImageDraw.Draw(img)
                         
-                        w1, h1 = font.getsize(text1)
+                        _, _, w1, h1 = font.getbbox(text1)
                         h = 0
                         
                         left, top, right, bottom = draw.textbbox((0, 0),text1, font=font)
