@@ -21,7 +21,7 @@ def select_url(report):
 
     return url
     
-_, excel_dir, save_dir, page = sys.argv
+_, excel_dir, save_dir, page_start, page_end = sys.argv
 
 excel = pd.read_excel(excel_dir)
 
@@ -34,21 +34,24 @@ for i in range(excel.shape[0]):
     
     pdf_list = []
     date_list = []
-    url = select_url(category)
+    raw_url = select_url(category)
 
     concat_df = pd.DataFrame(columns=['pdf_link', 'date'])
-    for j in range(1, int(page)+1):
-        url = f'{url}&page={j}'
+    for j in range(int(page_start), int(page_end)+1):
+        url = f'{raw_url}&page={j}'
         print(category, 'pdf 수집!!', url)
         response = urlopen(url)
 
         soup = BeautifulSoup(response, 'html.parser')
 
         table = soup.find('table')
-        
+
+
         # pdf 링크 추출
         for pdf_link in table.find_all('td', {'class':'file'}):
-            pdf_list.append(pdf_link.find('a').get('href'))
+            if pdf_link.find('a') != None:
+                pdf_list.append(pdf_link.find('a').get('href'))
+
         # 작성일 추출
         for date in table.find_all('td', {'style':'padding-left:5px'}):
             date_list.append(date.text)
@@ -65,12 +68,13 @@ for i in range(excel.shape[0]):
     # pdf down
     for idx in range(df.shape[0]):
         pdf = df.iloc[idx]['pdf_link']
-        pdf_name = pdf.split('/')[-1]
-    
-        response = requests.get(pdf)
+        if pdf != None:
+            pdf_name = pdf.split('/')[-1]
         
-        down_path = os.path.join(folder, pdf_name)
-        pdf_file = open(down_path, 'wb')
-        pdf_file.write(response.content)
-        pdf_file.close()
-        print(down_path, 'downloaded')
+            response = requests.get(pdf)
+            
+            down_path = os.path.join(folder, pdf_name)
+            pdf_file = open(down_path, 'wb')
+            pdf_file.write(response.content)
+            pdf_file.close()
+            print(down_path, 'downloaded')
