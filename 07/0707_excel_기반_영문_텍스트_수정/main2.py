@@ -17,7 +17,6 @@ for idx in tqdm(range(input1.shape[0])):
     property_group = group[property].tolist()   # input1에 속성값인 group에 key값의 단어들을 리스트 형태로 불러옴
     
     df = input1.loc[idx].copy()
-    sample_df = input1.loc[idx].copy()
     lower_sentence = input1.loc[idx]['문장'].lower()
     sample = input1.loc[idx]['문장']
     
