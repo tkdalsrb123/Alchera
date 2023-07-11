@@ -19,7 +19,7 @@ y_coord = '37.5050101'  # 위도(Latitude) 값을 입력하세요.
 browser.execute_script(f"searchAround('{x_coord}', '{y_coord}');")
 
 # 로드뷰 영역이 로드될 때까지 잠시 대기
-time.sleep(10)
+time.sleep(5)
 
 # 로드뷰 캡쳐
 browser.save_screenshot('./roadview.png')
