@@ -293,119 +293,119 @@ for root, dirs, files in os.walk(xml_dir):
             for img_info in xml_file['annotations']['image']:
                 filename = os.path.split(img_info['@name'])[-1]
                 
-                # if len(info[filename].keys()) != 0:     # excel 파일에 파일이 존재할 때
-                #     print(filename.replace('png', 'json'), '생성중!!!')
+                if len(info[filename].keys()) != 0:     # excel 파일에 파일이 존재할 때
+                    print(filename.replace('png', 'json'), '생성중!!!')
                     
-                info_file = info[filename]
-                date = info_file['date']
-                if 'N' in info_file['vehicle']:
-                    vehicle = 'NQ5'
-                elif 'S' in info_file['vehicle']:
-                    vehicle = 'Santafe'
-                elif 'A' in info_file['vehicle']:
-                    vehicle = 'Sorento'
-                
-                if vehicle == 'NQ5' or vehicle == 'Santafe':
-                    project = 'mobis_rir_2nd_eu'
-                elif vehicle == 'Sorento':
-                    project = 'mobis_rir_2nd_na'
-                
-                list_object = []
-                for box_info in img_info['box']:
-                    x = []
-                    y = []
-                    vehicle_class = box_info['@label']
-                    x.append(box_info['@xtl'])
-                    x.append(box_info['@xbr'])
-                    y.append(box_info['@ytl'])                    
-                    y.append(box_info['@ybr'])
-                    x_min = min(x)
-                    y_min = min(y)
-                    x_max = max(x)
-                    y_max = max(y)
-                    x_cnt = np.median(x)
-                    y_cnt = np.median(y)
-                    width = max(x) - min(x)
-                    height = max(y) - min(y)
-                    for att_info in box_info['attribute']:
-                        if att_info['@name'] == 'sub class1':
-                            subclass1 = att_info['#text']
-                        elif att_info['@name'] == 'sub class2':
-                            subclass2 = att_info['#text']
-                        elif att_info['@name'] == 'Stutation occlusion of box':
-                            occlusion = att_info['#text']
-                        elif att_info['@name'] == 'Stutation truncation of box':
-                            truncation = att_info['#text']
+                    info_file = info[filename]
+                    date = info_file['date']
+                    if 'N' in info_file['vehicle']:
+                        vehicle = 'NQ5'
+                    elif 'S' in info_file['vehicle']:
+                        vehicle = 'Santafe'
+                    elif 'A' in info_file['vehicle']:
+                        vehicle = 'Sorento'
                     
-                    if occlusion == 'not occlusion' or occlusion == 'Both 2 wheel have no occlusion':
-                        occlusion = '0'
-                    elif occlusion == '1-50%occlusion' or occlusion == '1-25%occlusion' or occlusion == '1 wheel 100% visible, other wheel partially occlusion':
-                        occlusion = '1'
-                    elif occlusion == '25-50%occlusion' or occlusion == '1 wheel 100% occlusion, other wheel &lt; 50% occlusion':
-                        occlusion = '2'
+                    if vehicle == 'NQ5' or vehicle == 'Santafe':
+                        project = 'mobis_rir_2nd_eu'
+                    elif vehicle == 'Sorento':
+                        project = 'mobis_rir_2nd_na'
+                    
+                    list_object = []
+                    for box_info in img_info['box']:
+                        x = []
+                        y = []
+                        vehicle_class = box_info['@label']
+                        x.append(box_info['@xtl'])
+                        x.append(box_info['@xbr'])
+                        y.append(box_info['@ytl'])                    
+                        y.append(box_info['@ybr'])
+                        x_min = min(x)
+                        y_min = min(y)
+                        x_max = max(x)
+                        y_max = max(y)
+                        x_cnt = np.median(x)
+                        y_cnt = np.median(y)
+                        width = max(x) - min(x)
+                        height = max(y) - min(y)
+                        for att_info in box_info['attribute']:
+                            if att_info['@name'] == 'sub class1':
+                                subclass1 = att_info['#text']
+                            elif att_info['@name'] == 'sub class2':
+                                subclass2 = att_info['#text']
+                            elif att_info['@name'] == 'Stutation occlusion of box':
+                                occlusion = att_info['#text']
+                            elif att_info['@name'] == 'Stutation truncation of box':
+                                truncation = att_info['#text']
                         
-                    if truncation == 'not truncation' or truncation == 'Both 2 wheel have no truncation':
-                        truncation = '0'
-                    elif truncation == '1-50%truncation' or truncation == '1-25%truncation' or truncation == '1 wheel 100% visible, other wheel partially truncation':
-                        truncation = '1'
-                    elif truncation == '25-50%truncation' or truncation == '1 wheel 100% truncation, other wheel &lt; 50% truncation':
-                        truncation = '2'
+                        if occlusion == 'not occlusion' or occlusion == 'Both 2 wheel have no occlusion':
+                            occlusion = '0'
+                        elif occlusion == '1-50%occlusion' or occlusion == '1-25%occlusion' or occlusion == '1 wheel 100% visible, other wheel partially occlusion':
+                            occlusion = '1'
+                        elif occlusion == '25-50%occlusion' or occlusion == '1 wheel 100% occlusion, other wheel &lt; 50% occlusion':
+                            occlusion = '2'
+                            
+                        if truncation == 'not truncation' or truncation == 'Both 2 wheel have no truncation':
+                            truncation = '0'
+                        elif truncation == '1-50%truncation' or truncation == '1-25%truncation' or truncation == '1 wheel 100% visible, other wheel partially truncation':
+                            truncation = '1'
+                        elif truncation == '25-50%truncation' or truncation == '1 wheel 100% truncation, other wheel &lt; 50% truncation':
+                            truncation = '2'
 
-                    list_object.append({'class':vehicle_class, 'sub_class1':subclass1, 'sub_class2':subclass2,
-                                'xmin':round(x_min), 'xmax':round(x_max), 'ymin':round(y_min), 'ymax':round(y_max), 'cnt_x':int(x_cnt), 'cnt_y':int(y_cnt), 
-                                'width':round(width), 'height':round(height), 
-                                'occlusion':occlusion, 'truncation':truncation})
+                        list_object.append({'class':vehicle_class, 'sub_class1':subclass1, 'sub_class2':subclass2,
+                                    'xmin':round(x_min), 'xmax':round(x_max), 'ymin':round(y_min), 'ymax':round(y_max), 'cnt_x':int(x_cnt), 'cnt_y':int(y_cnt), 
+                                    'width':round(width), 'height':round(height), 
+                                    'occlusion':occlusion, 'truncation':truncation})
+                        
                     
+                    
+                    new_json = json_tree(filename, date, vehicle, project, list_object)
+                    
+                    os.makedirs(folder, exist_ok=True)
+                    output_path = os.path.join(folder, filename.replace('png', 'json'))
+                    
+                    json_path_dict[filename] = output_path  # image와 매칭할 딕셔너리
+                    with open(output_path, 'w', encoding='utf-8') as outfile:
+                        json.dump(new_json, outfile, indent=2, ensure_ascii=False)
                 
-                
-                new_json = json_tree(filename, date, vehicle, project, list_object)
-                
-                os.makedirs(folder, exist_ok=True)
-                output_path = os.path.join(folder, filename.replace('png', 'json'))
-                
-                json_path_dict[filename] = output_path  # image와 매칭할 딕셔너리
-                with open(output_path, 'w', encoding='utf-8') as outfile:
-                    json.dump(new_json, outfile, indent=2, ensure_ascii=False)
-                
-                # else:
-                #     continue
+                else:
+                    continue
 
 # 이미지 시각화 작업
-# for root, dirs, files in os.walk(img_dir):
-#     for file in files:
-#         filename, ext = os.path.splitext(file)
-#         if ext == '.png':
-#             img_path = os.path.join(root, file)
-#             json_path = json_path_dict[filename]
-#             output_img_path = json_path.replace('json', 'png')
+for root, dirs, files in os.walk(img_dir):
+    for file in files:
+        filename, ext = os.path.splitext(file)
+        if ext == '.png':
+            img_path = os.path.join(root, file)
+            json_path = json_path_dict[filename]
+            output_img_path = json_path.replace('json', 'png')
             
-#             with open(json_path, encoding='utf-8') as f:
-#                 json_file = json.load(f)
+            with open(json_path, encoding='utf-8') as f:
+                json_file = json.load(f)
             
-#             img = Image.open(img_path)
+            img = Image.open(img_path)
             
-#             fontpath = "NanumBarunGothicBold.ttf"
+            fontpath = "NanumBarunGothicBold.ttf"
             
-#             numpy_image = np.array(img)
-#             cv_image = cv2.cvtColor(numpy_image, cv2.COLOR_RGB2BGR)
-#             overlay = cv_image.copy()
+            numpy_image = np.array(img)
+            cv_image = cv2.cvtColor(numpy_image, cv2.COLOR_RGB2BGR)
+            overlay = cv_image.copy()
             
-#             text_background(json_file['objects'])    # 텍스트 백그라운드 시각화
+            text_background(json_file['objects'])    # 텍스트 백그라운드 시각화
             
-#             # 백그라운드 투명도 조절
-#             alpha = 0.7
-#             img = cv2.addWeighted(cv_image, alpha, overlay, 1-alpha, 0)
-#             img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-#             img = Image.fromarray(img)
+            # 백그라운드 투명도 조절
+            alpha = 0.7
+            img = cv2.addWeighted(cv_image, alpha, overlay, 1-alpha, 0)
+            img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+            img = Image.fromarray(img)
             
-#             font = ImageFont.truetype(fontpath, 15)
-#             draw = ImageDraw.Draw(img)
-#             d = DashedImageDraw(img)
+            font = ImageFont.truetype(fontpath, 15)
+            draw = ImageDraw.Draw(img)
+            d = DashedImageDraw(img)
             
-#             visualization(json_file['objects'])   # 텍스트, bbox 시각화
-#             legend()    # 범례 시각화
+            visualization(json_file['objects'])   # 텍스트, bbox 시각화
+            legend()    # 범례 시각화
 
-#             img.save(output_img_path, 'png')
-#             print(f'{output_img_path} 시각화완료..!')
+            img.save(output_img_path, 'png')
+            print(f'{output_img_path} 시각화완료..!')
             
             
