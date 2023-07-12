@@ -28,7 +28,7 @@ for root, dirs, files in os.walk(input_dir):
                 json_file = json.load(f)
             
             img = Image.open(img_path)
-            fontpath = 'gulim.ttc'
+            fontpath = 'C:\Windows\Fonts\H2HDRM.ttf'
             font = ImageFont.truetype(fontpath, 20)
             draw = ImageDraw.Draw(img)
             for ann in json_file['annotations']:
@@ -38,7 +38,7 @@ for root, dirs, files in os.walk(input_dir):
                 text2 = [gro['level_name'] for gro in json_file['growth_levels'] if gro['level_id'] == gro_le]
                 text = '\n'.join([text1[0], text2[0]])
                 points = [(point[0], point[1])for point in ann['keypoints']]
-                draw.polygon(points, outline=(255,0,0), width=5)
+                draw.polygon(points, outline=(255,0,0), width=2)
                 draw.text(points[0], text, font=font, fill=(255, 0, 0))
             
             img.save(output_img_path, 'png')

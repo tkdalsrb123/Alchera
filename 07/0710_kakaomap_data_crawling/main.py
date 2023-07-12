@@ -10,7 +10,7 @@ text = '전북 장수군 장수읍 개실길\n'
 driver = webdriver.Chrome()
 url = 'https://map.kakao.com/'
 driver.get(url)
-driver.implicitly_wait(time_to_wait=3)  # 웹페이지 load 최대시간 설정
+# driver.implicitly_wait(time_to_wait=3)  # 웹페이지 load 최대시간 설정
 
 q_element = driver.find_element(By.NAME, 'q')     # 검색창 element 찾기
 q_element.send_keys(text, Keys.ENTER)   # 검색창에 text 넣기
@@ -21,3 +21,4 @@ ActionChains(driver)\
 driver.save_screenshot('./image.png')
 driver.quit()
 
+https://map0.daumcdn.net/map_roadview/2022/10/9131894/2_101542_9131894_20221007015313.jpg
