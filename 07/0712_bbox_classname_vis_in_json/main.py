@@ -21,7 +21,7 @@ for root, dirs, files in os.walk(input_dir):
         if ext == '.json':
             namekey = filename.split('-')[-1]
             path = os.path.join(root, file)
-        elif ext == '.jpg':
+        elif ext == '.jpg' or ext == '.jpeg':
             namekey = filename.split('-')[-1]
             path = os.path.join(root, file)
         
@@ -31,7 +31,7 @@ for val in file_dict.values():
     for path in val:
         if '.json' in path:
             json_path = path
-        elif '.jpg' in path:
+        elif '.jpg' in path or '.jpeg' in path:
             img_path = path
 
     with open(json_path, encoding='utf-8') as f:
@@ -44,7 +44,7 @@ for val in file_dict.values():
     output_img_dir = os.path.join(folder, file)
     
     
-    img = Image.open(img_path)
+    img = Image.open(img_path).convert('RGB')
     fontsize = 15
     fontpath = 'arial.ttf'
     font = ImageFont.truetype(fontpath, fontsize)

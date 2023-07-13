@@ -20,4 +20,6 @@ bbox 굵기 조절 방법
 : 67line or 84line 에서 draw.rectangle 안에 width 인자를 설정
 
 
-
+0713 오류 수정
+- 확장자가 JPEG를 가진 파일이 있어 JPEG도 시각화 가능하게 수정
+- RGBA 색상값을 가진 파일이 잇어 이미지를 불러올 때 RGB로 변환
