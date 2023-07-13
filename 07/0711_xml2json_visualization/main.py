@@ -327,6 +327,10 @@ for root, dirs, files in os.walk(xml_dir):
                         y_cnt = np.median(y)
                         width = max(x) - min(x)
                         height = max(y) - min(y)
+                        subclass1 = None
+                        subclass2 = None
+                        occlusion = 'not occlusion'
+                        truncation = 'not truncation'
                         for att_info in box_info['attribute']:
                             if att_info['@name'] == 'sub class 1':
                                 subclass1 = att_info['#text']
