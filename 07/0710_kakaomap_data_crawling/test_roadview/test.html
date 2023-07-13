@@ -2,27 +2,26 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>주소로 장소 표시하기</title>
+    <title>로드뷰 생성하기</title>
     
 </head>
 <body>
-<p style="margin-top:-12px">
-    <em class="link">
-        <a href="javascript:void(0);" onclick="window.open('http://fiy.daum.net/fiy/map/CsGeneral.daum', '_blank', 'width=981, height=650')">
-            혹시 주소 결과가 잘못 나오는 경우에는 여기에 제보해주세요.
-        </a>
-    </em>
-</p>
-<div id="map" style="width:100%;height:350px;"></div>
+<!-- 로드뷰를 표시할 div 입니다 -->
+<div id="roadview" style="width:100%;height:950px;"></div>
 
 <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=c7e323dfaa3e884221473fca0cd6b61b&libraries=services"></script>
 <script>
 var roadviewContainer = document.getElementById('roadview'); //로드뷰를 표시할 div
-var roadview = new kakao.maps.Roadview(roadviewContainer); //로드뷰 객체
+//로드뷰 객체
+var roadview = new daum.maps.Roadview(roadviewContainer, {
+    panoID:1028313536,
+    panoX:126.97837,
+    panoY:37.56613,
+    pan: -30, // 로드뷰 처음 실행시에 바라봐야 할 수평 각
+    tilt: 20, // 로드뷰 처음 실행시에 바라봐야 할 수직 각
+    zoom: 0 // 로드뷰 줌 초기값
+});
 var roadviewClient = new kakao.maps.RoadviewClient(); //좌표로부터 로드뷰 파노ID를 가져올 로드뷰 helper객체
-
-// 지도를 생성합니다    
-var map = new kakao.maps.Map(mapContainer, mapOption); 
 
 // 주소-좌표 변환 객체를 생성합니다
 var geocoder = new kakao.maps.services.Geocoder();
@@ -33,13 +32,14 @@ geocoder.addressSearch('전북 장수군 장수읍 개실길', function(result, 
     // 정상적으로 검색이 완료됐으면 
      if (status === kakao.maps.services.Status.OK) {
 
-        var coords = new kakao.maps.LatLng(result[0].y, result[0].x);
-        roadviewClient.getNearestPanoId(coords, 50, function(panoId) {
-            roadview.setPanoId(panoId, coords); //panoId와 중심좌표를 통해 로드뷰 실행
-        });
+        var position = new kakao.maps.LatLng(result[0].y, result[0].x);
 
-    } 
-});    
+        // 특정 위치의 좌표와 가까운 로드뷰의 panoId를 추출하여 로드뷰를 띄운다.
+        roadviewClient.getNearestPanoId(position, 50, function(panoId) {
+            roadview.setPanoId(panoId, position); //panoId와 중심좌표를 통해 로드뷰 실행 
+        });
+    }
+})
 </script>
 </body>
 </html>
