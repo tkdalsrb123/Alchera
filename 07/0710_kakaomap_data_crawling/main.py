@@ -10,8 +10,15 @@ from selenium.webdriver.chrome.service import Service as ChromeService
 
 text = '전북 장수군 장수읍 개실길'
 
+chrome_options = webdriver.ChromeOptions()
 
-driver = webdriver.Chrome()
+chrome_options.add_argument('--headless')
+
+chrome_options.add_argument('--no-sandbox')
+
+chrome_options.add_argument('--disable-dev-shm-usage')
+
+driver = webdriver.Chrome(options=chrome_options)
 url = 'https://localhost:5500/07/0710_kakaomap_data_crawling/test_roadview/test.html'
 driver.get(url)
 # # driver.implicitly_wait(time_to_wait=3)  # 웹페이지 load 최대시간 설정
