@@ -27,64 +27,68 @@ for root, dirs, files in os.walk(input_dir):
         
         file_dict[namekey].append(path)
 
+
 for val in file_dict.values():
-    for path in val:
-        if '.json' in path:
-            json_path = path
-        elif '.jpg' in path or '.jpeg' in path:
-            img_path = path
+    try:
+        for path in val:
+            if '.json' in path:
+                json_path = path
+            elif '.jpg' in path or '.jpeg' in path:
+                img_path = path
 
-    with open(json_path, encoding='utf-8') as f:
-        json_file = json.load(f)
-    
-    root, file = os.path.split(img_path)
-    mid = '\\'.join(root.split('\\')[len(input_dir.split('\\')):])
-    folder = os.path.join(output_dir, mid)
-    os.makedirs(folder, exist_ok=True)
-    output_img_dir = os.path.join(folder, file)
-    
-    
-    img = Image.open(img_path).convert('RGB')
-    fontsize = 15
-    fontpath = 'arial.ttf'
-    font = ImageFont.truetype(fontpath, fontsize)
-    draw = ImageDraw.Draw(img)
-    
-    if surface_num == '0':
-        for ann in json_file['annotations']:
-            random_color = random_color_generator()
-            if ann['name'] != 'surface':
-                coo_dict = literal_eval(ann['relative_coordinates'])
-                center_x = coo_dict['center_x']
-                center_y = coo_dict['center_y']
-                width = coo_dict['width']
-                height = coo_dict['height']
-                text = ann['name']
-                
-                yolo_box = (center_x, center_y, width, height)
-                x1, y1, x2, y2 = pbf.convert_bbox(yolo_box, from_type='yolo', to_type='voc', image_size=(1920, 1080))
+        with open(json_path, encoding='utf-8') as f:
+            json_file = json.load(f)
+        
+        root, file = os.path.split(img_path)
+        mid = '\\'.join(root.split('\\')[len(input_dir.split('\\')):])
+        folder = os.path.join(output_dir, mid)
+        os.makedirs(folder, exist_ok=True)
+        output_img_dir = os.path.join(folder, file)
+        
+        print(img_path, '시각화중!')
+        img = Image.open(img_path).convert('RGB')
+        fontsize = 15
+        fontpath = 'arial.ttf'
+        font = ImageFont.truetype(fontpath, fontsize)
+        draw = ImageDraw.Draw(img)
+        
+        if surface_num == '0':
+            for ann in json_file['annotations']:
+                random_color = random_color_generator()
+                if ann['name'] != 'surface':
+                    coo_dict = literal_eval(ann['relative_coordinates'])
+                    center_x = coo_dict['center_x']
+                    center_y = coo_dict['center_y']
+                    width = coo_dict['width']
+                    height = coo_dict['height']
+                    text = ann['name']
+                    yolo_box = (center_x, center_y, width, height)
+                    x1, y1, x2, y2 = pbf.convert_bbox(yolo_box, from_type='yolo', to_type='voc', image_size=(1920, 1080))
 
-                draw.rectangle((x1, y1, x2, y2), outline=random_color, width=3)
-                draw.text((x1,y1-15), text, fill=random_color, font=font)
-                
-    elif surface_num == '1':
-        for ann in json_file['annotations']:
-            random_color = random_color_generator()
-            if ann['name'] == 'surface':
-                coo_dict = literal_eval(ann['relative_coordinates'])
-                center_x = coo_dict['center_x']
-                center_y = coo_dict['center_y']
-                width = coo_dict['width']
-                height = coo_dict['height']
-                text = ann['name']
-                
-                yolo_box = (center_x, center_y, width, height)
-                x1, y1, x2, y2 = pbf.convert_bbox(yolo_box, from_type='yolo', to_type='voc', image_size=(1920, 1080))
+                    draw.rectangle((x1, y1, x2, y2), outline=random_color, width=3)
+                    draw.text((x1,y1-15), text, fill=random_color, font=font)
 
-                draw.rectangle((x1, y1, x2, y2), outline=random_color)
-                draw.text((x1,y1-10), text, fill=random_color)
+                    
+        elif surface_num == '1':
+            for ann in json_file['annotations']:
+                random_color = random_color_generator()
+                if ann['name'] == 'surface':
+                    coo_dict = literal_eval(ann['relative_coordinates'])
+                    center_x = coo_dict['center_x']
+                    center_y = coo_dict['center_y']
+                    width = coo_dict['width']
+                    height = coo_dict['height']
+                    text = ann['name']
+
+                    yolo_box = (center_x, center_y, width, height)
+                    x1, y1, x2, y2 = pbf.convert_bbox(yolo_box, from_type='yolo', to_type='voc', image_size=(1920, 1080))
+
+                    draw.rectangle((x1, y1, x2, y2), outline=random_color)
+                    draw.text((x1,y1-10), text, fill=random_color)
+    except ValueError:
+        break
         
  
     img.save(output_img_dir, 'JPEG')
-    print(f'{output_img_dir} 저장!!!')
-                
+
+
