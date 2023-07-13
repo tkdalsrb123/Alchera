@@ -315,10 +315,10 @@ for root, dirs, files in os.walk(xml_dir):
                         x = []
                         y = []
                         vehicle_class = box_info['@label']
-                        x.append(box_info['@xtl'])
-                        x.append(box_info['@xbr'])
-                        y.append(box_info['@ytl'])                    
-                        y.append(box_info['@ybr'])
+                        x.append(float(box_info['@xtl']))
+                        x.append(float(box_info['@xbr']))
+                        y.append(float(box_info['@ytl']))                    
+                        y.append(float(box_info['@ybr']))
                         x_min = min(x)
                         y_min = min(y)
                         x_max = max(x)
@@ -328,9 +328,9 @@ for root, dirs, files in os.walk(xml_dir):
                         width = max(x) - min(x)
                         height = max(y) - min(y)
                         for att_info in box_info['attribute']:
-                            if att_info['@name'] == 'sub class1':
+                            if att_info['@name'] == 'sub class 1':
                                 subclass1 = att_info['#text']
-                            elif att_info['@name'] == 'sub class2':
+                            elif att_info['@name'] == 'sub class 2':
                                 subclass2 = att_info['#text']
                             elif att_info['@name'] == 'Stutation occlusion of box':
                                 occlusion = att_info['#text']
