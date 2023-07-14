@@ -10,6 +10,9 @@
 <div id="roadview" style="width:100%;height:950px;"></div>
 
 <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=c7e323dfaa3e884221473fca0cd6b61b&libraries=services"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.15.5/xlsx.full.min.js"></script>
+<input type="C:/Users/Alchera115/Desktop/add.xlsx" onchange="readExcel()">
+
 <script>
 var roadviewContainer = document.getElementById('roadview'); //로드뷰를 표시할 div
 //로드뷰 객체
@@ -25,6 +28,7 @@ var roadviewClient = new kakao.maps.RoadviewClient(); //좌표로부터 로드�
 
 // 주소-좌표 변환 객체를 생성합니다
 var geocoder = new kakao.maps.services.Geocoder();
+
 
 // 주소로 좌표를 검색합니다
 geocoder.addressSearch('전북 장수군 장수읍 개실길', function(result, status) {
