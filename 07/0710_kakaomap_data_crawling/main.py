@@ -17,10 +17,10 @@ url = 'http://localhost:8080/07/0710_kakaomap_data_crawling/test_roadview/test.h
 driver.get(url)
 try:
     wait = WebDriverWait(driver, 30)
-    for i in range(3):
-        time.sleep(5)
+    for i in range(10):
+        time.sleep(2)
         driver.save_screenshot(f'./image{i}.png')
-        driver.find_element(By.XPATH, '//div[contains(@id,"_ar_14_")]').click()
-    wait.until(EC.element_to_be_clickable((By.XPATH, '//div[contains(@id,"_ar_14_")]')))
+        driver.find_element(By.XPATH, '//div[contains(@id,"_ar_10_")]').click()
+    wait.until(EC.element_to_be_clickable((By.XPATH, '//div[contains(@id,"_ar_10_")]')))
 finally:
     driver.quit()

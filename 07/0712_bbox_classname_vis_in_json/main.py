@@ -83,8 +83,8 @@ for val in file_dict.values():
                     yolo_box = (center_x, center_y, width, height)
                     x1, y1, x2, y2 = pbf.convert_bbox(yolo_box, from_type='yolo', to_type='voc', image_size=(1920, 1080))
 
-                    draw.rectangle((x1, y1, x2, y2), outline=random_color)
-                    draw.text((x1,y1-10), text, fill=random_color)
+                    draw.rectangle((x1, y1, x2, y2), outline=random_color, width=3)
+                    draw.text((x1,y1-15), text, fill=random_color, font=font)
     except ValueError:
         break
         
