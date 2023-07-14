@@ -27,7 +27,6 @@ for root, dirs, files in os.walk(input_dir):
         
         file_dict[namekey].append(path)
 
-
 for val in file_dict.values():
     try:
         for path in val:
@@ -51,7 +50,7 @@ for val in file_dict.values():
         fontpath = 'arial.ttf'
         font = ImageFont.truetype(fontpath, fontsize)
         draw = ImageDraw.Draw(img)
-        
+
         if surface_num == '0':
             for ann in json_file['annotations']:
                 random_color = random_color_generator()
@@ -68,7 +67,7 @@ for val in file_dict.values():
                     draw.rectangle((x1, y1, x2, y2), outline=random_color, width=3)
                     draw.text((x1,y1-15), text, fill=random_color, font=font)
 
-                    
+    
         elif surface_num == '1':
             for ann in json_file['annotations']:
                 random_color = random_color_generator()
@@ -85,10 +84,11 @@ for val in file_dict.values():
 
                     draw.rectangle((x1, y1, x2, y2), outline=random_color, width=3)
                     draw.text((x1,y1-15), text, fill=random_color, font=font)
+                
     except ValueError:
-        break
+        continue
         
- 
+
     img.save(output_img_dir, 'JPEG')
 
 
