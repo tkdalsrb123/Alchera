@@ -29,7 +29,7 @@ driver = webdriver.Chrome()
 url = f'https://map.kakao.com/?q={text}'
 driver.get(url)
 driver.maximize_window()
-wait = WebDriverWait(driver, 30)
+wait = WebDriverWait(driver, 60)
 roadview = driver.find_element(By.XPATH, '//*[@id="view.map"]/div[4]/a')
 driver.execute_script("arguments[0].click();", roadview)
 time.sleep(5)
@@ -37,22 +37,23 @@ point = driver.find_elements(By.XPATH, '//*[contains(@style, "position: absolute
 actions = ActionChains(driver)
 actions.double_click(point[-1])
 actions.perform()
-time.sleep(3)
+time.sleep(10)
 button = driver.find_element(By.XPATH, '//*[@id="view"]/div[1]/div[1]/button')
 screenshot = driver.find_element(By.XPATH, '//*[@id="view"]/div[1]/div[1]/ul/li[1]/button')
 canvas = driver.find_element(By.XPATH, '//*[@id="view.roadview"]')
 clickbutton = ActionChains(driver)\
-    .move_to_element(canvas)\
-    .click_and_hold()\
-    .move_by_offset(400,0)\
-    .release()\
     .click(button)
+    # .move_to_element(canvas)\
+    # .click_and_hold()\
+    # .move_by_offset(400,0)\
+    # .release()\
 clickbutton.perform()
-for i in range(3):
-    time.sleep(5)
+for i in range(50):
+    time.sleep(1)
+    # -200, 100
     clickscreenshot = ActionChains(driver)\
         .click(screenshot)\
-        .move_by_offset(-100, 50)\
+        .move_by_offset(-1200, 100)\
         .click()
     clickscreenshot.perform()
 time.sleep(3)
