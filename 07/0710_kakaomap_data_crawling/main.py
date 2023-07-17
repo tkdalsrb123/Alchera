@@ -45,7 +45,7 @@ for text in addresses:
         # -200, 100
         clickscreenshot = ActionChains(driver)\
             .click(screenshot)\
-            .move_by_offset(-1200, 100)\
+            .move_by_offset(-200, 100)\
             .click()
         clickscreenshot.perform()
     time.sleep(3)
