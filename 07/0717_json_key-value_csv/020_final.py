@@ -26,7 +26,7 @@ for root, dirs, files in os.walk(json_dir):
                         level2 = cat['level2']
                         name = cat['name']
                         
-                    df_list.append([filename, ann_id, img_id, cat_id, level1, level2, name])
+                        df_list.append([filename, ann_id, img_id, cat_id, level1, level2, name])
 
 df = pd.DataFrame(df_list, columns=['filename', 'ann_id', 'image_id', 'category_id', 'level1', 'level2', 'name'])
 df.to_excel(f'{output_dir}/final.xlsx', index=False)
