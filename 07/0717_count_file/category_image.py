@@ -15,7 +15,7 @@ for root, dirs, files in os.walk(input_dir):
                 json_file = json.load(f)
             
             for ann in json_file['annotations']:
-                count_file[ann['category_id']].append(file)
+                count_file[ann['category_id']].append(json_path)
             
 for key, val in count_file.items():
     count_file[key] = len(set(val))
