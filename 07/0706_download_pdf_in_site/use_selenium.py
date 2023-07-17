@@ -25,17 +25,21 @@ for val in data[:3]:
     soup = BeautifulSoup(html, 'html.parser')
     table = soup.find('table')
     
-    print(table.find_all('tr'))
-    
+    # 작성일 추출
+    for date in table.find_all('td', {'style':'padding-left:5px'}):
+        date_list.append(date.text)
+        
     # pdf 링크 추출
-    # for pdf_link in table.find_all('td', {'class':'file'}):
-    #     if pdf_link.find('a') != None:
-    #         pdf_list.append(pdf_link.find('a').get('href'))
+    for pdf_link in table.find_all('td', {'class':'file'}):
+        if pdf_link.find('a') != None:
+            pdf_list.append(pdf_link.find('a').get('href'))
             # print(pdf_link.find('a').get('href'))
+    
+    date_pdf = list(zip(date_list, pdf_list))
+    for i in date_pdf:
+        print(i[0])
             
-    # # 작성일 추출
-    # for date in table.find_all('td', {'style':'padding-left:5px'}):
-    #     date_list.append(date.text)
+
     
     # next = driver.find_element(By.XPATH, '//*[@id="contentarea_left"]/div[3]/table[2]/tbody/tr/td[11]/a')
     # next.click()
