@@ -10,8 +10,7 @@ from bs4 import BeautifulSoup
 url_title = {'시황정보 리포트':'company_list.naver', '투자정보 리포트':'invest_list.naver', '종목분석 리포트':'company_list.naver', '산업분석 리포트':'industry_list.naver', '경제분석 리포트':'economy_list.naver', '채권분석 리포트':'debenture_list.naver'}
 
 excel = pd.read_excel(r"C:\Users\Alchera115\wj.alchera\Alchera_data\07\0706_사이트 내 PDF 파일 다운로드\save_pdf.xlsx")
-# excel['날짜'] = excel['날짜'].str.replace('.', '/')
-excel['날짜'] = pd.to_datetime(excel['날짜'], format='%y.%m.%d')
+excel['날짜'] = pd.to_datetime(excel['날짜'], format='%y.%m.%d')    # format 형식 -> 기존 데이터의 형태에 맞게 만들어야한다.
 data = excel.values
 print(data)
 # driver = webdriver.Chrome()
