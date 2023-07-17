@@ -36,8 +36,6 @@ for val in data[:3]:
             # print(pdf_link.find('a').get('href'))
     
     date_pdf = list(zip(date_list, pdf_list))
-    for i in date_pdf:
-        print(i[0])
             
 
     
