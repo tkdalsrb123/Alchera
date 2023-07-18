@@ -6,6 +6,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import pandas as pd
 import sys
+from selenium.webdriver.common.keys import Keys
 
 _, excel_dir = sys.argv
 
@@ -30,21 +31,24 @@ for text in addresses:
     time.sleep(10)
     button = driver.find_element(By.XPATH, '//*[@id="view"]/div[1]/div[1]/button')
     screenshot = driver.find_element(By.XPATH, '//*[@id="view"]/div[1]/div[1]/ul/li[1]/button')
-    canvas = driver.find_element(By.XPATH, '//*[@id="view.roadview"]')
     
     clickbutton = ActionChains(driver)\
         .click(button)
     clickbutton.perform()
     
-    for i in range(5):
+    for i in range(30):
         time.sleep(1)
-        # -200, 100
         clickscreenshot = ActionChains(driver)\
-            .click(screenshot)\
-            .move_by_offset(-1200, 100)\
-            .click()
+            .click(screenshot)
         clickscreenshot.perform()
+        
+        time.sleep(1)   
+        # Keys.ARROW_RIGHT  오른쪽으로 이동
+        # Keys.ARROW_LEFT  왼쪽으로 이동
+        godirection = ActionChains(driver)\
+            .send_keys(Keys.ARROW_LEFT)
+        godirection.perform()
+
     time.sleep(3)
     wait.until(EC.element_to_be_clickable((By.XPATH, '//*[@id="view.roadview"]')))
 driver.quit()
- 
