@@ -17,7 +17,7 @@ def jsonformat(width, imagename, shapes, height):
 
 def sort_list(sample_list):
     key_list = ['shapes_type', 'label', 'points']
-    sample_list = sorted(sample_list, key=lambda x: int(x[-1]), reverse=True)   # z_order 크기 순으로 정렬
+    sample_list = sorted(sample_list, key=lambda x: int(x[-1]), reverse=False)   # z_order 크기 순으로 정렬
     sample_list = list(map(lambda x: dict(zip(key_list, x[:-1])), sample_list)) # z_order 삭제
     return sample_list
     
