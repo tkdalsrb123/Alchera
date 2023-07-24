@@ -136,7 +136,7 @@ def visualization(obj):
             y1 = pil['ymin']
             x2 = pil['xmin'] + pil['width']
             y2 = pil['ymin'] + pil['height']
-            outline = select_outline(pil['class'])
+            outline = select_outline(pil['class'].lower())
             if pil['sub_class1'][:3] != 'fix':
                 draw.rectangle(((x1, y1),(x2, y2)), outline=outline, width=1)
                 draw.text((x1, y1-18), pil_text, font=font, fill=outline)
@@ -155,7 +155,7 @@ def visualization(obj):
             y1 = pil['ymin']
             x2 = pil['xmin'] + pil['width']
             y2 = pil['ymin'] + pil['height']
-            outline = select_outline(pil['class'])
+            outline = select_outline(pil['class'].lower())
             if pil['sub_class1'][:3] != 'fix':
                 d.dashed_rectangle(((x1, y1),(x2, y2)), dash=(7,5), outline=outline, width=1)
                 draw.text((x1, y1-18), pil_text, font=font, fill=outline)
@@ -174,7 +174,7 @@ def visualization(obj):
             y1 = pil['ymin']
             x2 = pil['xmin'] + pil['width']
             y2 = pil['ymin'] + pil['height']
-            outline = select_outline(pil['class'])
+            outline = select_outline(pil['class'].lower())
             if pil['sub_class1'][:3] != 'fix':
                 d.dashed_rectangle(((x1, y1),(x2, y2)), dash=(1,1), outline=outline, width=1)
                 draw.text((x1, y1-15), pil_text, font=font, fill=outline)
@@ -198,7 +198,7 @@ def text_background(obj):
             y1 = int(pil['ymin'])
             x2 = int(pil['xmin'] + pil['width'])
             y2 = int(pil['ymin'] + pil['height'])
-            color = select_color(pil['class'])
+            color = select_color(pil['class'].lower())
             if pil['sub_class1'][:3] != 'fix':
                 cv2.rectangle(overlay, (x1, y1-text_height-6), (x1+text_width-6, y1), color, -1)
             elif pil['sub_class1'][:3] == 'fix':
@@ -215,7 +215,7 @@ def text_background(obj):
             (text_width, text_height) = cv2.getTextSize(pil_text, font, fontScale=1, thickness=1)[0]
             x1 = int(pil['xmin'])
             y1 = int(pil['ymin'])
-            color = select_color(pil['class'])
+            color = select_color(pil['class'].lower())
             if pil['sub_class1'][:3] != 'fix':
                 cv2.rectangle(overlay, (x1, y1-text_height-6), (x1+text_width-6, y1), color, -1)
             elif pil['sub_class1'][:3] == 'fix':
@@ -232,7 +232,7 @@ def text_background(obj):
             (text_width, text_height) = cv2.getTextSize(pil_text, font, fontScale=1, thickness=1)[0]
             x1 = int(pil['xmin'])
             y1 = int(pil['ymin'])
-            color = select_color(pil['class'])
+            color = select_color(pil['class'].lower())
             if pil['sub_class1'][:3] != 'fix':
                 cv2.rectangle(overlay, (x1, y1-text_height-6), (x1+text_width-6, y1), color, -1)
             elif pil['sub_class1'][:3] == 'fix':
@@ -272,7 +272,7 @@ def json_tree(name, date, vehicle, project, objects):
     
     return json_tree
     
-_, xml_dir, excel_dir, img_dir, save_dir = sys.argv
+_, xml_dir, excel_dir, img_dir, save_dir, save_img_dir = sys.argv
 
 json_path_dict = defaultdict(str)
 
@@ -336,9 +336,9 @@ for root, dirs, files in os.walk(xml_dir):
                                 subclass1 = att_info['#text']
                             elif att_info['@name'] == 'sub class 2':
                                 subclass2 = att_info['#text']
-                            elif att_info['@name'] == 'Stutation occlusion of box':
+                            elif 'occlusion' in att_info['@name']:
                                 occlusion = att_info['#text']
-                            elif att_info['@name'] == 'Stutation truncation of box':
+                            elif 'truncation' in att_info['@name']:
                                 truncation = att_info['#text']
                         
                         if occlusion == 'not occlusion' or occlusion == 'Both 2 wheel have no occlusion':
@@ -380,15 +380,18 @@ for root, dirs, files in os.walk(img_dir):
         filename, ext = os.path.splitext(file)
         if ext == '.png':
             img_path = os.path.join(root, file)
-            json_path = json_path_dict[filename]
-            output_img_path = json_path.replace('json', 'png')
+            json_path = json_path_dict[file]
+            mid = '\\'.join(root.split('\\')[len(img_dir.split('\\')):])
+            folder = os.path.join(save_img_dir, mid)
+            os.makedirs(folder, exist_ok=True)
+            output_img_path = os.path.join(folder, file)
             
             with open(json_path, encoding='utf-8') as f:
                 json_file = json.load(f)
             
             img = Image.open(img_path)
             
-            fontpath = "NanumBarunGothicBold.ttf"
+            fontpath = "malgunbd.ttf"
             
             numpy_image = np.array(img)
             cv_image = cv2.cvtColor(numpy_image, cv2.COLOR_RGB2BGR)
