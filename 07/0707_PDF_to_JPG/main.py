@@ -19,6 +19,7 @@ for root, dirs, files in os.walk(pdf_dir):
             
             # pdf 페이지 별로 jpg로 저장
             for i, page in enumerate(pages):
-                save_img = f'{save_img_path}_{i+1}.jpg'
+                num = f'{i+1}'.rjust(3,'0')
+                save_img = f'{save_img_path}_{num}.jpg'
                 page.save(save_img, 'JPEG')
                 print(save_img, 'image down!!!')
