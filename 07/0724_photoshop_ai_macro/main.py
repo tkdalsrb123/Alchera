@@ -7,8 +7,10 @@ from pywinauto import findwindows
 #     print(proc, proc.process_id)
 
 app = Application(backend="uia")
-app.start(r"C:\Program Files\Adobe\Adobe Photoshop (Beta)\Photoshop.exe")
+app.connect(path = r"C:\Program Files\Adobe\Adobe Photoshop (Beta)\Photoshop.exe")
 
 dlg = app['Notepad']
-# dlg = app.top_window()
-app.dlg.print_control_identifiers()
+dlg = app.top_window()
+dlg['파일(F)'].select()
+# dlg.print_control_identifiers()
+# dlg['메뉴 모음']['파일(F)'].click()
