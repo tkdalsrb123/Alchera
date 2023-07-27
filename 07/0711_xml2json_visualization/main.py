@@ -51,20 +51,23 @@ class DashedImageDraw(ImageDraw.ImageDraw):
             length = math.sqrt(x_length**2 + y_length**2)
             dash_enabled = True
             postion = 0
-            while postion <= length:
-                for dash_step in dash:
-                    if postion > length:
-                        break
-                    if dash_enabled:
-                        start = postion/length
-                        end = min((postion + dash_step - 1) / length, 1)
-                        self.thick_line([(round(x1 + start*x_length),
-                                          round(y1 + start*y_length)),
-                                         (round(x1 + end*x_length),
-                                          round(y1 + end*y_length))],
-                                        xy, fill, width)
-                    dash_enabled = not dash_enabled
-                    postion += dash_step
+            try:
+                while postion <= length:
+                    for dash_step in dash:
+                        if postion > length:
+                            break
+                        if dash_enabled:
+                            start = postion/length
+                            end = min((postion + dash_step - 1) / length, 1)
+                            self.thick_line([(round(x1 + start*x_length),
+                                            round(y1 + start*y_length)),
+                                            (round(x1 + end*x_length),
+                                            round(y1 + end*y_length))],
+                                            xy, fill, width)
+                        dash_enabled = not dash_enabled
+                        postion += dash_step
+            except ZeroDivisionError:
+                error_list.append([file, ([x1, y1], [x2, y2])])
         return
 
     def dashed_rectangle(self, xy, dash=(2,2), outline=None, width=0):
@@ -215,6 +218,8 @@ def text_background(obj):
             (text_width, text_height) = cv2.getTextSize(pil_text, font, fontScale=1, thickness=1)[0]
             x1 = int(pil['xmin'])
             y1 = int(pil['ymin'])
+            x2 = int(pil['xmin'] + pil['width'])
+            y2 = int(pil['ymin'] + pil['height'])
             color = select_color(pil['class'].lower())
             if pil['sub_class1'][:3] != 'fix':
                 cv2.rectangle(overlay, (x1, y1-text_height-6), (x1+text_width-6, y1), color, -1)
@@ -232,6 +237,8 @@ def text_background(obj):
             (text_width, text_height) = cv2.getTextSize(pil_text, font, fontScale=1, thickness=1)[0]
             x1 = int(pil['xmin'])
             y1 = int(pil['ymin'])
+            x2 = int(pil['xmin'] + pil['width'])
+            y2 = int(pil['ymin'] + pil['height'])
             color = select_color(pil['class'].lower())
             if pil['sub_class1'][:3] != 'fix':
                 cv2.rectangle(overlay, (x1, y1-text_height-6), (x1+text_width-6, y1), color, -1)
@@ -273,7 +280,7 @@ def json_tree(name, date, vehicle, project, objects):
     return json_tree
     
 _, xml_dir, excel_dir, img_dir, save_dir, save_img_dir = sys.argv
-
+error_list = []
 json_path_dict = defaultdict(str)
 
 info = defaultdict(dict)
@@ -337,9 +344,16 @@ for root, dirs, files in os.walk(xml_dir):
                             elif att_info['@name'] == 'sub class 2':
                                 subclass2 = att_info['#text']
                             elif 'occlusion' in att_info['@name']:
-                                occlusion = att_info['#text']
+                                if '#text' in att_info.keys():
+                                    occlusion = att_info['#text']
+                                else:
+                                    pass
                             elif 'truncation' in att_info['@name']:
-                                truncation = att_info['#text']
+                                if '#text' in att_info.keys():
+                                    truncation = att_info['#text']
+                                else:
+                                    pass
+                                    
                         
                         if occlusion == 'not occlusion' or occlusion == 'Both 2 wheel have no occlusion':
                             occlusion = '0'
@@ -415,4 +429,6 @@ for root, dirs, files in os.walk(img_dir):
             img.save(output_img_path, 'png')
             print(f'{output_img_path} 시각화완료..!')
             
-            
+
+df = pd.DataFrame(error_list, columns=['filename', 'coordinates'])
+df.to_excel('./error_list.xlsx', index=False)
