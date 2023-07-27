@@ -10,10 +10,10 @@ file_len = len(os.listdir(input_dir))
 
 app = Application(backend="uia").connect(path=r"C:\Program Files\Adobe\Adobe Photoshop (Beta)\Photoshop.exe")
 
-file_coords = (60, 13)
-start_generative_coords = (178, 273)
-generative_coords = (283, 347)
-make_generative_coords = (1151, 747)
+file_coords = (60, 13)  # 파일(F)
+start_generative_coords = (178, 273)    # 생성형 범위 시작지점(이미지 좌측 상단 모서리)
+generative_coords = (283, 347)      # 생성형 범위 끝지점
+make_generative_coords = (1151, 747)    # 생성형 생성 위치(기준 생성형 박스 오른쪽 하단 모서리)
 
 for i in range(file_len):
 
