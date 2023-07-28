@@ -42,7 +42,7 @@ for path in matching_dict.values():
     
     img = read_img(image_path)
     color = (0,0, 255)
-    
+
     for obj in json_file['annotationObjectInfo']:
         action_value = obj['actionValue']
         coordinates_keypoints = obj['keypoints']
@@ -64,8 +64,12 @@ for path in matching_dict.values():
             x2 = x1 + coordinates_BBox[2]
             y2 = y1 + coordinates_BBox[3]
             cv2.rectangle(img, (x1,y1), (x2,y2), color=color, thickness=2)
-            cv2.putText(img, text, (x1,y1-10), fontFace=cv2.FONT_HERSHEY_COMPLEX, fontScale=0.5, color=color)
     
+            if y1-10 > 1:
+                cv2.putText(img, text, (x1,y1-10), fontFace=cv2.FONT_HERSHEY_COMPLEX, fontScale=0.5, color=color)
+            else:   # 이미지 벗어날 경우 박스 하단에 시각화
+                cv2.putText(img, text, (x1,y2+15), fontFace=cv2.FONT_HERSHEY_COMPLEX, fontScale=0.5, color=color)
+                
     mid = '\\'.join(root.split('\\')[len(input_dir.split('\\')):])
     folder = os.path.join(ouput_dir, mid)
     os.makedirs(folder, exist_ok=True)
