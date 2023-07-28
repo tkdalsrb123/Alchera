@@ -40,31 +40,30 @@ for path in matching_dict.values():
         
     action_name = json_file['annotationImageInfo']['action']
     
+    img = read_img(image_path)
+    color = (0,0, 255)
+    
     for obj in json_file['annotationObjectInfo']:
         action_value = obj['actionValue']
-        if len(obj['keypoints']) > 0:
-            coordinates = obj['keypoints']
-        else:
-            coordinates = obj['BBox']
-            
-        img = read_img(image_path)
+        coordinates_keypoints = obj['keypoints']
+        coordinates_BBox = obj['BBox']
         
-        color = (0,0, 255)
         text = f'{action_name}/{action_value}'
         
-        if len(coordinates) > 4:
+        # keypoints가 존재하는 obj info 시각화
+        if len(coordinates_keypoints) > 0:
+            # keypoints 시각화
+            for idx in range(0, len(coordinates_keypoints), 3):
+                x = coordinates_keypoints[idx]
+                y = coordinates_keypoints[idx+1]
+                cv2.circle(img, (x,y), 5, color=color, thickness=-1)
 
-            for idx in range(0, len(coordinates), 3):
-                x = coordinates[idx]
-                y = coordinates[idx+1]
-                cv2.circle(img, (x,y), 10, color=color)
-                cv2.putText(img, text, (x,y-10), fontFace=cv2.FONT_HERSHEY_COMPLEX, fontScale=0.5, color=color)
-        else:
-            x1 = coordinates[0]
-            y1 = coordinates[1]
-            x2 = x1 + coordinates[2]
-            y2 = y1 + coordinates[3]
-            cv2.rectangle(img, (x1,y1), (x2,y2), color=color, thickness=3)
+            # bbox 및 텍스트 시각화
+            x1 = coordinates_BBox[0]
+            y1 = coordinates_BBox[1]
+            x2 = x1 + coordinates_BBox[2]
+            y2 = y1 + coordinates_BBox[3]
+            cv2.rectangle(img, (x1,y1), (x2,y2), color=color, thickness=2)
             cv2.putText(img, text, (x1,y1-10), fontFace=cv2.FONT_HERSHEY_COMPLEX, fontScale=0.5, color=color)
     
     mid = '\\'.join(root.split('\\')[len(input_dir.split('\\')):])
