@@ -17,3 +17,9 @@ python main.py [input 최상위 폴더] [output 최상위 폴더]
 2. 2차 수정사항
 - keypoint가 없어도 bbox 시각화
 - ActionValue true = 빨간색, false = 파란색 으로 색상 지정
+
+2023-08-01
+
+1. 3차 수정사항
+- 객체별로 랜덤 색 부여
+- keypoint 구조에서 세번째 값들인 0, 1, 2가 포인트마다 텍스트로 출력

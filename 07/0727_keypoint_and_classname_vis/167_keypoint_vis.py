@@ -2,6 +2,7 @@ import os, sys, json
 from collections import defaultdict
 import cv2
 import numpy as np
+import random
 
 def extract_file(path_list, ext):
     for path in path_list:
@@ -18,7 +19,9 @@ def visualization(image, keypoints, bbox, color):
     for idx in range(0, len(keypoints), 3):
         x = keypoints[idx]
         y = keypoints[idx+1]
+        point_text = str(keypoints[idx+2])
         cv2.circle(image, (x,y), 5, color=color, thickness=-1)
+        cv2.putText(image, point_text, (x-5,y-10), fontFace=cv2.FONT_HERSHEY_COMPLEX, fontScale=0.5, color=color)
 
     # bbox 및 텍스트 시각화
     x1 = bbox[0]
@@ -69,7 +72,11 @@ for path in matching_dict.values():
         text = f'{action_name}/{action_value}'
         
         if action_value == True:
-            select_color = (0, 0, 255)
+            r = random.randint(0, 255)
+            g = random.randint(0, 255)
+            b = random.randint(0, 255)
+            select_color = (r, g, b)
+    
         elif action_value == False:
             select_color = (255, 0, 0)
         
@@ -91,5 +98,3 @@ for path in matching_dict.values():
         with open(save_img_path, mode='w+b') as f:
             encoded_img.tofile(f)
         print(save_img_path, '저장!!')
-
-    
