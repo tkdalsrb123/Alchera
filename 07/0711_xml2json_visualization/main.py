@@ -288,6 +288,7 @@ df = pd.read_excel(excel_dir)
 df.apply(makeinfo, axis=1)  # excel 파일을 딕셔너리 형태로 변경
 
 # xml 파일 -> json 파일
+json_error_list = []
 for root, dirs, files in os.walk(xml_dir):
     for file in files:
         ext = os.path.splitext(file)[-1]
@@ -338,21 +339,25 @@ for root, dirs, files in os.walk(xml_dir):
                         subclass2 = None
                         occlusion = 'not occlusion'
                         truncation = 'not truncation'
-                        for att_info in box_info['attribute']:
-                            if att_info['@name'] == 'sub class 1':
-                                subclass1 = att_info['#text']
-                            elif att_info['@name'] == 'sub class 2':
-                                subclass2 = att_info['#text']
-                            elif 'occlusion' in att_info['@name']:
-                                if '#text' in att_info.keys():
+                        try:
+                            for att_info in box_info['attribute']:
+                                if att_info['@name'] == 'sub class 1':
+                                    subclass1 = att_info['#text']
+                                elif att_info['@name'] == 'sub class 2':
+                                    subclass2 = att_info['#text']
+                                elif 'occlusion' in att_info['@name']:
+                                    # if '#text' in att_info.keys():
                                     occlusion = att_info['#text']
-                                else:
-                                    pass
-                            elif 'truncation' in att_info['@name']:
-                                if '#text' in att_info.keys():
+                                    # else:
+                                    #     pass
+                                elif 'truncation' in att_info['@name']:
+                                    # if '#text' in att_info.keys():
                                     truncation = att_info['#text']
-                                else:
-                                    pass
+                                    # else:
+                                    #     pass
+                        except KeyError:
+                            json_error_list.append([file, filename, att_info])
+                            break
                                     
                         
                         if occlusion == 'not occlusion' or occlusion == 'Both 2 wheel have no occlusion':
@@ -432,3 +437,6 @@ for root, dirs, files in os.walk(img_dir):
 
 df = pd.DataFrame(error_list, columns=['filename', 'coordinates'])
 df.to_excel('./error_list.xlsx', index=False)
+
+df2 = pd.DataFrame(json_error_list, columns=['xml_file', 'filename', 'error_info'])
+df2.to_excel('./json_error_list.xlsx', index=False)
