@@ -298,48 +298,48 @@ for root, dirs, files in os.walk(xml_dir):
             folder = os.path.join(save_dir, mid)
             
             xml_file = readxml(xml_path)
-            for img_info in xml_file['annotations']['image']:
-                filename = os.path.split(img_info['@name'])[-1]
-                
-                if len(info[filename].keys()) != 0:     # excel 파일에 파일이 존재할 때
-                    print(filename.replace('png', 'json'), '생성중!!!')
+            try:
+                for img_info in xml_file['annotations']['image']:
+                    filename = os.path.split(img_info['@name'])[-1]
                     
-                    info_file = info[filename]
-                    date = info_file['date']
-                    if 'N' in info_file['vehicle']:
-                        vehicle = 'NQ5'
-                    elif 'S' in info_file['vehicle']:
-                        vehicle = 'Santafe'
-                    elif 'A' in info_file['vehicle']:
-                        vehicle = 'Sorento'
-                    
-                    if vehicle == 'NQ5' or vehicle == 'Santafe':
-                        project = 'mobis_rir_2nd_eu'
-                    elif vehicle == 'Sorento':
-                        project = 'mobis_rir_2nd_na'
-                    
-                    list_object = []
-                    for box_info in img_info['box']:
-                        x = []
-                        y = []
-                        vehicle_class = box_info['@label']
-                        x.append(float(box_info['@xtl']))
-                        x.append(float(box_info['@xbr']))
-                        y.append(float(box_info['@ytl']))                    
-                        y.append(float(box_info['@ybr']))
-                        x_min = min(x)
-                        y_min = min(y)
-                        x_max = max(x)
-                        y_max = max(y)
-                        x_cnt = np.median(x)
-                        y_cnt = np.median(y)
-                        width = max(x) - min(x)
-                        height = max(y) - min(y)
-                        subclass1 = None
-                        subclass2 = None
-                        occlusion = 'not occlusion'
-                        truncation = 'not truncation'
-                        try:
+                    if len(info[filename].keys()) != 0:     # excel 파일에 파일이 존재할 때
+                        print(filename.replace('png', 'json'), '생성중!!!')
+                        
+                        info_file = info[filename]
+                        date = info_file['date']
+                        if 'N' in info_file['vehicle']:
+                            vehicle = 'NQ5'
+                        elif 'S' in info_file['vehicle']:
+                            vehicle = 'Santafe'
+                        elif 'A' in info_file['vehicle']:
+                            vehicle = 'Sorento'
+                        
+                        if vehicle == 'NQ5' or vehicle == 'Santafe':
+                            project = 'mobis_rir_2nd_eu'
+                        elif vehicle == 'Sorento':
+                            project = 'mobis_rir_2nd_na'
+                        
+                        list_object = []
+                        for box_info in img_info['box']:
+                            x = []
+                            y = []
+                            vehicle_class = box_info['@label']
+                            x.append(float(box_info['@xtl']))
+                            x.append(float(box_info['@xbr']))
+                            y.append(float(box_info['@ytl']))                    
+                            y.append(float(box_info['@ybr']))
+                            x_min = min(x)
+                            y_min = min(y)
+                            x_max = max(x)
+                            y_max = max(y)
+                            x_cnt = np.median(x)
+                            y_cnt = np.median(y)
+                            width = max(x) - min(x)
+                            height = max(y) - min(y)
+                            subclass1 = None
+                            subclass2 = None
+                            occlusion = 'not occlusion'
+                            truncation = 'not truncation'
                             for att_info in box_info['attribute']:
                                 if att_info['@name'] == 'sub class 1':
                                     subclass1 = att_info['#text']
@@ -355,43 +355,43 @@ for root, dirs, files in os.walk(xml_dir):
                                     truncation = att_info['#text']
                                     # else:
                                     #     pass
-                        except KeyError:
-                            json_error_list.append([file, filename, att_info])
-                            break
-                                    
-                        
-                        if occlusion == 'not occlusion' or occlusion == 'Both 2 wheel have no occlusion':
-                            occlusion = '0'
-                        elif occlusion == '1-50%occlusion' or occlusion == '1-25%occlusion' or occlusion == '1 wheel 100% visible, other wheel partially occlusion':
-                            occlusion = '1'
-                        elif occlusion == '25-50%occlusion' or occlusion == '1 wheel 100% occlusion, other wheel &lt; 50% occlusion':
-                            occlusion = '2'
+                                        
                             
-                        if truncation == 'not truncation' or truncation == 'Both 2 wheel have no truncation':
-                            truncation = '0'
-                        elif truncation == '1-50%truncation' or truncation == '1-25%truncation' or truncation == '1 wheel 100% visible, other wheel partially truncation':
-                            truncation = '1'
-                        elif truncation == '25-50%truncation' or truncation == '1 wheel 100% truncation, other wheel &lt; 50% truncation':
-                            truncation = '2'
+                            if occlusion == 'not occlusion' or occlusion == 'Both 2 wheel have no occlusion':
+                                occlusion = '0'
+                            elif occlusion == '1-50%occlusion' or occlusion == '1-25%occlusion' or occlusion == '1 wheel 100% visible, other wheel partially occlusion':
+                                occlusion = '1'
+                            elif occlusion == '25-50%occlusion' or occlusion == '1 wheel 100% occlusion, other wheel &lt; 50% occlusion':
+                                occlusion = '2'
+                                
+                            if truncation == 'not truncation' or truncation == 'Both 2 wheel have no truncation':
+                                truncation = '0'
+                            elif truncation == '1-50%truncation' or truncation == '1-25%truncation' or truncation == '1 wheel 100% visible, other wheel partially truncation':
+                                truncation = '1'
+                            elif truncation == '25-50%truncation' or truncation == '1 wheel 100% truncation, other wheel &lt; 50% truncation':
+                                truncation = '2'
 
-                        list_object.append({'class':vehicle_class, 'sub_class1':subclass1, 'sub_class2':subclass2,
-                                    'xmin':round(x_min), 'xmax':round(x_max), 'ymin':round(y_min), 'ymax':round(y_max), 'cnt_x':int(x_cnt), 'cnt_y':int(y_cnt), 
-                                    'width':round(width), 'height':round(height), 
-                                    'occlusion':occlusion, 'truncation':truncation})
+                            list_object.append({'class':vehicle_class, 'sub_class1':subclass1, 'sub_class2':subclass2,
+                                        'xmin':round(x_min), 'xmax':round(x_max), 'ymin':round(y_min), 'ymax':round(y_max), 'cnt_x':int(x_cnt), 'cnt_y':int(y_cnt), 
+                                        'width':round(width), 'height':round(height), 
+                                        'occlusion':occlusion, 'truncation':truncation})
+                            
                         
+                        
+                        new_json = json_tree(filename, date, vehicle, project, list_object)
+                        
+                        os.makedirs(folder, exist_ok=True)
+                        output_path = os.path.join(folder, filename.replace('png', 'json'))
+                        
+                        json_path_dict[filename] = output_path  # image와 매칭할 딕셔너리
+                        with open(output_path, 'w', encoding='utf-8') as outfile:
+                            json.dump(new_json, outfile, indent=2, ensure_ascii=False)
                     
-                    
-                    new_json = json_tree(filename, date, vehicle, project, list_object)
-                    
-                    os.makedirs(folder, exist_ok=True)
-                    output_path = os.path.join(folder, filename.replace('png', 'json'))
-                    
-                    json_path_dict[filename] = output_path  # image와 매칭할 딕셔너리
-                    with open(output_path, 'w', encoding='utf-8') as outfile:
-                        json.dump(new_json, outfile, indent=2, ensure_ascii=False)
-                
-                else:
-                    continue
+                    else:
+                        continue
+            except KeyError:
+                json_error_list.append([file, filename, att_info])
+                break
 
 # 이미지 시각화 작업
 for root, dirs, files in os.walk(img_dir):
