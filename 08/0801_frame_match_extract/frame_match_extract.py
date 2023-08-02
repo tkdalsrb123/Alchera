@@ -1,7 +1,9 @@
 import os, sys
 import pandas as pd
 import shutil
+from tqdm import tqdm
 
+# 파일에 원하는 정보를 데이터프레임으로 만들기
 def make_df(dir):
     file_info = []
     for root, dirs, files in os.walk(dir):
@@ -17,6 +19,7 @@ def make_df(dir):
 
     return df
 
+# 조건에 맞는 파일 추출
 def file_extract(df, Category, minidx, maxidx):
     df = df[df['category'] == Category]
 
@@ -31,6 +34,7 @@ def file_extract(df, Category, minidx, maxidx):
         copyfile(df, extract_num1)
         copyfile(df, extract_num2)
 
+# 파일 복사
 def copyfile(df, num):
     extract_file = df.loc[df['num'] == num, 'filepath']
     extract_file = extract_file.values[0]
@@ -40,7 +44,6 @@ def copyfile(df, num):
     output_path = os.path.join(folder, file)
     os.makedirs(folder, exist_ok=True)
     shutil.copy2(extract_file, output_path)
-    print(output_path)
     
 _, old_db_dir, new_db_dir, output_dir, mode_num = sys.argv
 
@@ -48,8 +51,10 @@ old_db_df = make_df(old_db_dir)
 new_db_df = make_df(new_db_dir)
 
 category_list = old_db_df['category'].unique()
+
+# 맨 앞 프레임을 무조건 살리는 경우
 if mode_num == '0':
-    for category in category_list:
+    for category in tqdm(category_list):
         min_idx = old_db_df.loc[old_db_df['category'] == category, 'num'].min()
         max_idx = old_db_df.loc[old_db_df['category'] == category, 'num'].max()
         
@@ -59,9 +64,10 @@ if mode_num == '0':
             file_extract(new_db_df, category, min_idx, max_idx)
         elif min_idx%3 == 0:
             file_extract(new_db_df, category, min_idx, max_idx)
-
+            
+# 맨 앞 프레임에 조건을 넣을 경우
 elif mode_num == '1': 
-    for category in category_list:
+    for category in tqdm(category_list):
         min_idx = old_db_df.loc[old_db_df['category'] == category, 'num'].min()
         max_idx = old_db_df.loc[old_db_df['category'] == category, 'num'].max()
         
