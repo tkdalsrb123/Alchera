@@ -16,14 +16,14 @@ for root, dirs, files in os.walk(input_dir):
             video = cv2.VideoCapture(mp4_path)
 
             currentframe = 0
-            fps = 1
+            fps = 10
             # 프레임 추출
             while True:
                 ret, frame = video.read()
                 if not ret:
                     break
                 
-                if currentframe % fps == 0:
+                if currentframe % fps == 0 or currentframe % fps == 1 or currentframe % fps == 2:
                     num = str(currentframe).zfill(8)
                     frame_filename = f'{filename}_{num}.jpg'
                     frame_path = os.path.join(folder, frame_filename)
