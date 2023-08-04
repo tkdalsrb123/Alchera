@@ -20,8 +20,9 @@ def make_df(dir):
     return df
 
 # 조건에 맞는 파일 추출
-def file_extract(df, Category, minidx, maxidx):
+def file_extract(df, old_df, Category, minidx, maxidx):
     df = df[df['category'] == Category]
+    old_df = old_df[old_df['category'] == Category]
 
     for i in range(minidx, maxidx, 3):
         if minidx%3 == 0:
@@ -31,9 +32,11 @@ def file_extract(df, Category, minidx, maxidx):
         extract_num1 = extract_num + 10
         extract_num2 = extract_num + 20
         # copyfile(df, extract_num)
-        copyfile(df, extract_num1)
-        copyfile(df, extract_num2)
-        
+        old_file = old_df.loc[old_df['num'] == i, 'filepath']
+        if len(old_file.values) > 0:
+            copyfile(df, extract_num1)
+            copyfile(df, extract_num2)
+                
 
 # 파일 복사
 def copyfile(df, num):
@@ -48,16 +51,16 @@ def copyfile(df, num):
 
 def old_file_extract(df, Category, minidx, maxidx):
     df = df[df['category'] == Category]
-    
     for i in range(minidx, maxidx, 3):
         old_file = df.loc[df['num'] == i, 'filepath']
-        old_file = old_file.values[0]
-        root, file = os.path.split(old_file)
-        folder_name = '_'.join(file.split('_')[:3])
-        folder = os.path.join(output_dir, 'old_db', folder_name)
-        output_path = os.path.join(folder, file)
-        os.makedirs(folder, exist_ok=True)
-        shutil.copy2(old_file, output_path)
+        if len(old_file.values) > 0:
+            old_file = old_file.values[0]
+            root, file = os.path.split(old_file)
+            folder_name = '_'.join(file.split('_')[:3])
+            folder = os.path.join(output_dir, 'old_db', folder_name)
+            output_path = os.path.join(folder, file)
+            os.makedirs(folder, exist_ok=True)
+            shutil.copy2(old_file, output_path)
         
 _, old_db_dir, new_db_dir, output_dir, mode_num = sys.argv
 
@@ -73,13 +76,13 @@ if mode_num == '0':
         max_idx = old_db_df.loc[old_db_df['category'] == category, 'num'].max()
         
         if min_idx%3 == 1:
-            file_extract(new_db_df, category, min_idx, max_idx)
+            file_extract(new_db_df, old_db_df, category, min_idx, max_idx)
             old_file_extract(old_db_df, category, min_idx, max_idx)
         elif min_idx%3 == 2:
-            file_extract(new_db_df, category, min_idx, max_idx)
+            file_extract(new_db_df, old_db_df, category, min_idx, max_idx)
             old_file_extract(old_db_df, category, min_idx, max_idx)
         elif min_idx%3 == 0:
-            file_extract(new_db_df, category, min_idx, max_idx)
+            file_extract(new_db_df, old_db_df, category, min_idx, max_idx)
             old_file_extract(old_db_df, category, min_idx, max_idx)
             
 # 맨 앞 프레임에 조건을 넣을 경우

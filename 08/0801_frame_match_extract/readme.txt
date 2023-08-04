@@ -21,3 +21,8 @@ python frame_match_extract.py [기존 db 최상위 폴더] [extract_full_frame�
 
 기능 = 1 일때,
 맨 앞장이 기준과 다를 시 제외하고 프레임 추출
+
+2023-08-07
+
+1. 수정사항
+- old db에서 프레임이 끊겨있는 경우가 있는데 이때 그냥 넘어간다.
