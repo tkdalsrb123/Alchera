@@ -33,7 +33,7 @@ def file_extract(df, old_df, Category, minidx, maxidx):
         extract_num2 = extract_num + 20
         # copyfile(df, extract_num)
         old_file = old_df.loc[old_df['num'] == i, 'filepath']
-        if len(old_file.values) > 0:
+        if len(old_file.values) > 0:    # old db에서 프레임이 끊겨있을 경우 건너뜀
             copyfile(df, extract_num1)
             copyfile(df, extract_num2)
                 
@@ -53,7 +53,7 @@ def old_file_extract(df, Category, minidx, maxidx):
     df = df[df['category'] == Category]
     for i in range(minidx, maxidx, 3):
         old_file = df.loc[df['num'] == i, 'filepath']
-        if len(old_file.values) > 0:
+        if len(old_file.values) > 0:    # old db에서 프레임이 끊겨있을 경우 건너뜀
             old_file = old_file.values[0]
             root, file = os.path.split(old_file)
             folder_name = '_'.join(file.split('_')[:3])
@@ -92,13 +92,13 @@ elif mode_num == '1':
         max_idx = old_db_df.loc[old_db_df['category'] == category, 'num'].max()
         
         if min_idx%3 == 1:
-            file_extract(new_db_df, category, min_idx, max_idx)
+            file_extract(new_db_df, old_db_df, category, min_idx, max_idx)
             old_file_extract(old_db_df, category, min_idx, max_idx)
         elif min_idx%3 == 2:
             min_idx = min_idx + 2
-            file_extract(new_db_df, category, min_idx, max_idx)
+            file_extract(new_db_df, old_db_df, category, min_idx, max_idx)
             old_file_extract(old_db_df, category, min_idx, max_idx)
         elif min_idx%3 == 0:
             min_idx = min_idx + 1
-            file_extract(new_db_df, category, min_idx, max_idx)
+            file_extract(new_db_df, old_db_df, category, min_idx, max_idx)
             old_file_extract(old_db_df, category, min_idx, max_idx)
