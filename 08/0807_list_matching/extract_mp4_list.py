@@ -1,5 +1,6 @@
 import os, sys
 import pandas as pd
+from tqdm import tqdm
 
 def set_file_name(video_title):
     file_name = []
@@ -31,17 +32,15 @@ for csv_file in csv_list:
 
 output_df = pd.DataFrame(columns=['revise', 'duration', 'url', 'search_sum'])
 mp4_list = os.listdir(input_dir)
-for mp4_file in mp4_list:
+for mp4_file in tqdm(mp4_list):
     filename, ext = os.path.splitext(mp4_file)
+    filename = filename.replace(' ', '')
     if ext == '.mp4':
-        mp4_path = os.path.join(input_dir, mp4_file)
-        new_filename = filename.replace(' ', '')
-        new_mp4_path = os.path.join(input_dir, new_filename)
-        os.rename(mp4_path, new_mp4_path)
-        match_df = all_df.loc[all_df['match'] == new_filename, ['duration', 'url', 'search_sum', 'revise']]
+        match_df = all_df.loc[all_df['match'] == filename, ['duration', 'url', 'search_sum', 'revise']]
         output_df = pd.concat([output_df, match_df], ignore_index=True)
 
 output_df.drop_duplicates(subset='url', inplace=True)
-output_df.to_csv(f'{output_dir}/matcing_file.csv', encoding='utf-8-sig', index=False)
+output_df.to_csv(f'{output_dir}/matching_file.csv', encoding='utf-8-sig', index=False)
+print(f'{output_dir}/matching_file.csv', '저장!!')
 # all_df.to_csv(f'{output_dir}/all_file.csv', encoding='utf-8-sig', index=False)
         

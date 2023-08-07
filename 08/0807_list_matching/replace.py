@@ -21,4 +21,5 @@ filename = os.path.split(csv_dir)[-1]
 df = pd.read_csv(csv_dir, encoding='utf-8-sig')
 df['name'] = df['name'].apply(set_file_name)
 
-df.to_csv(f'{output_dir}/Re_{filename}', encoding='utf-8-sig')
+df.to_csv(f'{output_dir}/Re_{filename}', encoding='utf-8-sig', index=False)
+print(f'{output_dir}/Re_{filename}', '저장!!')
