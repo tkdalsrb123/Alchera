@@ -36,7 +36,7 @@ def file_extract(df, old_df, Category, minidx, maxidx):
         if len(old_file.values) > 0:    # old db에서 프레임이 끊겨있을 경우 건너뜀
             copyfile(df, extract_num1)
             copyfile(df, extract_num2)
-                
+
 
 # 파일 복사
 def copyfile(df, num):
@@ -49,6 +49,7 @@ def copyfile(df, num):
     os.makedirs(folder, exist_ok=True)
     shutil.copy2(extract_file, output_path)
 
+        
 def old_file_extract(df, Category, minidx, maxidx):
     df = df[df['category'] == Category]
     for i in range(minidx, maxidx, 3):
@@ -57,8 +58,15 @@ def old_file_extract(df, Category, minidx, maxidx):
             old_file = old_file.values[0]
             root, file = os.path.split(old_file)
             folder_name = '_'.join(file.split('_')[:3])
+            filename = '_'.join(file.split('_')[:4])
+            if minidx%3 == 0:
+                extract_num = ((((i//3)-1) * 30) + 2) - 1
+            else:
+                extract_num = ((((i//3)) * 30) + (minidx%3)) - 1
+            num = str(extract_num).zfill(8)
+            frame_filename = f'{filename}_{num}.jpg'
             folder = os.path.join(output_dir, 'old_db', folder_name)
-            output_path = os.path.join(folder, file)
+            output_path = os.path.join(folder, frame_filename)
             os.makedirs(folder, exist_ok=True)
             shutil.copy2(old_file, output_path)
         
