@@ -23,3 +23,9 @@ python main.py [input 최상위 폴더] [output 최상위 폴더]
 1. 3차 수정사항
 - 객체별로 랜덤 색 부여
 - keypoint 구조에서 세번째 값들인 0, 1, 2가 포인트마다 텍스트로 출력
+
+2023-08-08
+
+1. 4차 수정사항
+- keypoints가 있으면, BBox 시각화 x, keypoints만 시각화
+- keypoints의 3번째 값이 포인트와 함께 시각화

@@ -14,7 +14,7 @@ def read_img(img_path):
     img = cv2.imdecode(img_array, cv2.IMREAD_COLOR)
     return img
 
-def visualization(image, keypoints, bbox, color):
+def visualization(image, put_text, color, bbox, keypoints=[]):
     # keypoints 시각화
     for idx in range(0, len(keypoints), 3):
         x = keypoints[idx]
@@ -28,13 +28,13 @@ def visualization(image, keypoints, bbox, color):
     y1 = bbox[1]
     x2 = x1 + bbox[2]
     y2 = y1 + bbox[3]
-    cv2.rectangle(img, (x1,y1), (x2,y2), color=color, thickness=2)
+    if len(keypoints) == 0:
+        cv2.rectangle(image, (x1,y1), (x2,y2), color=color, thickness=2)
 
-    if y1-10 > 1:
-        cv2.putText(image, text, (x1,y1-10), fontFace=cv2.FONT_HERSHEY_COMPLEX, fontScale=0.5, color=color)
-    else:   # 이미지 벗어날 경우 박스 하단에 시각화
-        cv2.putText(image, text, (x1,y2+15), fontFace=cv2.FONT_HERSHEY_COMPLEX, fontScale=0.5, color=color)
-
+        if y1-10 > 1:
+            cv2.putText(image, put_text, (x1,y1-10), fontFace=cv2.FONT_HERSHEY_COMPLEX, fontScale=0.5, color=color)
+        else:   # 이미지 벗어날 경우 박스 하단에 시각화
+            cv2.putText(image, put_text, (x1,y2+15), fontFace=cv2.FONT_HERSHEY_COMPLEX, fontScale=0.5, color=color)
 
 _, input_dir, ouput_dir = sys.argv
 
@@ -66,7 +66,9 @@ for path in matching_dict.values():
     img = read_img(image_path)
     for obj in json_file['annotationObjectInfo']:
         action_value = obj['actionValue']
-        coordinates_keypoints = obj['keypoints']
+        coordinates_keypoints = None
+        if 'keypoints' in obj.keys():
+            coordinates_keypoints = obj['keypoints']
         coordinates_BBox = obj['BBox']
         
         text = f'{action_name}/{action_value}'
@@ -81,11 +83,11 @@ for path in matching_dict.values():
             select_color = (255, 0, 0)
         
         # keypoints가 존재하는 obj info 시각화
-        if len(coordinates_keypoints) > 0:
-            visualization(img, coordinates_keypoints, coordinates_BBox, select_color)
+        if coordinates_keypoints is not None:
+            visualization(img, text, select_color, coordinates_BBox, coordinates_keypoints)
 
         else:
-            visualization(img, coordinates_keypoints, coordinates_BBox, select_color) 
+            visualization(img, text, select_color, coordinates_BBox)
                 
     mid = '\\'.join(root.split('\\')[len(input_dir.split('\\')):])
     folder = os.path.join(ouput_dir, mid)
