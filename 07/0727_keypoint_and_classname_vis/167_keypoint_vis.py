@@ -74,10 +74,11 @@ for path in matching_dict.values():
         text = f'{action_name}/{action_value}'
         
         if action_value == True:
-            r = random.randint(0, 255)
-            g = random.randint(0, 255)
-            b = random.randint(0, 255)
-            select_color = (r, g, b)
+            # r = random.randint(0, 255)
+            # g = random.randint(0, 255)
+            # b = random.randint(0, 255)
+            # select_color = (r, g, b)
+            select_color = (0, 0, 255)
     
         elif action_value == False:
             select_color = (255, 0, 0)
