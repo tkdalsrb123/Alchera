@@ -298,8 +298,8 @@ for root, dirs, files in os.walk(xml_dir):
             folder = os.path.join(save_dir, mid)
             
             xml_file = readxml(xml_path)
-            try:
-                for img_info in xml_file['annotations']['image']:
+            for img_info in xml_file['annotations']['image']:
+                try:
                     filename = os.path.split(img_info['@name'])[-1]
                     
                     if len(info[filename].keys()) != 0:     # excel 파일에 파일이 존재할 때
@@ -445,9 +445,10 @@ for root, dirs, files in os.walk(xml_dir):
                     
                     else:
                         continue
-            except KeyError:
-                json_error_list.append([file, filename, att_info])
-                break
+                
+                except KeyError:
+                    json_error_list.append([file, filename, att_info])
+
 
 # 이미지 시각화 작업
 for root, dirs, files in os.walk(img_dir):
