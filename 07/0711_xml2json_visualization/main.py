@@ -320,14 +320,71 @@ for root, dirs, files in os.walk(xml_dir):
                             project = 'mobis_rir_2nd_na'
                         
                         list_object = []
-                        for box_info in img_info['box']:
+                        if type(img_info['box']) == list:
+                            for box_info in img_info['box']:
+                                x = []
+                                y = []
+                                vehicle_class = box_info['@label']
+                                x.append(float(box_info['@xtl']))
+                                x.append(float(box_info['@xbr']))
+                                y.append(float(box_info['@ytl']))                    
+                                y.append(float(box_info['@ybr']))
+                                x_min = min(x)
+                                y_min = min(y)
+                                x_max = max(x)
+                                y_max = max(y)
+                                x_cnt = np.median(x)
+                                y_cnt = np.median(y)
+                                width = max(x) - min(x)
+                                height = max(y) - min(y)
+                            
+                                subclass1 = None
+                                subclass2 = None
+                                occlusion = 'not occlusion'
+                                truncation = 'not truncation'
+                                for att_info in box_info['attribute']:
+                                    if att_info['@name'] == 'sub class 1':
+                                        subclass1 = att_info['#text']
+                                    elif att_info['@name'] == 'sub class 2':
+                                        subclass2 = att_info['#text']
+                                    elif 'occlusion' in att_info['@name']:
+                                        # if '#text' in att_info.keys():
+                                        occlusion = att_info['#text']
+                                        # else:
+                                        #     pass
+                                    elif 'truncation' in att_info['@name']:
+                                        # if '#text' in att_info.keys():
+                                        truncation = att_info['#text']
+                                        # else:
+                                        #     pass
+                            if occlusion == 'not occlusion' or occlusion == 'Both 2 wheel have no occlusion':
+                                occlusion = '0'
+                            elif occlusion == '1-50%occlusion' or occlusion == '1-25%occlusion' or occlusion == '1 wheel 100% visible, other wheel partially occlusion':
+                                occlusion = '1'
+                            elif occlusion == '25-50%occlusion' or occlusion == '1 wheel 100% occlusion, other wheel &lt; 50% occlusion':
+                                occlusion = '2'
+                                
+                            if truncation == 'not truncation' or truncation == 'Both 2 wheel have no truncation':
+                                truncation = '0'
+                            elif truncation == '1-50%truncation' or truncation == '1-25%truncation' or truncation == '1 wheel 100% visible, other wheel partially truncation':
+                                truncation = '1'
+                            elif truncation == '25-50%truncation' or truncation == '1 wheel 100% truncation, other wheel &lt; 50% truncation':
+                                truncation = '2'
+
+                            list_object.append({'class':vehicle_class, 'sub_class1':subclass1, 'sub_class2':subclass2,
+                                        'xmin':round(x_min), 'xmax':round(x_max), 'ymin':round(y_min), 'ymax':round(y_max), 'cnt_x':int(x_cnt), 'cnt_y':int(y_cnt), 
+                                        'width':round(width), 'height':round(height), 
+                                        'occlusion':occlusion, 'truncation':truncation})
+                            
+                            
+                        elif type(img_info['box']) == dict:
                             x = []
                             y = []
-                            vehicle_class = box_info['@label']
-                            x.append(float(box_info['@xtl']))
-                            x.append(float(box_info['@xbr']))
-                            y.append(float(box_info['@ytl']))                    
-                            y.append(float(box_info['@ybr']))
+                            vehicle_class = img_info['box']['@label']
+                            x.append(float(img_info['box']['@xtl']))
+                            x.append(float(img_info['box']['@xbr']))
+                            y.append(float(img_info['box']['@ytl']))                    
+                            y.append(float(img_info['box']['@ybr']))
                             x_min = min(x)
                             y_min = min(y)
                             x_max = max(x)
@@ -336,11 +393,12 @@ for root, dirs, files in os.walk(xml_dir):
                             y_cnt = np.median(y)
                             width = max(x) - min(x)
                             height = max(y) - min(y)
+                        
                             subclass1 = None
                             subclass2 = None
                             occlusion = 'not occlusion'
                             truncation = 'not truncation'
-                            for att_info in box_info['attribute']:
+                            for att_info in img_info['box']['attribute']:
                                 if att_info['@name'] == 'sub class 1':
                                     subclass1 = att_info['#text']
                                 elif att_info['@name'] == 'sub class 2':
@@ -355,7 +413,6 @@ for root, dirs, files in os.walk(xml_dir):
                                     truncation = att_info['#text']
                                     # else:
                                     #     pass
-                                        
                             
                             if occlusion == 'not occlusion' or occlusion == 'Both 2 wheel have no occlusion':
                                 occlusion = '0'
@@ -376,7 +433,6 @@ for root, dirs, files in os.walk(xml_dir):
                                         'width':round(width), 'height':round(height), 
                                         'occlusion':occlusion, 'truncation':truncation})
                             
-                        
                         
                         new_json = json_tree(filename, date, vehicle, project, list_object)
                         
