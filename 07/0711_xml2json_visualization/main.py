@@ -357,24 +357,24 @@ for root, dirs, files in os.walk(xml_dir):
                                         truncation = att_info['#text']
                                         # else:
                                         #     pass
-                            if occlusion == 'not occlusion' or occlusion == 'Both 2 wheel have no occlusion':
-                                occlusion = '0'
-                            elif occlusion == '1-50%occlusion' or occlusion == '1-25%occlusion' or occlusion == '1 wheel 100% visible, other wheel partially occlusion':
-                                occlusion = '1'
-                            elif occlusion == '25-50%occlusion' or occlusion == '1 wheel 100% occlusion, other wheel &lt; 50% occlusion':
-                                occlusion = '2'
-                                
-                            if truncation == 'not truncation' or truncation == 'Both 2 wheel have no truncation':
-                                truncation = '0'
-                            elif truncation == '1-50%truncation' or truncation == '1-25%truncation' or truncation == '1 wheel 100% visible, other wheel partially truncation':
-                                truncation = '1'
-                            elif truncation == '25-50%truncation' or truncation == '1 wheel 100% truncation, other wheel &lt; 50% truncation':
-                                truncation = '2'
+                                if occlusion == 'not occlusion' or occlusion == 'Both 2 wheel have no occlusion':
+                                    occlusion = '0'
+                                elif occlusion == '1-50%occlusion' or occlusion == '1-25%occlusion' or occlusion == '1 wheel 100% visible, other wheel partially occlusion':
+                                    occlusion = '1'
+                                elif occlusion == '25-50%occlusion' or occlusion == '1 wheel 100% occlusion, other wheel &lt; 50% occlusion':
+                                    occlusion = '2'
+                                    
+                                if truncation == 'not truncation' or truncation == 'Both 2 wheel have no truncation':
+                                    truncation = '0'
+                                elif truncation == '1-50%truncation' or truncation == '1-25%truncation' or truncation == '1 wheel 100% visible, other wheel partially truncation':
+                                    truncation = '1'
+                                elif truncation == '25-50%truncation' or truncation == '1 wheel 100% truncation, other wheel &lt; 50% truncation':
+                                    truncation = '2'
 
-                            list_object.append({'class':vehicle_class, 'sub_class1':subclass1, 'sub_class2':subclass2,
-                                        'xmin':round(x_min), 'xmax':round(x_max), 'ymin':round(y_min), 'ymax':round(y_max), 'cnt_x':int(x_cnt), 'cnt_y':int(y_cnt), 
-                                        'width':round(width), 'height':round(height), 
-                                        'occlusion':occlusion, 'truncation':truncation})
+                                list_object.append({'class':vehicle_class, 'sub_class1':subclass1, 'sub_class2':subclass2,
+                                            'xmin':round(x_min), 'xmax':round(x_max), 'ymin':round(y_min), 'ymax':round(y_max), 'cnt_x':int(x_cnt), 'cnt_y':int(y_cnt), 
+                                            'width':round(width), 'height':round(height), 
+                                            'occlusion':occlusion, 'truncation':truncation})
                             
                             
                         elif type(img_info['box']) == dict:
