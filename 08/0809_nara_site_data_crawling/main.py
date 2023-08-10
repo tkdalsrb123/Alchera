@@ -36,7 +36,7 @@ tr = tbody.find_all('tr')
 div = tr[0].find_all('td' > 'div')
 for i in div:
     # if ['class'] not in i.attrs.values():
-    if 'class' not in i.name:
+    if 'class':
         print(i.text)
     if i.name == 'a':
         print(i.get('href'))
