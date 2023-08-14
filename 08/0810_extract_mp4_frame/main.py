@@ -3,6 +3,40 @@ import os, sys
 from collections import defaultdict
 from tqdm import tqdm
 
+def extract_frame(Video, Old_FrameList, New_FrameList, Old_Folder, New_Folder):
+    currentframe = 0
+    
+    while True:
+        ret, frame = Video.read()
+        if not ret:
+            break
+        
+        if currentframe % 10 == 0 or currentframe % 10 == 1 or currentframe % 10 == 2:
+            if currentframe in Old_FrameList:
+                file_num = str(currentframe).zfill(8)
+                frame_filename = f'{file}_{file_num}.jpg'
+                
+                frame_path = os.path.join(Old_Folder, frame_filename)
+                print(frame_path)
+
+                result, n = cv2.imencode('.jpg', frame)
+                if result:
+                    with open(frame_path, mode='w+b') as f:
+                        n.tofile(f)
+            elif currentframe in New_FrameList:
+                file_num = str(currentframe).zfill(8)
+                frame_filename = f'{file}_{file_num}.jpg'
+                
+                frame_path = os.path.join(New_Folder, frame_filename)
+                print(frame_path)
+
+                result, n = cv2.imencode('.jpg', frame)
+                if result:
+                    with open(frame_path, mode='w+b') as f:
+                        n.tofile(f)
+        
+        currentframe += 1
+            
 _, old_db_dir, new_db_dir, mp4_dir = sys.argv
 
 db_list = []
@@ -30,262 +64,138 @@ for root, dirs, files in os.walk(mp4_dir):
 
 
 for mp4_path, file in tqdm(mp4_dict.items()):
-    if (len(db_dict[file])) == (db_dict[file][-1]['idx'] - db_dict[file][0]['idx'] +1):     # 프레임이 끊기지 않는 경우
-        for i in range(0, len(db_dict[file]), 3):
-            folder1 = db_dict[file][i]['folder1']
-            folder2 = db_dict[file][i]['folder2']
-            num = int(db_dict[file][i]['idx'])
-            frame_num = 30 * (num//3) + (num%3)
-            
+    old_file_list = []
+    new_file_list = []
+    if len(db_dict[file]) != 0:
+        if (len(db_dict[file])) == (db_dict[file][-1]['idx'] - db_dict[file][0]['idx'] +1):     # 프레임이 끊기지 않는 경우
+            folder1 = db_dict[file][0]['folder1']
+            folder2 = db_dict[file][0]['folder2']
             video = cv2.VideoCapture(mp4_path)
-            video.set(cv2.CAP_PROP_FRAME_COUNT, frame_num)
-            
             old_folder = os.path.join(new_db_dir,'old_db', folder1, folder2)
+            new_folder = os.path.join(new_db_dir,'new_db', folder1, folder2)
             os.makedirs(old_folder, exist_ok=True)
-
-            ret, frame = video.read()
-
-            file_num = str(frame_num).zfill(8)
-            frame_filename = f'{file}_{file_num}.jpg'
+            os.makedirs(new_folder, exist_ok=True)
             
-            frame_path = os.path.join(old_folder, frame_filename)
-            print(frame_path)
-
-            result, n = cv2.imencode('.jpg', frame)
-            if result:
-                with open(frame_path, mode='w+b') as f:
-                    n.tofile(f)
-            
-            if i < len(db_dict[file])-3:    # 마지막 old db 프레임이 아닐 때 
-                for i in range(2):
-                    new_folder = os.path.join(new_db_dir,'new_db', folder1, folder2)
-                    os.makedirs(new_folder, exist_ok=True)
-                    
-                    frame_num += 10
-
-                    video.set(cv2.CAP_PROP_FRAME_COUNT, frame_num)
-
-                    ret, frame = video.read()
-
-                    file_num = str(frame_num).zfill(8)
-                    frame_filename = f'{file}_{file_num}.jpg'
-                    
-                    frame_path = os.path.join(new_folder, frame_filename)
-                    print(frame_path)
-
-                    result, n = cv2.imencode('.jpg', frame)
-
-                    if result:
-                        with open(frame_path, mode='w+b') as f:
-                            n.tofile(f)
-
-            elif i >= len(db_dict[file])-3:     # 마지막 old db 프레임일 때
-                if len(db_dict[file]) % 3 == 0:
+            for i in range(0, len(db_dict[file]), 3):
+                num = int(db_dict[file][i]['idx'])
+                frame_num = 30 * (num//3) + (num%3)
+                
+                old_file_list.append(frame_num)
+                
+                if i < len(db_dict[file])-3:    # 마지막 old db 프레임이 아닐 때 
                     for i in range(2):
-                        new_folder = os.path.join(new_db_dir,'new_db', folder1, folder2)
-                        os.makedirs(new_folder, exist_ok=True)
-                        
                         frame_num += 10
-
-                        video.set(cv2.CAP_PROP_FRAME_COUNT, frame_num)
-
-                        ret, frame = video.read()
-
-                        file_num = str(frame_num).zfill(8)
-                        frame_filename = f'{file}_{file_num}.jpg'
                         
-                        frame_path = os.path.join(new_folder, frame_filename)
-                        print(frame_path)
+                        new_file_list.append(frame_num)
 
-                        result, n = cv2.imencode('.jpg', frame)
-
-                        if result:
-                            with open(frame_path, mode='w+b') as f:
-                                n.tofile(f)
-                                
-                elif len(db_dict[file]) % 3 == 1:
-                    pass
-                
-                elif len(db_dict[file]) % 3 == 2:
-                    new_folder = os.path.join(new_db_dir,'new_db', folder1, folder2)
-                    os.makedirs(new_folder, exist_ok=True)
-                    
-                    frame_num += 10
-
-                    video.set(cv2.CAP_PROP_FRAME_COUNT, frame_num)
-
-                    ret, frame = video.read()
-
-                    file_num = str(frame_num).zfill(8)
-                    frame_filename = f'{file}_{file_num}.jpg'
-                    
-                    frame_path = os.path.join(new_folder, frame_filename)
-                    print(frame_path)
-
-                    result, n = cv2.imencode('.jpg', frame)
-
-                    if result:
-                        with open(frame_path, mode='w+b') as f:
-                            n.tofile(f)
-                
-                
-            
-    elif (len(db_dict[file])) != (db_dict[file][-1]['idx'] - db_dict[file][0]['idx'] +1):   # 중간에 프레임이 끊기는 경우
-        frame_list = []
-        n = 0
-        for i, v in enumerate(db_dict[file]):   # 끊기는 프레임 기준으로 자르기
-            if i+1 == len(db_dict[file]):
-                break
-            if (v['idx'] + 1) != (db_dict[file][i+1]['idx']):
-                frame_list.append(db_dict[file][n:i+1])
-                n = i
-        frame_list.append(db_dict[file][n+1:])
-
-        for index, j in enumerate(frame_list):
-            if index != (len(frame_list) -1):   # 마지막이 아닐 때
-                for z in range(0, len(j), 3):
-                    folder1 = j[z]['folder1']
-                    folder2 = j[z]['folder2']
-                    num = int(j[z]['idx'])
-                    frame_num = 30 * (num//3) + (num%3)
-                    
-                    video = cv2.VideoCapture(mp4_path)
-                    video.set(cv2.CAP_PROP_FRAME_COUNT, frame_num)
-                    
-                    old_folder = os.path.join(new_db_dir,'old_db', folder1, folder2)
-                    os.makedirs(old_folder, exist_ok=True)
-
-                    ret, frame = video.read()
-
-                    file_num = str(frame_num).zfill(8)
-                    frame_filename = f'{file}_{file_num}.jpg'
-                    
-                    frame_path = os.path.join(old_folder, frame_filename)
-                    print(frame_path)
-
-                    result, n = cv2.imencode('.jpg', frame)
-                    if result:
-                        with open(frame_path, mode='w+b') as f:
-                            n.tofile(f)
-                            
-                    if z < len(j)-3:    # 마지막 old db 프레임이 아닐 때 
+                elif i >= len(db_dict[file])-3:     # 마지막 old db 프레임일 때
+                    if len(db_dict[file]) % 3 == 0:
                         for i in range(2):
-                            new_folder = os.path.join(new_db_dir,'new_db', folder1, folder2)
-                            os.makedirs(new_folder, exist_ok=True)
-                            
                             frame_num += 10
 
-                            video.set(cv2.CAP_PROP_FRAME_COUNT, frame_num)
-
-                            ret, frame = video.read()
-
-                            file_num = str(frame_num).zfill(8)
-                            frame_filename = f'{file}_{file_num}.jpg'
-                            
-                            frame_path = os.path.join(new_folder, frame_filename)
-                            print(frame_path)
-
-                            result, n = cv2.imencode('.jpg', frame)
-
-                            if result:
-                                with open(frame_path, mode='w+b') as f:
-                                    n.tofile(f)
-                    elif z > len(j)-3:  # 마지막 old db 프레임일 때
+                            new_file_list.append(frame_num)
+                                    
+                    elif len(db_dict[file]) % 3 == 1:
                         pass
                     
-            elif index == (len(frame_list)-1):  # 마지막일 때
-                for z in range(0, len(j), 3):
-                    folder1 = j[z]['folder1']
-                    folder2 = j[z]['folder2']
-                    num = int(j[z]['idx'])
-                    frame_num = 30 * (num//3) + (num%3)
-                    
-                    video = cv2.VideoCapture(mp4_path)
-                    video.set(cv2.CAP_PROP_FRAME_COUNT, frame_num)
-                    
-                    old_folder = os.path.join(new_db_dir,'old_db', folder1, folder2)
-                    os.makedirs(old_folder, exist_ok=True)
+                    elif len(db_dict[file]) % 3 == 2:
+                        frame_num += 10
 
-                    ret, frame = video.read()
+                        new_file_list.append(frame_num)
+                        
+            extract_frame(video, old_file_list, new_file_list, old_folder, new_folder)
 
-                    file_num = str(frame_num).zfill(8)
-                    frame_filename = f'{file}_{file_num}.jpg'
-                    
-                    frame_path = os.path.join(old_folder, frame_filename)
-                    print(frame_path)
+        elif (len(db_dict[file])) != (db_dict[file][-1]['idx'] - db_dict[file][0]['idx'] +1):   # 중간에 프레임이 끊기는 경우
+            frame_list = []
+            n = 0
+            for i, v in enumerate(db_dict[file]):   # 끊기는 프레임 기준으로 자르기
+                if i+1 == len(db_dict[file]):
+                    break
+                if (v['idx'] + 1) != (db_dict[file][i+1]['idx']):
+                    frame_list.append(db_dict[file][n:i+1])
+                    n = i
+            frame_list.append(db_dict[file][n+1:])
 
-                    result, n = cv2.imencode('.jpg', frame)
-                    if result:
-                        with open(frame_path, mode='w+b') as f:
-                            n.tofile(f)
-                            
-                    if z < len(j)-3:    # 마지막 old db 프레임이 아닐 때 
-                        for i in range(2):
-                            new_folder = os.path.join(new_db_dir,'new_db', folder1, folder2)
-                            os.makedirs(new_folder, exist_ok=True)
-                            
-                            frame_num += 10
-
-                            video.set(cv2.CAP_PROP_FRAME_COUNT, frame_num)
-
-                            ret, frame = video.read()
-
-                            file_num = str(frame_num).zfill(8)
-                            frame_filename = f'{file}_{file_num}.jpg'
-                            
-                            frame_path = os.path.join(new_folder, frame_filename)
-                            print(frame_path)
-
-                            result, n = cv2.imencode('.jpg', frame)
-
-                            if result:
-                                with open(frame_path, mode='w+b') as f:
-                                    n.tofile(f)
-                                    
-                    elif z >= len(j)-3:     # 마지막 old db 프레임일 때
-                        if len(j) % 3 == 0:     
-                            for i in range(2):
-                                new_folder = os.path.join(new_db_dir,'new_db', folder1, folder2)
-                                os.makedirs(new_folder, exist_ok=True)
+            for index, j in enumerate(frame_list):
+                video = cv2.VideoCapture(mp4_path)
+                folder1 = j[0]['folder1']
+                folder2 = j[0]['folder2']
+                old_folder = os.path.join(new_db_dir,'old_db', folder1, folder2)
+                new_folder = os.path.join(new_db_dir,'new_db', folder1, folder2)
+                os.makedirs(old_folder, exist_ok=True)
+                os.makedirs(new_folder, exist_ok=True)
+                if index != len(frame_list)-1:  # 끊긴 프레임 뭉치 중 마지막 뭉치가 아닌 경우
+                    for z in range(0, len(j), 3):
+                        num = int(j[z]['idx'])
+                        frame_num = 30 * (num//3) + (num%3)
+                        
+                        old_file_list.append(frame_num)
                                 
+                        if z < len(j)-3:    # 마지막 old db 프레임이 아닐 때 
+                            for i in range(2):
+                                frame_num += 10
+                                
+                                new_file_list.append(frame_num)
+                                        
+                        elif z >= len(j)-3:     # 마지막 old db 프레임일 때
+                            if index == 0:
+                                if len(j) % 3 == 0:     
+                                    n = int(j[0]['idx'])
+                                    frame_n = 30 * (n//3) + (n%3)
+                                    for i in range(2):
+                                        frame_n -= 10
+                                        new_file_list.append(frame_n)
+                                        
+                                elif len(j) % 3 == 1:
+                                    pass
+                                
+                                elif len(j) % 3 == 2:
+                                    frame_n -= 10
+                                    new_file_list.append(frame_n)
+                                    
+                            elif index != 0:
+                                if len(j) % 3 == 0:     
+                                    frame_n -= 10
+                                    for i in range(2):
+                                        frame_n -= 10
+                                        new_file_list.append(frame_n)
+                                        
+                                elif len(j) % 3 == 1:
+                                    pass
+                                
+                                elif len(j) % 3 == 2:
+                                    frame_n -= 10
+                                    new_file_list.append(frame_n)
+                            
+                    
+                elif index == len(frame_list)-1:  # 끊긴 프레임 뭉치 중 마지막 뭉치
+                    for z in range(0, len(j), 3):
+                        num = int(j[z]['idx'])
+                        frame_num = 30 * (num//3) + (num%3)
+                        
+                        old_file_list.append(frame_num)
+                                
+                        if z < len(j)-3:    # 마지막 old db 프레임이 아닐 때 
+                            for i in range(2):
+                                frame_num += 10
+                                
+                                new_file_list.append(frame_num)
+                                        
+                        elif z >= len(j)-3:     # 마지막 old db 프레임일 때
+                            if len(j) % 3 == 0:     
+                                for i in range(2):
+                                    frame_num += 10
+                                    
+                                    new_file_list.append(frame_num)
+                            elif len(j) % 3 == 1:
+                                pass
+                            
+                            elif len(j) % 3 == 2:
                                 frame_num += 10
 
-                                video.set(cv2.CAP_PROP_FRAME_COUNT, frame_num)
-
-                                ret, frame = video.read()
-
-                                file_num = str(frame_num).zfill(8)
-                                frame_filename = f'{file}_{file_num}.jpg'
-                                
-                                frame_path = os.path.join(new_folder, frame_filename)
-                                print(frame_path)
-
-                                result, n = cv2.imencode('.jpg', frame)
-
-                                if result:
-                                    with open(frame_path, mode='w+b') as f:
-                                        n.tofile(f)
-                        elif len(j) % 3 == 1:
-                            pass
-                        
-                        elif len(j) % 3 == 2:
-                            new_folder = os.path.join(new_db_dir,'new_db', folder1, folder2)
-                            os.makedirs(new_folder, exist_ok=True)
-                            
-                            frame_num += 10
-
-                            video.set(cv2.CAP_PROP_FRAME_COUNT, frame_num)
-
-                            ret, frame = video.read()
-
-                            file_num = str(frame_num).zfill(8)
-                            frame_filename = f'{file}_{file_num}.jpg'
-                            
-                            frame_path = os.path.join(new_folder, frame_filename)
-                            print(frame_path)
-
-                            result, n = cv2.imencode('.jpg', frame)
-
-                            if result:
-                                with open(frame_path, mode='w+b') as f:
-                                    n.tofile(f)
+                                new_file_list.append(frame_num)
+    
+            extract_frame(video, old_file_list, new_file_list, old_folder, new_folder)
+  
+    elif len(db_dict[file]) == 0:
+        print(mp4_path, '매칭실패!!') 
