@@ -49,6 +49,7 @@ for path in tqdm(matching_dict.values()):
     
     print(image_path, '시각화!!')
     root, file = os.path.split(image_path)
+    filename, ext = os.path.splitext(file)
 
     mid = '\\'.join(root.split('\\')[len(input_dir.split('\\')):])
     folder = os.path.join(ouput_dir, mid)
