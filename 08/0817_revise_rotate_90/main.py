@@ -44,7 +44,8 @@ def revise_poly_coor(coordinates, w):
     return_list = list(map(lambda x: ','.join(x), coor_list))
     new_coordinates = ';'.join(return_list)
     return new_coordinates
-    
+
+# 수정 안해도 되는 파일들
 no_file_list = ['1690341887349002798_color.jpg',
 '1690341887848792381_color.jpg',
 '1690341888315707068_color.jpg',
@@ -69,6 +70,7 @@ for root, dirs, files in os.walk(input_xml_dir):
 
 rotate_img_list = []
 img_list = []
+# xml 파일 수정
 for xml_path in tqdm(xml_list):
     root, file = os.path.split(xml_path)
     mid = '\\'.join(root.split('\\')[len(input_xml_dir):])
@@ -116,10 +118,10 @@ for xml_path in tqdm(xml_list):
                     x2_new = y2
                     y2_new = img_width - x2
 
-                    box['@xtl'] = x1_new
-                    box['@ytl'] = y1_new
-                    box['@xbr'] = x2_new
-                    box['@ybr'] = y2_new
+                    box['@xtl'] = round(x1_new, 2)
+                    box['@ytl'] = round(y1_new, 2)
+                    box['@xbr'] = round(x2_new, 2)
+                    box['@ybr'] = round(y2_new, 2)
                     
                 elif type(box) == list:
                     for b in box:
@@ -133,10 +135,10 @@ for xml_path in tqdm(xml_list):
                         x2_new = y2
                         y2_new = img_width - x2
                         
-                        b['@xtl'] = x1_new
-                        b['@ytl'] = y1_new
-                        b['@xbr'] = x2_new
-                        b['@ybr'] = y2_new
+                        b['@xtl'] = round(x1_new, 2)
+                        b['@ytl'] = round(y1_new, 2)
+                        b['@xbr'] = round(x2_new, 2)
+                        b['@ybr'] = round(y2_new, 2)
                         
     saveXml(output_xml_path, xml2dict)
     print(output_xml_path, 'xml 저장!!')
@@ -144,6 +146,7 @@ for xml_path in tqdm(xml_list):
 [rotate_img_list.remove(v) for v in rotate_img_list if v in no_file_list]
 [img_list.append(v) for v in no_file_list]
 
+# 이미지 90도 회전
 for img_name in tqdm(rotate_img_list):
     img_path = img_dict[img_name]
     
@@ -156,7 +159,8 @@ for img_name in tqdm(rotate_img_list):
     img = img.transpose(Image.ROTATE_90)
     img.save(output_img_path)
     print(output_img_path, 'image 저장!!')
-    
+
+# 이미지 복사
 for img_name in tqdm(img_list):
     img_path = img_dict[img_name]
     
