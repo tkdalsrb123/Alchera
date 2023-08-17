@@ -8,7 +8,7 @@ def readxml(path, encoding='utf-8'):
     return dic_data
 
 def saveXml(pathXml, objXml):
-    with open(pathXml, 'w') as f:
+    with open(pathXml, 'w') as f: 
         f.write(xmltodict.unparse(objXml, pretty=True))
 
 def reviseclass(key, whattype):
