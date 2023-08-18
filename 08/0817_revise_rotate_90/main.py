@@ -114,13 +114,13 @@ for xml_path in tqdm(xml_list):
                     y2 = float(box['@ybr'])
 
                     x1_new = y1
-                    y1_new = img_width - x1
+                    y1_new = img_width - x2
                     x2_new = y2
-                    y2_new = img_width - x2
+                    y2_new = img_width - x1
 
                     box['@xtl'] = round(x1_new, 2)
                     box['@ytl'] = round(y1_new, 2)
-                    box['@xbr'] = round(x2_new, 2)
+                    box['@xbr'] = round(x2_new, 2) 
                     box['@ybr'] = round(y2_new, 2)
                     
                 elif type(box) == list:
@@ -131,9 +131,9 @@ for xml_path in tqdm(xml_list):
                         y2 = float(b['@ybr'])
                         
                         x1_new = y1
-                        y1_new = img_width - x1
+                        y1_new = img_width - x2
                         x2_new = y2
-                        y2_new = img_width - x2
+                        y2_new = img_width - x1
                         
                         b['@xtl'] = round(x1_new, 2)
                         b['@ytl'] = round(y1_new, 2)
