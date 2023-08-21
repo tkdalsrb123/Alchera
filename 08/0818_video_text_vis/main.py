@@ -4,19 +4,22 @@ from moviepy.editor import VideoFileClip
 import pandas as pd
 from PIL import Image, ImageDraw, ImageFont
 import numpy as np
+
+
 def pipeline(frame):
-    try:
+    global i
+    if i < df.shape[0]:
         frame = Image.fromarray(frame)
-        h, w = frame.size
+        w, h = frame.size
         fontpath = 'C:\Windows\Fonts\H2HDRM.ttf'
-        font = ImageFont.truetype(fontpath, 25)
+        font = ImageFont.truetype(fontpath, 50)
         draw = ImageDraw.Draw(frame)
-        draw.text((800, 1000), text, font=font, fill=(255, 0, 0))
+        text = df.iloc[i].sentence
+        tw, th = font.getsize(text)
+        draw.text((int(w/2)-tw/2, int(h//8 * 7)-int(th/2)), text, font=font, fill=(255, 0, 0))
         frame = np.array(frame)
-        # cv2.putText(frame, str(next(dfi)[1].sentence), (0, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 0), 3, cv2.LINE_AA, True)
-    except StopIteration:
-        pass
-    # additional frame manipulation
+        i += 1
+
     return frame
 
 def replace_time(timestamp):
@@ -50,6 +53,7 @@ for root, dirs, files in os.walk(mp4_dir):
     for file in files:
         filename, ext = os.path.splitext(file)
         if ext == '.mp4':
+
             mp4_path = os.path.join(root, file)
             mid = '\\'.join(root.split('\\')[len(mp4_dir.split('\\')):])
             folder = os.path.join(save_mp4_dir, mid)
@@ -79,7 +83,7 @@ for root, dirs, files in os.walk(mp4_dir):
                     df_list.append([i, text])
                     
             df = pd.DataFrame(df_list, columns=['frame', 'sentence'])
-            dfi = df.iterrows()
+            i=0
             video = VideoFileClip(mp4_path)
             out_video = video.fl_image(pipeline)
             out_video.write_videofile(output_mp4_path)
