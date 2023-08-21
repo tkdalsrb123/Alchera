@@ -82,7 +82,7 @@ for filename, mp4_filepath in tqdm(mp4_dict.items()):
                 break
 
             if currentframe in list(df['frame']):
-
+                # box 시각화
                 num = str(i).zfill(2)
                 output_file_path = os.path.join(folder, f"{filename}_{num}.jpg")
                 frame = Image.fromarray(frame)
