@@ -99,11 +99,20 @@ for filename, mp4_filepath in tqdm(mp4_dict.items()):
                 y2 = round(h * coor['y2'])
                 
                 if x2 > x1:
-                    draw.rectangle((x1, y1, x2, y2), outline=(255, 0, 0), width=3)
-                    draw.text((x1, y1, x2, y2), text, font=font, fill=(0, 0, 255))
-                elif x1 < x2:
-                    draw.rectangle((x2, y1, x1, y2), outline=(255, 0, 0), width=3)
-                    draw.text((x2, y1, x1, y2), text, font=font, fill=(0, 0, 255))       
+                    if y2 > y1:
+                        draw.rectangle((x1, y1, x2, y2), outline=(255, 0, 0), width=3)
+                        draw.text((x1, y1, x2, y2), text, font=font, fill=(0, 0, 255))
+                    elif y1 > y2:
+                        draw.rectangle((x1, y2, x2, y1), outline=(255, 0, 0), width=3)
+                        draw.text((x1, y2, x2, y1), text, font=font, fill=(0, 0, 255))
+                        
+                elif x1 > x2:
+                    if y2 > y1:
+                        draw.rectangle((x2, y1, x1, y2), outline=(255, 0, 0), width=3)
+                        draw.text((x2, y1, x1, y2), text, font=font, fill=(0, 0, 255))
+                    elif y1 > y2:
+                        draw.rectangle((x2, y2, x1, y1), outline=(255, 0, 0), width=3)
+                        draw.text((x2, y2, x1, y1), text, font=font, fill=(0, 0, 255))
                 
                 frame = np.array(frame)
                 result, n = cv2.imencode('.jpg', frame)
