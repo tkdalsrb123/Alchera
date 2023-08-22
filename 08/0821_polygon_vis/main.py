@@ -1,6 +1,7 @@
 import json, os, sys, cv2
 from collections import defaultdict
 import numpy as np
+from tqdm import tqdm
 
 def read_files(path, Ext):
     if Ext == 'json':
@@ -35,7 +36,7 @@ _, input_dir, output_dir = sys.argv
 json_dict = read_files(input_dir, 'json')
 img_dict = read_files(input_dir, 'img')
 
-for filename, img_filepath in img_dict.items():
+for filename, img_filepath in tqdm(img_dict.items()):
     json_filepath = json_dict[filename]
     print(filename, '시각화!!')
     root, file = os.path.split(img_filepath)
@@ -58,8 +59,8 @@ for filename, img_filepath in img_dict.items():
                 
                 coor_list.append([x,y])
                 
-        points = np.array(coor_list, dtype=np.int32)
-        cv2.polylines(img, np.int32([coor_list]), isClosed=True, color=color, thickness=1)
+        points = np.array(coor_list)
+        cv2.polylines(img, np.int32([coor_list]), isClosed=True, color=color, thickness=1, lineType=cv2.LINE_AA)
             
             
     result, n = cv2.imencode(ext, img)
