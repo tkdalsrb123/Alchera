@@ -3,6 +3,7 @@ from collections import defaultdict
 import numpy as np
 from tqdm import tqdm
 
+
 def read_files(path, Ext):
     if Ext == 'json':
         file_dict = defaultdict(str)
@@ -24,6 +25,7 @@ def read_files(path, Ext):
                     file_dict[filename] = file_path
     
     return file_dict
+
 
 def read_img(img_path):
     img_array = np.fromfile(img_path, np.uint8)
