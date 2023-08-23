@@ -82,15 +82,7 @@ for uni in tqdm(uni_list):
             xml_img_dict['annotations']['version'] = '1.1'
             meta = {'id':id_num, 'name':None, 'size':None, 'mode':'annotation', 'created':None, 'updated':None, 'owner':None, 'labels':label_dict['labels']}
             xml_img_dict['annotations']['meta'] = meta
-            # ['id'] = id_num
-            # xml_img_dict['annotations']['meta']['name'] = None
-            # xml_img_dict['annotations']['meta']['size'] = None
-            # xml_img_dict['annotations']['meta']['mode'] = 'annotation'
-            # xml_img_dict['annotations']['meta']['created'] = None
-            # xml_img_dict['annotations']['meta']['updated'] = None
-            # xml_img_dict['annotations']['meta']['owner'] = None 
-            # xml_img_dict['annotations']['meta']['labels'] = label_dict['labels']
-            
+
             folder = os.path.join(output_dir, sequence, k)
             os.makedirs(folder, exist_ok=True)
             for frame in full_frame:
