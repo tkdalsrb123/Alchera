@@ -61,11 +61,19 @@ for xml_path in tqdm(xml_list):
         have_box = image.get('box')
         if have_box != None:
             for box in image['box']:
-                for att in box['attribute']:
-                    text = att.get('#text')
-                    if text == None:
-                        att['#text'] = att['@name'].split(' ')[1]
-                        error_dict['no_value_file'].append(image['@name'])
+                if type(box) == list:
+                    for att in box['attribute']:
+                        text = att.get('#text')
+                        if text == None:
+                            att['#text'] = att['@name'].split(' ')[1]
+                            error_dict['no_value_file'].append(image['@name'])
+                elif type(box) == dict:
+                    for box in image['box']:
+                        for att in box['attribute']:
+                            text = att.get('#text')
+                            if text == None:
+                                att['#text'] = att['@name'].split(' ')[1]
+                                error_dict['no_value_file'].append(image['@name'])   
         elif have_box == None:
             error_dict['no_box_file'].append(image['@name'])
     output_xml_path = os.path.join(folder, file)
