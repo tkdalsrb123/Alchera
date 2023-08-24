@@ -16,3 +16,11 @@ python main.py [xml_경로] [excel_경로] [이미지 경로] [json파일 저장
 
 1. 수정사항
 - xml 데이터에 box 값이 하나인 경우 dictonary 형태로 되어있어 이럴 경우도 정상 작동하게 수정
+
+2023-08-24
+
+1. 요청사항
+가림 잘림 정도를 시각화
+
+2. 실행방법
+python sub_vis.py [json 경로] [img 경로] [output 경로]
