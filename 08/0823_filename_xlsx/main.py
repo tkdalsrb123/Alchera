@@ -1,7 +1,5 @@
 import os, sys
 import pandas as pd
-from tqdm import tqdm
-
 
 _, input_dir, output_dir = sys.argv
 
