@@ -4,6 +4,7 @@ import pandas as pd
 import time
 from tqdm import tqdm
 import logging
+from collections import defaultdict
 
 def make_logger(log):
     logger = logging.getLogger()
@@ -45,7 +46,7 @@ _, input_dir, output_dir = sys.argv
 logger = make_logger('log.log')
 
 xml_list = readfiles(input_dir)
-error_list = []
+error_dict = defaultdict(list)
 for xml_path in tqdm(xml_list):
 
     root, file = os.path.split(xml_path)
@@ -57,20 +58,22 @@ for xml_path in tqdm(xml_list):
     xml_file = readxml(xml_path)
 
     for image in xml_file['annotations']['image']:
-        for box in image['box']:
-            for att in box['attribute']:
-                # if 'truncation' in att['@name']:
-                text = att.get('#text')
-                if text == None:
-                    att['#text'] = att['@name'].split(' ')[1]
-                    error_list.append(image['@name'])
-
+        have_box = image.get('box')
+        if have_box != None:
+            for box in image['box']:
+                for att in box['attribute']:
+                    text = att.get('#text')
+                    if text == None:
+                        att['#text'] = att['@name'].split(' ')[1]
+                        error_dict['no_value_file'].append(image['@name'])
+        elif have_box == None:
+            error_dict['no_box_file'].append(image['@name'])
     output_xml_path = os.path.join(folder, file)
     saveXml(output_xml_path, xml_file)
 
-timestamp = time.time()
-now = time.localtime(timestamp)
-now_formated = time.strftime("%d일%H시%M분", now)
+# timestamp = time.time()
+# now = time.localtime(timestamp)
+# now_formated = time.strftime("%d일%H시%M분", now)
 
-df = pd.DataFrame(error_list, columns=['filename'])
-df.to_excel(f'./error_list_{now_formated}.xlsx', index=False)
+df = pd.DataFrame.from_dict(error_dict, orient='columns')
+df.to_excel(f'{output_dir}/error_list.xlsx', index=False)
