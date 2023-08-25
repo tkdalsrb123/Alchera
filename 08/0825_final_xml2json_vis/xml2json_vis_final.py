@@ -570,8 +570,9 @@ vis_error_list = []
 for filename, img_path in tqdm(img_dict.items(), desc='시각화'):
     
     json_path = json_path_dict[filename]
-    output_img_path = MakeOutputPath(save_img_dir, img_path, save_img_dir)
-
+    
+    output_img_path = os.path.join(save_img_dir, f'{filename}.png')
+    
     logger.info(img_path)
     
     with open(json_path, encoding='utf-8') as f:
