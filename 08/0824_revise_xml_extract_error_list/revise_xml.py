@@ -79,9 +79,7 @@ for xml_path in tqdm(xml_list):
     output_xml_path = os.path.join(folder, file)
     saveXml(output_xml_path, xml_file)
 
-# timestamp = time.time()
-# now = time.localtime(timestamp)
-# now_formated = time.strftime("%d일%H시%M분", now)
 
-df = pd.DataFrame.from_dict(error_dict, orient='columns')
+df = pd.DataFrame.from_dict(error_dict, orient='index')
+df = df.transpose()
 df.to_excel(f'{output_dir}/error_list.xlsx', index=False)
