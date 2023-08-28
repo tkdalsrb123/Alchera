@@ -98,13 +98,18 @@ for xml_path in tqdm(xml_list, desc='xml', position=0):
                             coor = poly['@points']
                             split_list = coor.split(';')
                             coor_list = list(map(lambda x: x.split(','), split_list))
-                            print(list(map(lambda x: max(float(x[0])), coor_list)))
-                            # pts = np.array([[[round(float(i[0])), round(float(i[1]))] for i in coor_list]])
-                            # cv2.fillPoly(mask, pts, (255))
+                            x_list = []
+                            y_list = []
+                            for c in coor_list:
+                                x_list.append(round(float(c[0])))
+                                y_list.append(round(float(c[1])))
                             
-                            # res = cv2.bitwise_and(img, img, mask = mask)
-                            # rect = cv2.boundingRect(pts)
-                            # cropped = res[rect[1]: rect[1] + rect[3],  rect[0]: rect[0] + rect[2]]
+                            x_min = min(x_list)
+                            y_min = min(y_list)
+                            w = max(x_list) - x_min
+                            h = max(y_list) - y_min
+
+                            cropped = img[y_min: y_min + h:, x_min: x_min + w]
 
                             result, n = cv2.imencode(ext, cropped)
                             
@@ -127,13 +132,19 @@ for xml_path in tqdm(xml_list, desc='xml', position=0):
                         coor = image['polygon']['@points']
                         split_list = coor.split(';')
                         coor_list = list(map(lambda x: x.split(','), split_list))
-                        pts = np.array([[[round(float(i[0])), round(float(i[1]))] for i in coor_list]])
-                        cv2.fillPoly(mask, pts, (255))
+                        x_list = []
+                        y_list = []
+                        for c in coor_list:
+                            x_list.append(round(float(c[0])))
+                            y_list.append(round(float(c[1])))
                         
-                        res = cv2.bitwise_and(img, img, mask = mask)
-                        rect = cv2.boundingRect(pts)
-                        cropped = res[rect[1]: rect[1] + rect[3],  rect[0]: rect[0] + rect[2]]
+                        x_min = min(x_list)
+                        y_min = min(y_list)
+                        w = max(x_list) - x_min
+                        h = max(y_list) - y_min
 
+                        cropped = img[y_min: y_min + h:, x_min: x_min + w]
+                        
                         result, n = cv2.imencode(ext, cropped)
                         
                         if result:
