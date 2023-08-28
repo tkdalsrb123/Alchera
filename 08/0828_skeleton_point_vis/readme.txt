@@ -5,3 +5,7 @@
 
 2. 실행방법
 python main.py [input 최상위경로] [output 최상위 경로]
+
+3. 수정사항
+- 실행방법 변경
+[img_dir] [json_dir] [output_dir]

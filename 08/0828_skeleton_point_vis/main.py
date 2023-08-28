@@ -48,7 +48,7 @@ def readfiles(dir, Ext):
         return file_dict
     
 
-_, input_dir, output_dir = sys.argv
+_, img_dir, json_dir, output_dir = sys.argv
 
 logger = make_logger('log.log')
 
@@ -56,14 +56,14 @@ key_point_dict = {'nose':'0', 'the left eye':'1', 'the right eye':'2' , 'the lef
              'the left wrist':'9', 'the right wrist':'10', 'the left hip':"11", 'the right hip':'12', 'the left knee':'13', 'the right knee':'14', 'the left ankle':'15',
              'the right ankle':'16'}
 
-json_dict = readfiles(input_dir, "json")
-img_dict = readfiles(input_dir, 'img')
+json_dict = readfiles(json_dir, "json")
+img_dict = readfiles(img_dir, 'img')
 
 for filename, img_path in tqdm(img_dict.items()):
     json_path = json_dict[filename]
     
     root, file = os.path.split(img_path)
-    mid = '\\'.join(root.split('\\')[len(input_dir.split('\\')):])
+    mid = '\\'.join(root.split('\\')[len(img_dir.split('\\')):])
     folder = os.path.join(output_dir, mid)
     os.makedirs(folder, exist_ok=True)
     output_img_path = os.path.join(folder, file)
