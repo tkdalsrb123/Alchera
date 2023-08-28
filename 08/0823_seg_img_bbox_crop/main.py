@@ -98,13 +98,14 @@ for xml_path in tqdm(xml_list, desc='xml', position=0):
                             coor = poly['@points']
                             split_list = coor.split(';')
                             coor_list = list(map(lambda x: x.split(','), split_list))
-                            pts = np.array([[[round(float(i[0])), round(float(i[1]))] for i in coor_list]])
-                            cv2.fillPoly(mask, pts, (255))
+                            print(list(map(lambda x: max(float(x[0])), coor_list)))
+                            # pts = np.array([[[round(float(i[0])), round(float(i[1]))] for i in coor_list]])
+                            # cv2.fillPoly(mask, pts, (255))
                             
-                            res = cv2.bitwise_and(img, img, mask = mask)
-                            rect = cv2.boundingRect(pts)
-                            cropped = res[rect[1]: rect[1] + rect[3],  rect[0]: rect[0] + rect[2]]
-                            
+                            # res = cv2.bitwise_and(img, img, mask = mask)
+                            # rect = cv2.boundingRect(pts)
+                            # cropped = res[rect[1]: rect[1] + rect[3],  rect[0]: rect[0] + rect[2]]
+
                             result, n = cv2.imencode(ext, cropped)
                             
                             if result:
@@ -132,7 +133,7 @@ for xml_path in tqdm(xml_list, desc='xml', position=0):
                         res = cv2.bitwise_and(img, img, mask = mask)
                         rect = cv2.boundingRect(pts)
                         cropped = res[rect[1]: rect[1] + rect[3],  rect[0]: rect[0] + rect[2]]
-                        
+
                         result, n = cv2.imencode(ext, cropped)
                         
                         if result:
