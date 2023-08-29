@@ -287,7 +287,7 @@ def make_logger(log):
     logger.addHandler(file_handler)
     
     return logger
-
+ 
 def readfiles(path, Ext):
     if Ext == 'xml':
         file_list = []
