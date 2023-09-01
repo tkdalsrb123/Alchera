@@ -25,15 +25,17 @@ def read_img(img_path):
     return img
 
 def readfiles(dir, Ext):
-    file_dict = defaultdict(str)
+    file_dict = defaultdict(list)
     if Ext == 'json':
         for root, dirs, files in os.walk(dir):
             for file in files:
                 filename, ext = os.path.splitext(file)
                 if ext == '.json':
+                    filename = '_'.join(filename.split('_')[:5])
+                    
                     file_path = os.path.join(root, file)
                     
-                    file_dict[filename] = file_path
+                    file_dict[filename].append(file_path)
                     
         return file_dict
 
@@ -60,54 +62,57 @@ json_dict = readfiles(json_dir, "json")
 img_dict = readfiles(img_dir, 'img')
 
 for filename, img_path in tqdm(img_dict.items()):
-    json_path = json_dict[filename]
+    json_path_list = json_dict[filename]
     
     root, file = os.path.split(img_path)
     mid = '\\'.join(root.split('\\')[len(img_dir.split('\\')):])
     folder = os.path.join(output_dir, mid)
     os.makedirs(folder, exist_ok=True)
     output_img_path = os.path.join(folder, file)
-    logger.info(json_path)
-    with open(json_path, encoding='utf-8') as f:
-        json_file = json.load(f)
-    
+
     img = read_img(img_path)
-    
-    point_dict = defaultdict(str)
-    for obj in json_file['objects']:
-        name = obj['name']
-        have_keypoint = key_point_dict.get(name)
-        if have_keypoint != None:
-            points = obj['points']
-            point_text = key_point_dict[name]
-            for val in obj['attributes'][0]['values']:
-                
-                if val['selected'] == True:
-                    if val['value'] == 'truncation':
-                        color = (255, 0, 0)
-                    elif val['value'] == 'visible':
-                        color = (0, 255, 255)
-                    elif val['value'] == 'invisible':
-                        color = (0, 255, 0)
 
-            cv2.circle(img, (round(points[0][0]),round(points[0][1])), 3, color=color, thickness=-1)
-            cv2.putText(img, point_text,(round(points[0][0])-5,round(points[0][1])-2), fontFace=cv2.FONT_HERSHEY_COMPLEX, fontScale=0.3, color=color)
+    for json_path in json_path_list:
+        logger.info(json_path)
             
-            point_dict[point_text] = points
+        with open(json_path, encoding='utf-8') as f:
+            json_file = json.load(f)
+        
+        point_dict = defaultdict(str)
+        for obj in json_file['objects']:
+            name = obj['name']
+            have_keypoint = key_point_dict.get(name)
+            if have_keypoint != None:
+                points = obj['points']
+                point_text = key_point_dict[name]
+                for val in obj['attributes'][0]['values']:
+                    
+                    if val['selected'] == True:
+                        if val['value'] == 'truncation':
+                            color = (255, 0, 0)
+                        elif val['value'] == 'visible':
+                            color = (0, 255, 255)
+                        elif val['value'] == 'invisible':
+                            color = (0, 255, 0)
 
-    head = [point_dict['4'], point_dict['2'], point_dict['0'], point_dict['1'], point_dict['3']]
-    right_arm = [point_dict['6'], point_dict['8'], point_dict['10']]
-    left_arm = [point_dict['5'], point_dict['7'], point_dict['9']]
-    body = [point_dict['5'], point_dict['6'], point_dict['12'], point_dict['11'], point_dict['5']]
-    right_leg = [point_dict['12'], point_dict['14'], point_dict['16']]
-    left_leg = [point_dict['11'], point_dict['13'], point_dict['15']]
-    
-    line_vis_list = [head, right_arm, left_arm, body, right_leg, left_leg]
+                cv2.circle(img, (round(points[0][0]),round(points[0][1])), 3, color=color, thickness=-1)
+                cv2.putText(img, point_text,(round(points[0][0])-5,round(points[0][1])-2), fontFace=cv2.FONT_HERSHEY_COMPLEX, fontScale=0.3, color=color)
+                
+                point_dict[point_text] = points
 
-    for line in line_vis_list:
-        pts = [[round(i[0][0]), round(i[0][1])] for i in line]
-        pts = np.array(pts)
-        cv2.polylines(img, np.int32([pts]), False, (0, 69, 255))
+        head = [point_dict['4'], point_dict['2'], point_dict['0'], point_dict['1'], point_dict['3']]
+        right_arm = [point_dict['6'], point_dict['8'], point_dict['10']]
+        left_arm = [point_dict['5'], point_dict['7'], point_dict['9']]
+        body = [point_dict['5'], point_dict['6'], point_dict['12'], point_dict['11'], point_dict['5']]
+        right_leg = [point_dict['12'], point_dict['14'], point_dict['16']]
+        left_leg = [point_dict['11'], point_dict['13'], point_dict['15']]
+        
+        line_vis_list = [head, right_arm, left_arm, body, right_leg, left_leg]
+
+        for line in line_vis_list:
+            pts = [[round(i[0][0]), round(i[0][1])] for i in line]
+            pts = np.array(pts)
+            cv2.polylines(img, np.int32([pts]), False, (0, 69, 255))
 
 
     result, encoded_img = cv2.imencode('.jpg', img)

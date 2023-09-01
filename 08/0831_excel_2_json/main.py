@@ -69,7 +69,26 @@ for i in tqdm(range(0, df.shape[0], 5)):
 
     word_per_list = [len(sen.split(' ')) for sen in eng_list]
 
-    json_tree = {"videos":[{"filename":f'{filename}.mp4', "duration":duration, "sub-category":sub_category, "activity":activity, "source":source, "composition":composition, "location":location, "audio":audio, "time":time, "person_present":person, "kor_sentences":kor_list, "eng_sentences":eng_list, "words_per_sentence":word_per_list, "total_sentences": 5}]}
+    json_tree = {
+        "videos":[
+            {
+            "filename":f'{filename}.mp4', 
+            "duration":duration, 
+            "sub-category":sub_category, 
+            "activity":activity, 
+            "source":source, 
+            "composition":composition, 
+            "location":location, 
+            "audio":audio, 
+            "time":time, 
+            "person_present":person, 
+            "kor_sentences":kor_list, 
+            "eng_sentences":eng_list, 
+            "words_per_sentence":word_per_list, 
+            "total_sentences": 5
+            }
+        ]
+}
 
     output_json_path = os.path.join(output_dir, f'{filename}.json')
     with open(output_json_path, 'w', encoding='utf-8') as out:
