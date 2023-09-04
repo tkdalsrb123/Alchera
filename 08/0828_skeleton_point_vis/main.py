@@ -50,7 +50,7 @@ def readfiles(dir, Ext):
         return file_dict
     
 
-_, img_dir, json_dir, output_dir = sys.argv
+_, img_dir, json_dir, output_dir, point_dir = sys.argv
 
 logger = make_logger('log.log')
 
@@ -60,6 +60,15 @@ key_point_dict = {'nose':'0', 'the left eye':'1', 'the right eye':'2' , 'the lef
 
 json_dict = readfiles(json_dir, "json")
 img_dict = readfiles(img_dir, 'img')
+point_dict = readfiles(point_dir, 'json')
+
+point_info = defaultdict(str)
+
+for point_path in point_dict.values():
+    with open(point_path[0], encoding='utf-8') as f:
+        point_file = json.load(f)
+    for obj in point_file['objects']:
+        point_info[obj['file_name']] = [obj['points'], obj['bbox']]
 
 for filename, img_path in tqdm(img_dict.items()):
     json_path_list = json_dict[filename]
@@ -79,14 +88,32 @@ for filename, img_path in tqdm(img_dict.items()):
             json_file = json.load(f)
         
         point_dict = defaultdict(str)
+        keypoints = []
         for obj in json_file['objects']:
             name = obj['name']
             have_keypoint = key_point_dict.get(name)
+            
+            if have_keypoint != None:
+                
+                keypoints.append(obj['points'])
+  
+        na = os.path.split(json_path)[-1]
+        bb_x1 = point_info[na][1][0]
+        bb_y1 = point_info[na][1][1]
+        
+        # x, y, w, h = cv2.boundingRect(np.array(keypoints, dtype=np.float32))
+
+        # diff_x = abs(bb_x1 - (x))
+        # diff_y = abs(bb_y1 - (y))
+        
+        for obj in json_file['objects']:
+            name = obj['name']
+            have_keypoint = key_point_dict.get(name)
+            
             if have_keypoint != None:
                 points = obj['points']
-                point_text = key_point_dict[name]
+                point_text = key_point_dict[name]          
                 for val in obj['attributes'][0]['values']:
-                    
                     if val['selected'] == True:
                         if val['value'] == 'truncation':
                             color = (255, 0, 0)
@@ -95,10 +122,14 @@ for filename, img_path in tqdm(img_dict.items()):
                         elif val['value'] == 'invisible':
                             color = (0, 255, 0)
 
+                points[0][0] += bb_x1 - 20
+                points[0][1] += bb_y1 
+
                 cv2.circle(img, (round(points[0][0]),round(points[0][1])), 3, color=color, thickness=-1)
                 cv2.putText(img, point_text,(round(points[0][0])-5,round(points[0][1])-2), fontFace=cv2.FONT_HERSHEY_COMPLEX, fontScale=0.3, color=color)
-                
+                    
                 point_dict[point_text] = points
+                
 
         head = [point_dict['4'], point_dict['2'], point_dict['0'], point_dict['1'], point_dict['3']]
         right_arm = [point_dict['6'], point_dict['8'], point_dict['10']]
