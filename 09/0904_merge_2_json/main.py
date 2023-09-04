@@ -52,42 +52,44 @@ json2_dict = readfiles(input2_dir)
 
 error_list = []
 for filename, json1_path in tqdm(json1_dict.items()):
-    json2_path = json2_dict[filename]
-    
-    logger.info(json1_path)
-    root, file = os.path.split(json1_path)    
-    mid = '\\'.join(root.split('\\')[len(input1_dir.split('\\')):])
-    folder = os.path.join(output_dir, 'output', mid)
-    os.makedirs(folder, exist_ok=True)
-    
-    output_json_path = os.path.join(folder, file)
+    json_have = json2_dict.get(filename)
+    if json_have != None:
+        json2_path = json2_dict[filename]
+        
+        logger.info(json1_path)
+        root, file = os.path.split(json1_path)    
+        mid = '\\'.join(root.split('\\')[len(input1_dir.split('\\')):])
+        folder = os.path.join(output_dir, 'output', mid)
+        os.makedirs(folder, exist_ok=True)
+        
+        output_json_path = os.path.join(folder, file)
 
-    with open(json1_path, encoding='utf-8') as f1:
-        json1_file = json.load(f1)
-    
-    with open(json2_path, encoding='utf-8') as f2:
-        json2_file = json.load(f2)
-    
-    for att in json2_file['objects'][0]['attributes']:
-        if att['name'] == 'Y값 범위':
-            values = att['values'][0]['value']
-    
-    value_list = values.split('\n')
-    sort_val = []
-    try:
-        for value in value_list:
-            split_val = value.split('#')
-            split_val = [v.strip() for v in split_val]
-            sort_val.append(SortValue(split_val))
-    except:
-        error_list.append([file, split_val])
-        sort_val.append(split_val)
-    json1_file['unit-range'] = sort_val
+        with open(json1_path, encoding='utf-8') as f1:
+            json1_file = json.load(f1)
+        
+        with open(json2_path, encoding='utf-8') as f2:
+            json2_file = json.load(f2)
+        
+        for att in json2_file['objects'][0]['attributes']:
+            if att['name'] == 'Y값 범위':
+                values = att['values'][0]['value']
+        
+        value_list = values.split('\n')
+        sort_val = []
+        try:
+            for value in value_list:
+                split_val = value.split('#')
+                split_val = [v.strip() for v in split_val]
+                sort_val.append(SortValue(split_val))
+        except:
+            error_list.append([file, split_val])
+            sort_val.append(split_val)
+        json1_file['unit-range'] = sort_val
 
-    with open(output_json_path, 'w', encoding='utf-8') as o:
-        json.dump(json1_file, o, indent=2, ensure_ascii=False)
+        with open(output_json_path, 'w', encoding='utf-8') as o:
+            json.dump(json1_file, o, indent=2, ensure_ascii=False)
 
-    logger.info(f'{output_json_path}  저장!!!')
+        logger.info(f'{output_json_path}  저장!!!')
 
 error_xlsx = os.path.join(output_dir, 'error_list.xlsx')
 df = pd.DataFrame(error_list, columns = ['파일명', 'value'])
