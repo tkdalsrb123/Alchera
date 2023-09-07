@@ -93,4 +93,8 @@ for filename, img_path in tqdm(img_dict.items()):
             logger.info(f"{output_img_path} 저장!!")
             img.save(output_img_path, 'JPEG')
         else:
-            img.save(output_img_path, 'JPEG')
+            logger.info(f"{output_img_path} 저장!! 시각화 x")
+            result, encoded_img = cv2.imencode('.jpg', img)
+            if result:
+                with open(output_img_path, mode='w+b') as f:
+                    encoded_img.tofile(f)
