@@ -61,14 +61,14 @@ for filename, img_path in tqdm(img_dict.items()):
         
         text = json_file['scene_info']['fall_direction']
         coor_split = json_file['bboxdata']['bbox_location'].split(',')
+        img = read_img(img_path)
+        
         if len(coor_split) > 1:
             x1 = round(float(coor_split[0]))
             y1 = round(float(coor_split[1]))
             x2 = round(float(coor_split[2]))
             y2 = round(float(coor_split[3]))
 
-            img = read_img(img_path)
-            
             font = cv2.FONT_HERSHEY_PLAIN
             
             overlay = img.copy()
