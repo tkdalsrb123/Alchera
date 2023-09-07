@@ -75,6 +75,7 @@ for filename, ajson_path in tqdm(A_dict.items()):
         bjson_dict = reviseJson(bjson_path)
 
         merge_json = [ajson_dict, bjson_dict]
+        
         logger.info(f"{output_json_path} 저장!!")
         with open(output_json_path, 'w', encoding='utf-8') as o:
             json.dump(merge_json, o, indent=2, ensure_ascii=False)
