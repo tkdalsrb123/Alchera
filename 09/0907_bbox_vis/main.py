@@ -92,3 +92,5 @@ for filename, img_path in tqdm(img_dict.items()):
 
             logger.info(f"{output_img_path} 저장!!")
             img.save(output_img_path, 'JPEG')
+        else:
+            img.save(output_img_path, 'JPEG')
