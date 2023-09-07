@@ -73,16 +73,19 @@ for filename, img_path in tqdm(img_dict.items()):
             
             overlay = img.copy()
             
-            text_w, text_h = cv2.getTextSize(text, font, fontScale=3, thickness=1)[0]
+            fontScale = 3   # background 크기 조절(글씨 크기를 조절하면서 같이 조절해야함)
+            text_w, text_h = cv2.getTextSize(text, font, fontScale=fontScale, thickness=1)[0]
             cv2.rectangle(overlay, (x1, y1-text_h), (x1+(text_w//5)*2, y1), (255,255,255), -1)
             alpha = 0.5  # 배경 투명도 조절
+            bbox_thickness = 2  # bbox 선두께 조절
+            fontSize = 30   # 글씨 크기 조절
             img = cv2.addWeighted(img, alpha, overlay, 1-alpha, 0)
-            cv2.rectangle(img, (x1,y1),(x2,y2), (0, 0, 255), thickness=2)
+            cv2.rectangle(img, (x1,y1),(x2,y2), (0, 0, 255), thickness=bbox_thickness)  
             
             img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)        
             img = Image.fromarray(img)
             fontpath = "malgunbd.ttf"
-            pil_font = ImageFont.truetype(fontpath, 30)
+            pil_font = ImageFont.truetype(fontpath, fontSize)
             draw = ImageDraw.Draw(img)
 
             draw.text((x1, y1-text_h-5), text, font=pil_font, fill=(255, 0, 0) )
