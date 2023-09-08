@@ -53,16 +53,7 @@ for filename, img_filepath in tqdm(img_dict.items()):
     img = read_img(img_filepath)
     color = (255, 0, 0)
     for obj in json_file['objects']:
-        for box in obj['boxes']:
-            coor_list = []
-            for coor in box['coords']:
-                x = round(coor['x'])
-                y = round(coor['y'])
-                
-                coor_list.append([x,y])
-                
-        points = np.array(coor_list)
-        cv2.polylines(img, np.int32([coor_list]), isClosed=True, color=color, thickness=1, lineType=cv2.LINE_AA)
+        cv2.polylines(img, np.int32([obj['points']]), isClosed=True, color=color, thickness=1, lineType=cv2.LINE_AA)
             
             
     result, n = cv2.imencode(ext, img)

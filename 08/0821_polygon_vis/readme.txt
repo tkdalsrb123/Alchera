@@ -11,3 +11,8 @@ python main.py [input 경로] [output 경로]
 1. 수정사항
 - 시각화 계단현상 버그 수정
 - tqdm 프로그래스바 추가
+
+2023-09-08
+
+1. 수정사항
+- treeD json 구조 변경
