@@ -8,7 +8,8 @@ def readfiles(dir):
         for file in files:
             filename, ext = os.path.splitext(file)
             if ext == '.jpg':
-                id = int(filename.split('_')[0][:-1])
+                id = int(filename.split('_')[0][:3])
+                id = f"{id}".zfill(3)
                 file_dict[id].append(filename)
 
     return file_dict
