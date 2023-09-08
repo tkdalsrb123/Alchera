@@ -68,7 +68,7 @@ for filename, mp4_path in tqdm(mp4_dict.items()):
             frame_filename = f'{filename}_{num}.jpg'
             output_test_img_path = os.path.join(test_folder, frame_filename)
             output_img_path = os.path.join(folder, frame_filename)
-            if currentframe >= start_frame and currentframe <= end_frame:
+            if currentframe == start_frame or currentframe == end_frame:
                 x1 = 10
                 y1 = 10
 
@@ -94,35 +94,32 @@ for filename, mp4_path in tqdm(mp4_dict.items()):
 
                 logger.info(f"{output_img_path} 저장!!")
                 frame.save(output_img_path, 'JPEG')
-                if currentframe <= start_frame+15 or currentframe >= end_frame-15:
-                    logger.info(f"{output_test_img_path} 저장!!")
-                    frame.save(output_test_img_path, 'JPEG')
+                frame.save(output_test_img_path, 'JPEG')
 
-            elif currentframe < start_frame:
+            elif currentframe >= start_frame-15 and currentframe <= start_frame+15:
                 logger.info(f"{output_img_path} 저장!! 시각화 x")
                 result, encoded_img = cv2.imencode('.jpg', frame)
                 if result:
                     with open(output_img_path, mode='w+b') as f:
                         encoded_img.tofile(f)
-                if currentframe >= start_frame-15:
-                    logger.info(f"{output_test_img_path} 저장!! 시각화 x")
-                    result, encoded_img = cv2.imencode('.jpg', frame)
-                    if result:
-                        with open(output_test_img_path, mode='w+b') as f:
-                            encoded_img.tofile(f)
+                    with open(output_test_img_path, mode='w+b') as f:
+                        encoded_img.tofile(f)
                             
-            elif currentframe > end_frame:
+            elif currentframe >= end_frame-15 and currentframe <= end_frame+15:
                 logger.info(f"{output_img_path} 저장!! 시각화 x")
                 result, encoded_img = cv2.imencode('.jpg', frame)
                 if result:
                     with open(output_img_path, mode='w+b') as f:
                         encoded_img.tofile(f)
-                if currentframe <= end_frame+15:
-                    logger.info(f"{output_test_img_path} 저장!! 시각화 x")
-                    result, encoded_img = cv2.imencode('.jpg', frame)
-                    if result:
-                        with open(output_test_img_path, mode='w+b') as f:
+                    with open(output_test_img_path, mode='w+b') as f:
                             encoded_img.tofile(f)
+            
+            else:
+                logger.info(f"{output_img_path} 저장!! 시각화 x")
+                result, encoded_img = cv2.imencode('.jpg', frame)
+                if result:
+                    with open(output_img_path, mode='w+b') as f:
+                        encoded_img.tofile(f)
 
                 
             
