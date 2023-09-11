@@ -69,9 +69,8 @@ for filename, img_path in tqdm(img_dict.items()):
         bbox_count = len(json_file['bbox']['points'])
         poly_count = len(json_file['polygon']['points'])
         for idx, points in enumerate(json_file['bbox']['points']):
-            x1y1 = tuple([round(i) for i in points[0]])
-            x2y2 = tuple([round(i) for i in points[1]])
-
+            x1y1 = (round(points[0][1]), round(points[0][0]))
+            x2y2 = (round(points[1][1]), round(points[1][0]))
             text = json_file['bbox']['mid_vienna_codes'][idx]
             text_w, text_h = cv2.getTextSize(text, font, fontScale=fontScale, thickness=3)[0]
             cv2.rectangle(img, x1y1, x2y2, color=(0, 0, 255), thickness=3)
@@ -80,7 +79,7 @@ for filename, img_path in tqdm(img_dict.items()):
 
         vie_codes = json_file['polygon']['mid_vienna_codes']
         for idx, points in enumerate(json_file['polygon']['points']):
-            points = [[round(i[0]), round(i[1])] for i in points]
+            points = [[round(i[1]), round(i[0])] for i in points]
             x1y1 = tuple(map(round, points[0]))
             pts = np.array(points, np.int32)
             text = json_file['polygon']['mid_vienna_codes'][idx]
@@ -93,8 +92,8 @@ for filename, img_path in tqdm(img_dict.items()):
         bbox_count = len(json_file['bbox']['points'])
         vie_codes = json_file['bbox']['mid_vienna_codes']
         for idx, points in enumerate(json_file['bbox']['points']):
-            x1y1 = tuple([round(i) for i in points[0]])
-            x2y2 = tuple([round(i) for i in points[1]])
+            x1y1 = (round(points[0][1]), round(points[0][0]))
+            x2y2 = (round(points[1][1]), round(points[1][0]))
 
             text = json_file['bbox']['mid_vienna_codes'][idx]
             text_w, text_h = cv2.getTextSize(text, font, fontScale=fontScale, thickness=3)[0]
@@ -106,7 +105,7 @@ for filename, img_path in tqdm(img_dict.items()):
         poly_count = len(json_file['polygon']['points'])
         vie_codes = json_file['polygon']['mid_vienna_codes']
         for idx, points in enumerate(json_file['polygon']['points']):
-            points = [[round(i[0]), round(i[1])] for i in points]
+            points = [[round(i[1]), round(i[0])] for i in points]
             x1y1 = tuple(map(round, points[0]))
             pts = np.array(points, np.int32)
             text = json_file['polygon']['mid_vienna_codes'][idx]
