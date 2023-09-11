@@ -13,7 +13,7 @@ def make_logger(log):
     # file_handler
     file_handler = logging.FileHandler(log, mode='w')
     file_handler.setFormatter(file_formatter)
-    file_handler.setLevel(logging.INFO)
+    file_handler.setLjhevel(logging.INFO)
     # logger.add
     logger.addHandler(file_handler)
     
