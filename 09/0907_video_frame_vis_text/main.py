@@ -3,6 +3,8 @@ from collections import defaultdict
 from PIL import Image, ImageDraw, ImageFont
 import logging
 from tqdm import tqdm
+from label import label
+import numpy as np
 
 def make_logger(log):
     logger = logging.getLogger()
@@ -31,6 +33,12 @@ def readfiles(dir, Ext):
                 file_dict[filename] = file_path
     return file_dict
 
+def saveImage(saveDir, img):
+    result, encoded_img = cv2.imencode('.jpg', img)
+    if result:
+        with open(saveDir, mode='w+b') as f:
+            encoded_img.tofile(f)
+
 _, input_dir, output_dir = sys.argv
 
 logger = make_logger('log.log')
@@ -53,6 +61,9 @@ for filename, mp4_path in tqdm(mp4_dict.items()):
     start_frame = json_file['sensordata']['fall_start_frame']
     end_frame = json_file['sensordata']['fall_end_frame']
     text = json_file['scene_info']['scene_cat_name']
+    text2 = json_file['scene_info']['scene_IsFall']
+    start_text = f"# {start_frame} / {text2} : {text}"
+    end_text = f"# {end_frame} / {text2} : {text}"
     
     if (end_frame - start_frame) > 0:
         
@@ -69,57 +80,33 @@ for filename, mp4_path in tqdm(mp4_dict.items()):
             output_test_img_path = os.path.join(test_folder, frame_filename)
             output_img_path = os.path.join(folder, frame_filename)
             if currentframe == start_frame or currentframe == end_frame:
-                x1 = 10
-                y1 = 10
+                if currentframe == start_frame:
+                    s_frame = label(frame, start_text, 50, (0,0,255), (0,0), 0.5)
 
-                font = cv2.FONT_HERSHEY_PLAIN
-            
-                overlay = frame.copy()
+                    logger.info(f"{output_img_path} 저장!!")
+                    saveImage(output_img_path, s_frame)
                 
-                fontScale = 3   # background 크기 조절(글씨 크기를 조절하면서 같이 조절해야함)
-                text_w, text_h = cv2.getTextSize(text, font, fontScale=fontScale, thickness=1)[0]
-                cv2.rectangle(overlay, (x1, y1), (x1+(text_w//5)*3+20, y1+text_h+20), (255,255,255), -1)
-                alpha = 0.5  # 배경 투명도 조절
-   
-                fontSize = 40   # 글씨 크기 조절
-                frame = cv2.addWeighted(frame, alpha, overlay, 1-alpha, 0)
+                elif currentframe == end_frame:
+                    e_frame = label(frame, end_text, 50, (0,0,255), (0,0), 0.5)
+                    saveImage(output_img_path, e_frame)
                 
-                frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)        
-                frame = Image.fromarray(frame)
-                fontpath = "malgunbd.ttf"
-                pil_font = ImageFont.truetype(fontpath, fontSize)
-                draw = ImageDraw.Draw(frame)
-
-                draw.text((x1+15, y1), text, font=pil_font, fill=(255, 0, 0) )
-
-                logger.info(f"{output_img_path} 저장!!")
-                frame.save(output_img_path, 'JPEG')
-                frame.save(output_test_img_path, 'JPEG')
-
-            elif currentframe >= start_frame-15 and currentframe <= start_frame+15:
+                    merge_frame = np.concatenate((s_frame, e_frame), axis=0)
+                    merge_test_img_path = os.path.join(test_folder, f'{start_frame}-{end_frame}.jpg')
+                    saveImage(merge_test_img_path, merge_frame)
+                    
+            elif currentframe >= start_frame-30 and currentframe <= start_frame+30:
                 logger.info(f"{output_img_path} 저장!! 시각화 x")
-                result, encoded_img = cv2.imencode('.jpg', frame)
-                if result:
-                    with open(output_img_path, mode='w+b') as f:
-                        encoded_img.tofile(f)
-                    with open(output_test_img_path, mode='w+b') as f:
-                        encoded_img.tofile(f)
+                saveImage(output_img_path, frame)
+                saveImage(output_test_img_path, frame)
                             
-            elif currentframe >= end_frame-15 and currentframe <= end_frame+15:
+            elif currentframe >= end_frame-30 and currentframe <= end_frame+30:
                 logger.info(f"{output_img_path} 저장!! 시각화 x")
-                result, encoded_img = cv2.imencode('.jpg', frame)
-                if result:
-                    with open(output_img_path, mode='w+b') as f:
-                        encoded_img.tofile(f)
-                    with open(output_test_img_path, mode='w+b') as f:
-                            encoded_img.tofile(f)
+                saveImage(output_img_path, frame)
+                saveImage(output_test_img_path, frame)
             
             else:
                 logger.info(f"{output_img_path} 저장!! 시각화 x")
-                result, encoded_img = cv2.imencode('.jpg', frame)
-                if result:
-                    with open(output_img_path, mode='w+b') as f:
-                        encoded_img.tofile(f)
+                saveImage(output_img_path, frame)
 
                 
             
