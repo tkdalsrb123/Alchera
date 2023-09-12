@@ -65,6 +65,7 @@ for filename, mp4_path in tqdm(mp4_dict.items()):
     start_text = f"# {start_frame} / {text2} : {text}"
     end_text = f"# {end_frame} / {text2} : {text}"
     
+    text_size = 200
     if (end_frame - start_frame) > 0:
         
         video = cv2.VideoCapture(mp4_path)
@@ -81,14 +82,14 @@ for filename, mp4_path in tqdm(mp4_dict.items()):
             output_img_path = os.path.join(folder, frame_filename)
             if currentframe == start_frame or currentframe == end_frame:
                 if currentframe == start_frame:
-                    s_frame = label(frame, start_text, 50, (0,0,255), (0,0), 0.5)
+                    s_frame = label(frame, start_text, text_size, (0,0,255), (0,0), 0.5)
 
                     logger.info(f"{output_img_path} 저장!!")
                     saveImage(output_img_path, s_frame)
                     saveImage(output_test_img_path, s_frame)
                 
                 elif currentframe == end_frame:
-                    e_frame = label(frame, end_text, 50, (0,0,255), (0,0), 0.5)
+                    e_frame = label(frame, end_text, text_size, (0,0,255), (0,0), 0.5)
                     saveImage(output_img_path, e_frame)
                     saveImage(output_test_img_path, e_frame)
                 
