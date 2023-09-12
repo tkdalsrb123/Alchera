@@ -85,13 +85,15 @@ for filename, mp4_path in tqdm(mp4_dict.items()):
 
                     logger.info(f"{output_img_path} 저장!!")
                     saveImage(output_img_path, s_frame)
+                    saveImage(output_test_img_path, s_frame)
                 
                 elif currentframe == end_frame:
                     e_frame = label(frame, end_text, 50, (0,0,255), (0,0), 0.5)
                     saveImage(output_img_path, e_frame)
+                    saveImage(output_test_img_path, e_frame)
                 
                     merge_frame = np.concatenate((s_frame, e_frame), axis=0)
-                    merge_test_img_path = os.path.join(test_folder, f'{start_frame}-{end_frame}.jpg')
+                    merge_test_img_path = os.path.join(test_folder, f'fall_frame_{mid}.jpg')
                     saveImage(merge_test_img_path, merge_frame)
                     
             elif currentframe >= start_frame-30 and currentframe <= start_frame+30:
