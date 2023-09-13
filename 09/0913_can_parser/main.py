@@ -1,7 +1,6 @@
 import os, sys
 import shutil
 
-
 _, input_dir = sys.argv
 
 parser = './can_parser.txt'
