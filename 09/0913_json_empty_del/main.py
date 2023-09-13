@@ -1,7 +1,7 @@
 import json, os, sys
 import logging
 from tqdm import tqdm
-
+import pandas as pd
 
 def make_logger(log):
     logger = logging.getLogger()
@@ -46,6 +46,7 @@ logger = make_logger('log.log')
 
 json_list = readfiles(input_dir, '.json')
 
+error_file_list = []
 for json_path in tqdm(json_list):
     output_json_path = make_output_path(input_dir, json_path, output_dir)
     with open(json_path, encoding='utf-8') as f:
@@ -53,10 +54,16 @@ for json_path in tqdm(json_list):
     
     for obj in json_file['objects']:
         for att in obj['attributes']:
-            att['values'][0]['value'] = att['values'][0]['value'].rstrip()
-
-            if len(att['values'][0]['value'])>1 and att['values'][0]['value'][-1] == '#':
-                att['values'][0]['value'] = att['values'][0]['value'][:-2]
+            if len(att['values'][0]['value'])>1 and att['values'][0]['value'][-1] == ' ':
+                att['values'][0]['value'] = att['values'][0]['value'].rstrip()
+                
+                error_file_list.append(json_path)
+            
+                if len(att['values'][0]['value'])>1 and att['values'][0]['value'][-1] == '#':
+                    att['values'][0]['value'] = att['values'][0]['value'][:-2]
 
     with open(output_json_path, 'w', encoding='utf-8') as o:
         json.dump(json_file, o, indent=2, ensure_ascii=False)
+        
+df = pd.DataFrame(error_file_list, columns=['error_filename'])
+df.to_excel(f'{output_dir}/error_list.xlsx', index=False)
