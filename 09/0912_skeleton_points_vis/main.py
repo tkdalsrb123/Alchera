@@ -27,6 +27,7 @@ def read_img(img_path):
 
 def save_img(output_path, img):
     result, encoded_img = cv2.imencode('.jpg', img)
+    logger.info(output_path)
     if result:
         with open(output_path, mode='w+b') as f:
             encoded_img.tofile(f)
@@ -88,11 +89,13 @@ def vis_skeleton(img, id, sk_info, output_path):
 
 _, img_dir, json_dir, output_dir = sys.argv
 
+logger = make_logger('log.log')
+
 json_dict = readfiles(json_dir, '.json')
 img_dict = readfiles(img_dir, '.jpg')
 
 df2list = []
-for filename, img_path in img_dict.items():
+for filename, img_path in tqdm(img_dict.items()):
     json_path = json_dict.get(filename)
     if json_path:
         json_path = json_dict[filename]
@@ -102,7 +105,7 @@ for filename, img_path in img_dict.items():
         folder = os.path.join(output_dir, mid)
         os.makedirs(folder, exist_ok=True)
         output_img_path = os.path.join(folder, file)
-        
+        logger.info(json_path)
         with open(json_path, encoding='utf-8') as f:
             json_file = json.load(f)
 
