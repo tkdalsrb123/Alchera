@@ -10,6 +10,7 @@ def readfiles(dir, Ext):
     for root, dirs, files in os.walk(dir):
         for file in files:
             filename, ext = os.path.splitext(file)
+            ext = ext.lower()
             if ext == Ext:
                 file_path = os.path.join(root, file)
 
