@@ -2,6 +2,8 @@ import cv2, json, os, sys
 from collections import defaultdict
 from label import label
 import numpy as np
+import logging
+from tqdm import tqdm
 
 def readfiles(dir, Ext):
     file_dict = defaultdict(str)
@@ -19,15 +21,35 @@ def read_img(img_path):
     img = cv2.imdecode(img_array, cv2.IMREAD_COLOR)
     return img
 
+def make_logger(log):
+    logger = logging.getLogger()
+    logger.setLevel(logging.DEBUG)
+    
+    # formatter
+    file_formatter = logging.Formatter("%(asctime)s [%(levelname)s:%(lineno)d] -- %(message)s")
+    # file_handler
+    file_handler = logging.FileHandler(log, mode='w')
+    file_handler.setFormatter(file_formatter)
+    file_handler.setLevel(logging.INFO)
+    # logger.add
+    logger.addHandler(file_handler)
+    
+    return logger
+
+
 _, input_dir, output_dir = sys.argv
+
+logger = make_logger('log.log')
 
 json_dict = readfiles(input_dir, '.json')
 img_dict = readfiles(input_dir, '.jpg')
 
-for filename , img_path in img_dict.items():
+for filename , img_path in tqdm(img_dict.items()):
+    logger.info(img_path)
     have_json = json_dict.get(filename)
     if have_json != None:
         json_path = json_dict[filename]
+        logger.info(f"{json_path} 시각화!!!")
         root, file = os.path.split(img_path)
         mid = '\\'.join(root.split('\\')[len(input_dir.split('\\')):])
         folder = os.path.join(output_dir, mid)
@@ -54,3 +76,4 @@ for filename , img_path in img_dict.items():
         if result:
             with open(output_img_path, mode='w+b') as f:
                 encoded_img.tofile(f)
+        logger.info(f"{output_img_path} 저장!!!")
