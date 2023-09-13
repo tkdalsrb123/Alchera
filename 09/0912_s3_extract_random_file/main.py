@@ -33,14 +33,25 @@ def down_file_path(output_dir, from_down_path):
     s3client.download_file(bucket_name, from_down_path, output_file)
 
 def readfiles(dir, Ext):
-    file_dict = defaultdict(str)
-    for root, dirs, files in os.walk(dir):
-        for file in files:
-            filename, ext = os.path.splitext(file)
-            if ext == Ext:
-                file_path = os.path.join(root, file)
-
-                file_dict[filename] = file_path
+    if Ext == '.json':
+        file_dict = defaultdict(lambda: defaultdict(str))
+        for root, dirs, files in os.walk(dir):
+            for file in files:
+                filename, ext = os.path.splitext(file)
+                if ext == Ext:
+                    unique = root.split('\\')[-2]
+                    file_path = os.path.join(root, file)
+                    file_dict[unique][filename] = file_path
+    elif Ext == '.JPG':
+        file_dict = defaultdict(str)
+        for root, dirs, files in os.walk(dir):
+            for file in files:
+                filename, ext = os.path.splitext(file)
+                if ext == Ext:
+                    file_path = os.path.join(root, file)
+                    
+                    file_dict[filename] = file_path
+                
     return file_dict
 
 def shutilFile(inputFile, outputDir, Ext):
@@ -78,12 +89,17 @@ for random_file in tqdm(random_file_list, desc='s3 파일 다운'):
                     logger.info(contents['Key'])
                     down_file_path(output_dir, contents['Key'])
                     
-img_dict = readfiles(output_dir, '.JPG')
 json_dict = readfiles(output_dir, '.json')
+img_dict = readfiles(output_dir, '.JPG')
 
-for filename, img_path in tqdm(random.sample(list(img_dict.items()), int(img_num)), desc='파일 복사'):
-    json_path = json_dict[filename]
+for file_dict in json_dict.values():
+    for filename, json_path in tqdm(random.sample(list(file_dict.items()), int(img_num)), desc='파일 복사'):
+        img_path = img_dict[filename]
 
-    shutilFile(img_path, output_dir, 'image')
-    shutilFile(json_path, output_dir, 'json')
+        shutilFile(img_path, output_dir, 'image')
+        shutilFile(json_path, output_dir, 'json')
+
+
+    
+        
     

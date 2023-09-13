@@ -64,6 +64,7 @@ for filename, img_path in tqdm(img_dict.items()):
         
         
         i = 1
+        color = (0,0,255)
         for obj in json_file['objects']:
             img = read_img(img_path)
             points = obj['points']
@@ -71,7 +72,9 @@ for filename, img_path in tqdm(img_dict.items()):
             x2y2 = tuple([round(p) for p in points[1]])
             output_filename = f"{filename}_{i}{ext}"
             output_img_path = os.path.join(folder, output_filename)
-            cv2.rectangle(img, x1y1, x2y2, color =(0,0,255), thickness=3)
+            if i == 2:
+                color = (0, 255, 255)
+            cv2.rectangle(img, x1y1, x2y2, color =color, thickness=3)
             
             save_img(output_img_path, img)
             
