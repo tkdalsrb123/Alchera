@@ -53,14 +53,16 @@ for json_path in tqdm(json_list):
         json_file = json.load(f)
     
     for obj in json_file['objects']:
-        for att in obj['attributes']:
-            if len(att['values'][0]['value'])>1 and att['values'][0]['value'][-1] == ' ':
-                att['values'][0]['value'] = att['values'][0]['value'].rstrip()
+        for atts in obj['attributes']:
+            att_split = atts['values'][0]['value'].split('\n')
+            for att in att_split:
+                if len(att)>1 and att[-1] == ' ':
+                    att = att.rstrip()
+                    
+                    error_file_list.append(json_path)
                 
-                error_file_list.append(json_path)
-            
-                if len(att['values'][0]['value'])>1 and att['values'][0]['value'][-1] == '#':
-                    att['values'][0]['value'] = att['values'][0]['value'][:-2]
+                    if len(att)>1 and att[-1] == '#':
+                        att = att[:-2]
 
     with open(output_json_path, 'w', encoding='utf-8') as o:
         json.dump(json_file, o, indent=2, ensure_ascii=False)
