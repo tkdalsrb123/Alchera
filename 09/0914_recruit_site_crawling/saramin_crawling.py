@@ -20,21 +20,28 @@ pagination_button = driver.find_elements(By.XPATH, '//a[@class=" page page_move 
 
 list2df = []
 for i in range(len(pagination_button)):
-    recruit_links = driver.find_elements(By.XPATH, '//a[@target="_blank"]')
+    recruit_links = driver.find_elements(By.XPATH, '//*[@id="recruit_info_list"]/div[1]/div/div[2]/h2/a')
     for link in recruit_links:
         href = link.get_attribute('href')
         driver.execute_script("window.open('');")
         driver.switch_to.window(driver.window_handles[1])
         driver.get(href)
+        time.sleep(4)
+        try:
+            html = driver.page_source
+            soup = bs4(html, 'html.parser')
+            info = soup.find('div', attrs={'class':'jv_cont jv_company'})
+            print(info)
+            # content = driver.find_element(By.TAG_NAME, 'iframe')
+            # driver.switch_to.frame(content)
+            time.sleep(1)
+            driver.close()
+            driver.switch_to.window(driver.window_handles[0])
+        except:
+            print("에러")
+            driver.close()
+            driver.switch_to.window(driver.window_handles[0])
 
-        접수방법 = driver.find_element(By.XPATH, '//button[@class="spr_jview jv_howto ready]')
-        접수방법.click()
-        
-
-        
-
-    
-    
     # time.sleep(3)
     # pagination = driver.find_elements(By.XPATH, '//a[@class=" page page_move track_event"]')
     # page_num = pagination[i].get_attribute('page')
@@ -59,5 +66,5 @@ for i in range(len(pagination_button)):
 
     #     list2df.append([title, company_name])
 
-df = pd.DataFrame(list2df, columns=['채용제목', '회사'])
-df.to_excel('./채용정보.xlsx', index=False)
+# df = pd.DataFrame(list2df, columns=['채용제목', '회사'])
+# df.to_excel('./채용정보.xlsx', index=False)

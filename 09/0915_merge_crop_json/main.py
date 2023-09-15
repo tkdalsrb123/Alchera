@@ -84,7 +84,7 @@ for filename, json_path in tqdm(json_dict.items()):
             classId = obj['classId']
             name = obj['name']
             bbox = obj['points']
-            # for crop_json_path in crop_json_list:
+
             crop_json_path = crop_json_list[idx]
 
             crop_json_file = openJson(crop_json_path)
