@@ -79,17 +79,19 @@ for filename, json_path in tqdm(json_dict.items()):
         
         info = json_file['info']
         
-        for obj in json_file['objects']:
+        for idx, obj in enumerate(json_file['objects']):
             id = obj['id']
             classId = obj['classId']
             name = obj['name']
             bbox = obj['points']
-            for crop_json_path in crop_json_list:
-                crop_json_file = openJson(crop_json_path)
+            # for crop_json_path in crop_json_list:
+            crop_json_path = crop_json_list[idx]
 
-                points = crop_json_file['objects'][0]['points']
-            
-                output_json['objects'].append({"id":id, "classId":classId, "name":name, "bbox":bbox, "points":points})
+            crop_json_file = openJson(crop_json_path)
+
+            points = crop_json_file['objects'][0]['points']
+        
+            output_json['objects'].append({"id":id, "classId":classId, "name":name, "bbox":bbox, "points":points})
 
 
         output_json['info'] = info
