@@ -5,6 +5,12 @@ import pandas as pd
 import time
 from bs4 import BeautifulSoup as bs4
 
+def 전처리(text):
+    if type(text) == str:
+        text = text.replace(' ', '')
+    
+    return text
+    
 
 keyword = '데이터분석가' 
 link = f"https://www.saramin.co.kr/zf_user/search?searchword={keyword}&go=&flag=n&searchMode=1&searchType=search&search_done=y&search_optional_item=n"
@@ -30,8 +36,32 @@ for i in range(len(pagination_button)):
         try:
             html = driver.page_source
             soup = bs4(html, 'html.parser')
-            info = soup.find('div', attrs={'class':'jv_cont jv_company'})
-            print(info)
+            jv_company = soup.find_all('div', attrs={'class':'jv_cont jv_company'})
+            기업형태 = None
+            업종 = None
+            매출액 = None
+            홈페이지 = None
+            for jv in jv_company[:1]:
+                info = jv.find_all('dl')
+                for i in info:   
+                    if '기업형태' in i.find('dt').get_text():
+                        기업형태 = i.find('dd').get_text()
+                    elif '업종' in i.find('dt').get_text():
+                        업종 = i.find('dd').get_text()
+                    elif '매출액' in i.find('dt').get_text():
+                        매출액 = i.find('dd').get_text()
+                    elif '홈페이지' in i.find('dt').get_text():
+                        홈페이지 = i.find('dd').get_text()
+            
+            기업형태 = 전처리(기업형태)
+            업종 = 전처리(업종)
+            매출액 = 전처리(매출액)
+            홈페이지 = 전처리(홈페이지)
+            print(기업형태, 업종, 매출액, 홈페이지)
+
+
+
+            # print(홈페이지.strip())
             # content = driver.find_element(By.TAG_NAME, 'iframe')
             # driver.switch_to.frame(content)
             time.sleep(1)
