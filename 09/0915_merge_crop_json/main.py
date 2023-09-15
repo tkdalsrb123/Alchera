@@ -90,6 +90,8 @@ for filename, json_path in tqdm(json_dict.items()):
             crop_json_file = openJson(crop_json_path)
 
             points = crop_json_file['objects'][0]['points']
+            points[0][0] += bbox[0][0]
+            points[0][1] += bbox[0][1]
         
             output_json['objects'].append({"id":id, "classId":classId, "name":name, "bbox":bbox, "points":points})
 
