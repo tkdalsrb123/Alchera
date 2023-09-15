@@ -2,6 +2,7 @@ import os, sys, shutil
 from collections import defaultdict
 from tqdm import tqdm
 import logging
+import chardet
 
 def make_logger(log):
     logger = logging.getLogger()
@@ -56,7 +57,11 @@ bookmark_list = os.listdir(bookmark_dir)
 for book in bookmark_list:
     bookmark_path = os.path.join(bookmark_dir, book)
 
-    with open(bookmark_path, 'r', encoding='utf-16') as f:
+    data = open(bookmark_path, 'rb').read()
+    result = chardet.detect(data)
+    enc = result['encoding']
+
+    with open(bookmark_path, 'r', encoding=enc) as f:
         bookmarks = f.readlines()
         
     for bookmark in tqdm(bookmarks, desc='bookmark 읽는중'):

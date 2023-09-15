@@ -53,20 +53,21 @@ json2_dict = readfiles(input2_dir)
 error_list = []
 for filename, json1_path in tqdm(json1_dict.items()):
     json_have = json2_dict.get(filename)
+
+    logger.info(json1_path)
+    root, file = os.path.split(json1_path)    
+    mid = '\\'.join(root.split('\\')[len(input1_dir.split('\\')):])
+    folder = os.path.join(output_dir, 'output', mid)
+    os.makedirs(folder, exist_ok=True)
+    
+    output_json_path = os.path.join(folder, file)
+
+    with open(json1_path, encoding='utf-8') as f1:
+        json1_file = json.load(f1)
+        
     if json_have != None:
         json2_path = json2_dict[filename]
-        
-        logger.info(json1_path)
-        root, file = os.path.split(json1_path)    
-        mid = '\\'.join(root.split('\\')[len(input1_dir.split('\\')):])
-        folder = os.path.join(output_dir, 'output', mid)
-        os.makedirs(folder, exist_ok=True)
-        
-        output_json_path = os.path.join(folder, file)
 
-        with open(json1_path, encoding='utf-8') as f1:
-            json1_file = json.load(f1)
-        
         with open(json2_path, encoding='utf-8') as f2:
             json2_file = json.load(f2)
         
@@ -90,7 +91,15 @@ for filename, json1_path in tqdm(json1_dict.items()):
             json.dump(json1_file, o, indent=2, ensure_ascii=False)
 
         logger.info(f'{output_json_path}  저장!!!')
+        
+    else:
+        json1_file['unit-range'] = ""
 
+        with open(output_json_path, 'w', encoding='utf-8') as o:
+            json.dump(json1_file, o, indent=2, ensure_ascii=False)
+
+        logger.info(f'{output_json_path} "unit-range 공백 저장"!!!')
+        
 error_xlsx = os.path.join(output_dir, 'error_list.xlsx')
 df = pd.DataFrame(error_list, columns = ['파일명', 'value'])
 df.to_excel(error_xlsx, index=False)

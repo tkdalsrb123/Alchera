@@ -5,3 +5,8 @@
 
 2. 실행방법
 python main.py [input1 최상위 경로] [input2 최상위 경로] [output 최상위 경로]
+
+0915
+
+1. 수정사항
+- 매칭 안되는 파일이 있을 경우 unit-range에 공백 넣고 출력

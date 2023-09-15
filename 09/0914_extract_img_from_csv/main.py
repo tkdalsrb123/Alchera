@@ -77,7 +77,7 @@ tqdm.pandas()
 
 df = pd.read_csv(csv_dir, encoding='utf-8', header=None)
 
-df.progress_apply(extract_file, axis=1, args=(img_dict))
+df.progress_apply(extract_file, axis=1, args=(img_dict,))
 
 
 
