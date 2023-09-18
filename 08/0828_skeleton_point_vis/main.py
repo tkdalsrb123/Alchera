@@ -61,19 +61,19 @@ key_point_dict = {'nose':'0', 'the left eye':'1', 'the right eye':'2' , 'the lef
 
 json_dict = readfiles(json_dir, "json")
 img_dict = readfiles(img_dir, 'img')
-point_dict = readfiles(point_dir, 'json')
+# point_dict = readfiles(point_dir, 'json')
 
-point_info = defaultdict(str)
+# point_info = defaultdict(str)
 
-for point_path in point_dict.values():
-    with open(point_path[0], encoding='utf-8') as f:
-        point_file = json.load(f)
-    for obj in point_file['objects']:
-        if '.json' in obj['file_name']:
-            filename = os.path.splitext(obj['file_name'])[0]
-            point_info[filename] = [obj['points'], obj['bbox']]
-        else:
-            point_info[obj['file_name']] = [obj['points'], obj['bbox']]
+# for point_path in point_dict.values():
+#     with open(point_path[0], encoding='utf-8') as f:
+#         point_file = json.load(f)
+#     for obj in point_file['objects']:
+#         if '.json' in obj['file_name']:
+#             filename = os.path.splitext(obj['file_name'])[0]
+#             point_info[filename] = [obj['points'], obj['bbox']]
+#         else:
+#             point_info[obj['file_name']] = [obj['points'], obj['bbox']]
 error_list = []
 for filename, img_path in tqdm(img_dict.items()):
     try:
@@ -105,10 +105,10 @@ for filename, img_path in tqdm(img_dict.items()):
                         
                         keypoints.append(obj['points'])
         
-                na = os.path.split(json_path)[-1]
-                na = os.path.splitext(na)[0]
-                bb_x1 = point_info[na][0][0]
-                bb_y1 = point_info[na][0][1]
+                # na = os.path.split(json_path)[-1]
+                # na = os.path.splitext(na)[0]
+                # bb_x1 = point_info[na][0][0]
+                # bb_y1 = point_info[na][0][1]
 
                 for obj in json_file['objects']:
                     name = obj['name']
@@ -126,8 +126,8 @@ for filename, img_path in tqdm(img_dict.items()):
                                 elif val['value'] == 'invisible':
                                     color = (0, 255, 0)
 
-                        points[0][0] += bb_x1
-                        points[0][1] += bb_y1 
+                        # points[0][0] += bb_x1
+                        # points[0][1] += bb_y1 
 
                         cv2.circle(img, (round(points[0][0]),round(points[0][1])), 3, color=color, thickness=-1)
                         cv2.putText(img, point_text,(round(points[0][0])-5,round(points[0][1])-2), fontFace=cv2.FONT_HERSHEY_COMPLEX, fontScale=0.3, color=color)

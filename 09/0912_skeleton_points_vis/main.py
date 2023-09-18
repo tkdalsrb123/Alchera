@@ -83,7 +83,7 @@ def vis_skeleton(img, id, sk_info, output_path):
     for line in line_vis_list:
         pts = [[i[0], i[1]] for i in line]
         pts = np.array(pts)
-        cv2.polylines(img, np.int32([pts]), False, (0, 69, 255))
+        cv2.polylines(img, np.int32([pts]), False, bbox_color)
     
     save_img(output_path, img)
 

@@ -1,7 +1,6 @@
 import sys, os
 from selenium import webdriver
 from selenium.webdriver.common.by import By
-from selenium.webdriver import ActionChains
 import pandas as pd
 import time
 from bs4 import BeautifulSoup as bs4
@@ -23,7 +22,7 @@ for keyword in keyword_list:
     link = f"https://www.saramin.co.kr/zf_user/search?searchword={keyword}&go=&flag=n&searchMode=1&searchType=search&search_done=y&search_optional_item=n"
 
     driver.get(link)
-    time.sleep(3)
+    time.sleep(1)
     recruit_button = driver.find_element(By.XPATH, '//a[@target="recruit"]') 
     recruit_button.click()
     time.sleep(1)
@@ -43,7 +42,7 @@ for keyword in keyword_list:
             driver.execute_script("window.open('');")
             driver.switch_to.window(driver.window_handles[1])
             driver.get(href)
-            time.sleep(4)
+            time.sleep(2)
             try:
                 html = driver.page_source
                 soup = bs4(html, 'html.parser')
@@ -96,7 +95,7 @@ for keyword in keyword_list:
 link = "https://www.saramin.co.kr/zf_user/jobs/list/job-category?cat_kewd=689%2C690%2C691%2C696%2C693%2C694%2C763%2C770&panel_type=&search_optional_item=n&search_done=y&panel_count=y&preview=y"
 
 driver.get(link)
-time.sleep(3)
+time.sleep(1)
 
 page_list = driver.find_elements(By.XPATH, '//button[@class="BtnType SizeS"]')
 
@@ -112,7 +111,7 @@ while page_list:
             driver.execute_script("window.open('');")
             driver.switch_to.window(driver.window_handles[1])
             driver.get(href)
-            time.sleep(4)
+            time.sleep(2)
             try:
                 html = driver.page_source
                 soup = bs4(html, 'html.parser')
