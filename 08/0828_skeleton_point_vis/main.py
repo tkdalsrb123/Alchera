@@ -51,7 +51,7 @@ def readfiles(dir, Ext):
         return file_dict
     
 
-_, img_dir, json_dir, output_dir, point_dir = sys.argv
+_, img_dir, json_dir, output_dir = sys.argv
 
 logger = make_logger('log.log')
 
@@ -96,14 +96,14 @@ for filename, img_path in tqdm(img_dict.items()):
                     json_file = json.load(f)
                 
                 point_dict = defaultdict(str)
-                keypoints = []
-                for obj in json_file['objects']:
-                    name = obj['name']
-                    have_keypoint = key_point_dict.get(name)
+                # keypoints = []
+                # for obj in json_file['objects']:
+                #     name = obj['name']
+                #     have_keypoint = key_point_dict.get(name)
                     
-                    if have_keypoint != None:
+                #     if have_keypoint != None:
                         
-                        keypoints.append(obj['points'])
+                #         keypoints.append(obj['points'])
         
                 # na = os.path.split(json_path)[-1]
                 # na = os.path.splitext(na)[0]
