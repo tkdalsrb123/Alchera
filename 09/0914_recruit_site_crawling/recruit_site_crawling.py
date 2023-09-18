@@ -14,8 +14,6 @@ def 전처리(text):
 
 _, csv_path, output_dir = sys.argv
 
-
-
 df = pd.read_csv(csv_path, encoding='cp949')
 keyword_list = list(df['키워드'].values)
 
