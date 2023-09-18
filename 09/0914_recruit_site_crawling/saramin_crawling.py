@@ -8,7 +8,7 @@ from bs4 import BeautifulSoup as bs4
 def 전처리(text):
     if type(text) == str:
         text = text.replace(' ', '')
-    
+        
     return text
     
 
@@ -36,28 +36,41 @@ for i in range(len(pagination_button)):
         try:
             html = driver.page_source
             soup = bs4(html, 'html.parser')
-            jv_company = soup.find_all('div', attrs={'class':'jv_cont jv_company'})
-            기업형태 = None
-            업종 = None
-            매출액 = None
-            홈페이지 = None
-            for jv in jv_company[:1]:
-                info = jv.find_all('dl')
-                for i in info:   
-                    if '기업형태' in i.find('dt').get_text():
-                        기업형태 = i.find('dd').get_text()
-                    elif '업종' in i.find('dt').get_text():
-                        업종 = i.find('dd').get_text()
-                    elif '매출액' in i.find('dt').get_text():
-                        매출액 = i.find('dd').get_text()
-                    elif '홈페이지' in i.find('dt').get_text():
-                        홈페이지 = i.find('dd').get_text()
+            jv_cont = soup.find_all('div', attrs={'class':'jv_cont jv_howto'})
+            for jv in jv_cont[:1]:
+                guide = jv.find('dl', attrs={'class':'guide'})
+                dt = guide.find_all('dt')
+                if '담당자' in [d.get_text() for d in dt]:
+                    manager = guide.find('dd', attrs={'class':'manager'})
+                    print(manager.get_text())
+
+                    # if '지원방법' in g.find('dt').get_text():
+                    #     print(g.find('dd').get_text())
+                    # elif '담당자' in g.find('dd > dt').get_text():
+                    #     print(g.find('dd').get_text())
+
+            # jv_company = soup.find_all('div', attrs={'class':'jv_cont jv_company'})
+            # 기업형태 = None
+            # 업종 = None
+            # 매출액 = None
+            # 홈페이지 = None
+            # for jv in jv_company[:1]:
+            #     info = jv.find_all('dl')
+            #     for i in info:   
+            #         if '기업형태' in i.find('dt').get_text():
+            #             기업형태 = i.find('dd').get_text()
+            #         elif '업종' in i.find('dt').get_text():
+            #             업종 = i.find('dd').get_text()
+            #         elif '매출액' in i.find('dt').get_text():
+            #             매출액 = i.find('dd').get_text()
+            #         elif '홈페이지' in i.find('dt').get_text():
+            #             홈페이지 = i.find('dd').get_text()
             
-            기업형태 = 전처리(기업형태)
-            업종 = 전처리(업종)
-            매출액 = 전처리(매출액)
-            홈페이지 = 전처리(홈페이지)
-            print(기업형태, 업종, 매출액, 홈페이지)
+            # 기업형태 = 전처리(기업형태)
+            # 업종 = 전처리(업종)
+            # 매출액 = 전처리(매출액)
+            # 홈페이지 = 전처리(홈페이지)
+            
 
             # print(홈페이지.strip())
             # content = driver.find_element(By.TAG_NAME, 'iframe')
