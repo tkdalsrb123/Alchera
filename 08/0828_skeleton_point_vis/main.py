@@ -32,7 +32,7 @@ def readfiles(dir, Ext):
             for file in files:
                 filename, ext = os.path.splitext(file)
                 if ext == '.json':
-                    filename = '_'.join(filename.split('_')[:5])
+                    # filename = '_'.join(filename.split('_')[:5])
                     
                     file_path = os.path.join(root, file)
                     
@@ -61,6 +61,7 @@ key_point_dict = {'nose':'0', 'the left eye':'1', 'the right eye':'2' , 'the lef
 
 json_dict = readfiles(json_dir, "json")
 img_dict = readfiles(img_dir, 'img')
+
 # point_dict = readfiles(point_dir, 'json')
 
 # point_info = defaultdict(str)
