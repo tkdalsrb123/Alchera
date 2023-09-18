@@ -10,32 +10,23 @@ def 전처리(text):
         text = text.replace(' ', '')
         
     return text
-    
-csv_path = r"C:\Users\Alchera115\wj.alchera\Alchera_data\09\0914_recruit_site_crawling\keyword.csv"
-df = pd.read_csv(csv_path, encoding='cp949')
-keyword_list = list(df['키워드'].values)
 
-for keyword in keyword_list:
-    link = f"https://www.saramin.co.kr/zf_user/search?searchword={keyword}&go=&flag=n&searchMode=1&searchType=search&search_done=y&search_optional_item=n"
 
-    driver = webdriver.Chrome()
-    driver.get(link)
-    time.sleep(3)
-    recruit_button = driver.find_element(By.XPATH, '//a[@target="recruit"]') 
-    recruit_button.click()
-    time.sleep(1)
-    pagination_button = driver.find_elements(By.XPATH, '//a[@class=" page page_move track_event"]')
+link = "https://www.saramin.co.kr/zf_user/jobs/list/job-category?cat_kewd=689%2C690%2C691%2C696%2C693%2C694%2C763%2C770&panel_type=&search_optional_item=n&search_done=y&panel_count=y&preview=y"
 
-    list2df = []
-    for i in range(len(pagination_button)+1):
-        if i > 0:
-            pagination = driver.find_elements(By.XPATH, '//a[@class=" page page_move track_event"]')
-            page_num = pagination[i].get_attribute('page')
+driver = webdriver.Chrome()
+driver.get(link)
+time.sleep(3)
 
-            p = driver.find_element(By.XPATH, f'//a[@page="{page_num}"]')
-            p.click()
-            
-        recruit_links = driver.find_elements(By.XPATH, '//*[@id="recruit_info_list"]/div[1]/div/div[2]/h2/a')
+page_list = driver.find_elements(By.XPATH, '//button[@class="BtnType SizeS"]')
+
+while page_list:
+    page_list = driver.find_elements(By.XPATH, '//button[@class="BtnType SizeS"]')
+    for page in range(len(page_list)+1):
+        if page > 0:
+            page_num = driver.find_elements(By.XPATH, '//button[@class="BtnType SizeS"]')
+            page_num[page-1].click()
+        recruit_links = driver.find_elements(By.XPATH, '//a[@class="str_tit "]')
         for link in recruit_links:
             href = link.get_attribute('href')
             driver.execute_script("window.open('');")
@@ -46,12 +37,13 @@ for keyword in keyword_list:
                 html = driver.page_source
                 soup = bs4(html, 'html.parser')
                 jv_cont = soup.find_all('div', attrs={'class':'jv_cont jv_howto'})
+                담당자 = None
                 for jv in jv_cont[:1]:
                     guide = jv.find('dl', attrs={'class':'guide'})
                     dt = guide.find_all('dt')
                     if '담당자' in [d.get_text() for d in dt]:
                         manager = guide.find('dd', attrs={'class':'manager'})
-                        print(manager.get_text())
+                        담당자 = manager.get_text()
 
                 jv_company = soup.find_all('div', attrs={'class':'jv_cont jv_company'})
                 기업형태 = None
@@ -59,8 +51,6 @@ for keyword in keyword_list:
                 매출액 = None
                 홈페이지 = None
                 for jv in jv_company[:1]:
-                    기업명 = jv.find('span').get_text()
-                    print(기업명)
                     info = jv.find_all('dl')
                     for i in info:   
                         if '기업형태' in i.find('dt').get_text():
@@ -76,7 +66,7 @@ for keyword in keyword_list:
                 업종 = 전처리(업종)
                 매출액 = 전처리(매출액)
                 홈페이지 = 전처리(홈페이지)
-                
+
                 time.sleep(1)
                 driver.close()
                 driver.switch_to.window(driver.window_handles[0])
@@ -84,4 +74,13 @@ for keyword in keyword_list:
                 print("에러")
                 driver.close()
                 driver.switch_to.window(driver.window_handles[0]) 
+            
+    try:
+        next_page = driver.find_element(By.XPATH, '//button[@class="BtnType SizeS BtnNext"]')
+        next_page.click()
+    except:
+        print('마지막 페이지입니다')
+        break
+
+
 
