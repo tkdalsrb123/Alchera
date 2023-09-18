@@ -59,8 +59,6 @@ for i in range(len(pagination_button)):
             홈페이지 = 전처리(홈페이지)
             print(기업형태, 업종, 매출액, 홈페이지)
 
-
-
             # print(홈페이지.strip())
             # content = driver.find_element(By.TAG_NAME, 'iframe')
             # driver.switch_to.frame(content)
