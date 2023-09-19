@@ -4,6 +4,7 @@ import numpy as np
 from label import label
 from tqdm import tqdm
 from collections import defaultdict
+from PIL import Image, ImageFont, ImageDraw, ImageOps
 
 
 def make_logger(log):
@@ -87,10 +88,11 @@ for filename, img_path in tqdm(img_dict.items()):
             x2 = x1 + ann['bbox'][2]
             y2 = y1 + ann['bbox'][3]
                         
-            cv2.rectangle(img, (x1,y1), (x2,y2), color=color, thickness=3)
-            img = label(img, text, 10, color, (x1,y1-10), 0.5)
+            cv2.rectangle(img, (x1,y1), (x2,y2), color=color, thickness=1)
+            img = label(img, text, 10, color, (x1,y1-10), 1)
     
     elif mode == 'polyline':
+        y_copy = 0
         for ann in json_file['annotationImage']:
             lineId = ann['lineID']
             lineType = ann['lineType']
@@ -105,7 +107,9 @@ for filename, img_path in tqdm(img_dict.items()):
                 polyline = [[poly['x'], poly['y']] for poly in ann['polyline']]
                 x_mean = np.mean([poly[0] for poly in polyline])
                 y_mean = np.mean([poly[1] for poly in polyline])
-                img = label(img, text, 10, color, (x_mean,y_mean), 0.5)
+
+                img = label(img, text, 10, color, (x_mean,y_mean), 1)
+
                 overlay = img.copy()
                 alpha = 0.5
                 cv2.polylines(overlay, np.int32([polyline]), False, color, 5, cv2.LINE_AA)
