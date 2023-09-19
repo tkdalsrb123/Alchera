@@ -47,9 +47,9 @@ def readfiles(dir, Ext):
 def vis_skeleton(img, id, sk_info, output_path):
     key_dict = {}
 
-    if id == '01':
+    if id == 0:
         bbox_color = (0, 0, 255)
-    elif id == '02':
+    elif id == 1:
         bbox_color = (0, 255, 255)
 
     x1 = round(sk_info['bbox'][0])
@@ -106,10 +106,11 @@ for filename, img_path in tqdm(img_dict.items()):
         os.makedirs(folder, exist_ok=True)
         output_img_path = os.path.join(folder, file)
         logger.info(json_path)
-        with open(json_path, encoding='utf-8') as f:
+        with open(json_path, encoding='utf-8-sig') as f:
             json_file = json.load(f)
 
         img = read_img(img_path)
+
         if type(json_file[0]) == list:
             for info in json_file:
                 info = info[0]
@@ -120,7 +121,7 @@ for filename, img_path in tqdm(img_dict.items()):
                 df2list.append(info_list)
 
         elif type(json_file[0]) == dict:
-            id = json_file[0]['ID'][0]
+            id = json_file[0]['ID']
             key_dict = {}
             info_list = [filename, id]
             vis_skeleton(img, id, json_file[0], output_img_path)

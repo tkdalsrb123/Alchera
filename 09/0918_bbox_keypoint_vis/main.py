@@ -82,37 +82,49 @@ for filename, img_path in tqdm(img_dict.items()):
     output_img_path = makeOutputPath(img_path, img_dir, output_dir)
     with open(json_path, encoding='utf-8') as f:
         json_file = json.load(f)
-
-    img = read_img(img_path)
     
     if mode == 'keypoint':
         skeleton_dict = {}
-        for ann in json_file['annotations'][:1]:
+
+        for i, ann in enumerate(json_file['annotations']):
+            img = read_img(img_path)
+            
+            if ann['player_id'] == 1:
+                color = (0,0,255)
+            elif ann['player_id'] == 2:
+                color = (255,0,0)
             for idx, key in enumerate(range(0, len(ann['keypoints']),3)):
                 skeleton_dict[idx+1]=ann['keypoints'][key:key+3]
-
+                
             for num, keypoint in skeleton_dict.items():
-                color = select_color(num)
+                # color = select_color(num)
                 visible = keypoint[2]
                 if visible == 1:
                     cv2.circle(img, (keypoint[0], keypoint[1]), 3, color=color, thickness=1)
                 elif visible == 2:
-                    cv2.circle(img, (keypoint[0], keypoint[1]), 3, color=color, thickness=-1)
+                    cv2.circle(img, (keypoint[0], keypoint[1]), 3, color=color, thickness=-1)       
+                elif visible == 3:
+                    cv2.circle(img, (keypoint[0], keypoint[1]), 3, color=(0,255,255), thickness=-1)
+            if i == 0:
+                new_image = img
+            else:
+                new_image = np.concatenate((new_image, img), axis=1)
 
-            left_arm = [skeleton_dict[7], skeleton_dict[8], skeleton_dict[9], skeleton_dict[10]]
-            left_leg = [skeleton_dict[14], skeleton_dict[15], skeleton_dict[16], skeleton_dict[17], skeleton_dict[18], skeleton_dict[19],  skeleton_dict[20]]
-            body = [skeleton_dict[1], skeleton_dict[4], skeleton_dict[7], skeleton_dict[14]]
-            right_arm = [skeleton_dict[7], skeleton_dict[11], skeleton_dict[12], skeleton_dict[13]]
-            right_leg = [skeleton_dict[14], skeleton_dict[21], skeleton_dict[22], skeleton_dict[23],  skeleton_dict[24],  skeleton_dict[25],  skeleton_dict[26]]
+        save_img(output_img_path, new_image)
+            # left_arm = [skeleton_dict[7], skeleton_dict[8], skeleton_dict[9], skeleton_dict[10]]
+            # left_leg = [skeleton_dict[14], skeleton_dict[15], skeleton_dict[16], skeleton_dict[17], skeleton_dict[18], skeleton_dict[19],  skeleton_dict[20]]
+            # body = [skeleton_dict[1], skeleton_dict[4], skeleton_dict[7], skeleton_dict[14]]
+            # right_arm = [skeleton_dict[7], skeleton_dict[11], skeleton_dict[12], skeleton_dict[13]]
+            # right_leg = [skeleton_dict[14], skeleton_dict[21], skeleton_dict[22], skeleton_dict[23],  skeleton_dict[24],  skeleton_dict[25],  skeleton_dict[26]]
 
-            line_vis_list = [right_arm, left_arm, body, right_leg, left_leg]
-            line_vis_category = ['right_arm', 'left_arm', 'body', 'right_leg', 'left_leg']
+            # line_vis_list = [right_arm, left_arm, body, right_leg, left_leg]
+            # line_vis_category = ['right_arm', 'left_arm', 'body', 'right_leg', 'left_leg']
 
-            for idx, line in enumerate(line_vis_list):
-                pts = [[i[0], i[1]] for i in line]
-                pts = np.array(pts)
-                color = select_skeleton_color(line_vis_category[idx])
-                cv2.polylines(img, np.int32([pts]), False, color)
+            # for idx, line in enumerate(line_vis_list):
+            #     pts = [[i[0], i[1]] for i in line]
+            #     pts = np.array(pts)
+            #     color = select_skeleton_color(line_vis_category[idx])
+            #     cv2.polylines(img, np.int32([pts]), False, color)
     elif mode == 'bbox':
         player_dict = {}
         for player in json_file['players']:
@@ -132,4 +144,4 @@ for filename, img_path in tqdm(img_dict.items()):
 
             cv2.rectangle(img, (x1,y1), (x2,y2), color=color, thickness=3)
         
-    save_img(output_img_path, img)
+        save_img(output_img_path, img)
