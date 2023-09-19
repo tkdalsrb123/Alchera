@@ -1,57 +1,65 @@
+import sys
 from selenium import webdriver
 from selenium.webdriver.common.by import By
-from selenium.webdriver import ActionChains
 import pandas as pd
 import time
 from bs4 import BeautifulSoup as bs4
 
 def 전처리(text):
     if type(text) == str:
-        text = text.replace(' ', '')
+        text = text.replace(' ', '').replace('\n', '')
         
     return text
-    
-csv_path = r"C:\Users\Alchera115\wj.alchera\Alchera_data\09\0914_recruit_site_crawling\keyword.csv"
+
+
+
+_, csv_path, output_dir = sys.argv
+
 df = pd.read_csv(csv_path, encoding='cp949')
 keyword_list = list(df['키워드'].values)
 
+df2list = []
+driver = webdriver.Chrome()
 for keyword in keyword_list:
     link = f"https://www.saramin.co.kr/zf_user/search?searchword={keyword}&go=&flag=n&searchMode=1&searchType=search&search_done=y&search_optional_item=n"
 
-    driver = webdriver.Chrome()
     driver.get(link)
-    time.sleep(3)
+    time.sleep(1)
     recruit_button = driver.find_element(By.XPATH, '//a[@target="recruit"]') 
     recruit_button.click()
     time.sleep(1)
     pagination_button = driver.find_elements(By.XPATH, '//a[@class=" page page_move track_event"]')
 
-    list2df = []
-    for i in range(len(pagination_button)+1):
+    for i in range(len(pagination_button)):
         if i > 0:
             pagination = driver.find_elements(By.XPATH, '//a[@class=" page page_move track_event"]')
-            page_num = pagination[i].get_attribute('page')
+            p = pagination[i-1]
+            driver.execute_script("arguments[0].click();", p)
+            time.sleep(1)
 
-            p = driver.find_element(By.XPATH, f'//a[@page="{page_num}"]')
-            p.click()
-            
         recruit_links = driver.find_elements(By.XPATH, '//*[@id="recruit_info_list"]/div[1]/div/div[2]/h2/a')
+
         for link in recruit_links:
-            href = link.get_attribute('href')
-            driver.execute_script("window.open('');")
-            driver.switch_to.window(driver.window_handles[1])
-            driver.get(href)
-            time.sleep(4)
             try:
+                href = link.get_attribute('href')
+                driver.execute_script("window.open('');")
+                driver.switch_to.window(driver.window_handles[1])
+                driver.get(href)
+                time.sleep(2)
                 html = driver.page_source
                 soup = bs4(html, 'html.parser')
                 jv_cont = soup.find_all('div', attrs={'class':'jv_cont jv_howto'})
+                담당자 = None
+                연락처 = None
                 for jv in jv_cont[:1]:
                     guide = jv.find('dl', attrs={'class':'guide'})
                     dt = guide.find_all('dt')
                     if '담당자' in [d.get_text() for d in dt]:
                         manager = guide.find('dd', attrs={'class':'manager'})
-                        print(manager.get_text())
+                        담당자 = manager.get_text()
+                    elif '연락처' in [d.get_text() for d in dt]:
+                        number = guide.find('dd', attrs={'class':'info'})
+                        연락처 = number.get_text()
 
                 jv_company = soup.find_all('div', attrs={'class':'jv_cont jv_company'})
                 기업형태 = None
@@ -60,7 +68,6 @@ for keyword in keyword_list:
                 홈페이지 = None
                 for jv in jv_company[:1]:
                     기업명 = jv.find('span').get_text()
-                    print(기업명)
                     info = jv.find_all('dl')
                     for i in info:   
                         if '기업형태' in i.find('dt').get_text():
@@ -77,11 +84,26 @@ for keyword in keyword_list:
                 매출액 = 전처리(매출액)
                 홈페이지 = 전처리(홈페이지)
                 
+                df2list.append(['사람인', keyword, 기업명, 기업형태, 매출액, 담당자, 연락처, 홈페이지, 업종])
+
                 time.sleep(1)
                 driver.close()
                 driver.switch_to.window(driver.window_handles[0])
+                # except:
+                #     print("에러")
+                #     driver.close()
+                #     driver.switch_to.window(driver.window_handles[0]) 
+                        
+
+            # pagination = driver.find_elements(By.XPATH, '//a[@class=" page page_move track_event"]')
+            # page_num = pagination[i].get_attribute('page')
+            # print(page_num)
+            # p = driver.find_element(By.XPATH, f'//a[@page="{page_num}"]')
+            # time.sleep(1)
+            # p.click()
             except:
-                print("에러")
-                driver.close()
-                driver.switch_to.window(driver.window_handles[0]) 
+                print(link)
+            
+df = pd.DataFrame(df2list, columns=['인입경로', '키워드', '기업명', '기업형태', '매출액', '담당자', '전화', '홈페이지', '업종'])
+df.to_excel(f'{output_dir}/saramin_채용정보.xlsx', index=False)
 
