@@ -93,7 +93,7 @@ for filename, json1_path in tqdm(json1_dict.items()):
         logger.info(f'{output_json_path}  저장!!!')
         
     else:
-        json1_file['unit-range'] = ""
+        json1_file['unit-range'] = [""]
 
         with open(output_json_path, 'w', encoding='utf-8') as o:
             json.dump(json1_file, o, indent=2, ensure_ascii=False)

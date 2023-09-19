@@ -20,7 +20,7 @@ df2list = []
 driver = webdriver.Chrome()
 
 driver.get(link)
-time.sleep(3)
+time.sleep(1)
 
 page_list = driver.find_elements(By.XPATH, '//button[@class="BtnType SizeS"]')
 
@@ -36,7 +36,7 @@ while page_list:
             driver.execute_script("window.open('');")
             driver.switch_to.window(driver.window_handles[1])
             driver.get(href)
-            time.sleep(2)
+            time.sleep(1)
             try:
                 html = driver.page_source
                 soup = bs4(html, 'html.parser')
@@ -78,7 +78,7 @@ while page_list:
 
                 df2list.append(['사람인', '무역', 기업명, 기업형태, 매출액, 담당자, 연락처, 홈페이지, 업종])
                 print(['사람인', '무역', 기업명, 기업형태, 매출액, 담당자, 연락처, 홈페이지, 업종])
-                time.sleep(1)
+
                 driver.close()
                 driver.switch_to.window(driver.window_handles[0])
             except:

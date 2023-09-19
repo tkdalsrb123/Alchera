@@ -30,7 +30,7 @@ for keyword in keyword_list:
     time.sleep(1)
     pagination_button = driver.find_elements(By.XPATH, '//a[@class=" page page_move track_event"]')
 
-    for i in range(len(pagination_button)):
+    for i in range(len(pagination_button)+1):
         if i > 0:
             pagination = driver.find_elements(By.XPATH, '//a[@class=" page page_move track_event"]')
             p = pagination[i-1]
@@ -45,7 +45,7 @@ for keyword in keyword_list:
                 driver.execute_script("window.open('');")
                 driver.switch_to.window(driver.window_handles[1])
                 driver.get(href)
-                time.sleep(2)
+                time.sleep(1)
                 html = driver.page_source
                 soup = bs4(html, 'html.parser')
                 jv_cont = soup.find_all('div', attrs={'class':'jv_cont jv_howto'})
@@ -85,22 +85,11 @@ for keyword in keyword_list:
                 홈페이지 = 전처리(홈페이지)
                 
                 df2list.append(['사람인', keyword, 기업명, 기업형태, 매출액, 담당자, 연락처, 홈페이지, 업종])
+                print(['사람인', keyword, 기업명, 기업형태, 매출액, 담당자, 연락처, 홈페이지, 업종])
 
-                time.sleep(1)
                 driver.close()
                 driver.switch_to.window(driver.window_handles[0])
-                # except:
-                #     print("에러")
-                #     driver.close()
-                #     driver.switch_to.window(driver.window_handles[0]) 
-                        
 
-            # pagination = driver.find_elements(By.XPATH, '//a[@class=" page page_move track_event"]')
-            # page_num = pagination[i].get_attribute('page')
-            # print(page_num)
-            # p = driver.find_element(By.XPATH, f'//a[@page="{page_num}"]')
-            # time.sleep(1)
-            # p.click()
             except:
                 print(link)
             
