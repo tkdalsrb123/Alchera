@@ -32,7 +32,7 @@ img_dict = defaultdict(list)
 for root, dirs, files in os.walk(input_dir):
     for file in files:
         filename, ext = os.path.splitext(file)
-        if ext == '.jpg':
+        if ext == '.jpg' or ext == '.dng':
             img_path = os.path.join(root, file)
             name = os.path.split(root)[-1]
             
@@ -45,7 +45,7 @@ for name, img_path in tqdm(img_dict.items()):
         logger.info(path)
         root, file = os.path.split(path)
         filename, ext = os.path.splitext(file)
-        filename = f'{add_filename}_{filename}.jpg'
+        filename = f'{add_filename}_{filename}{ext}'
         new_name = os.path.join(root, filename)
         os.rename(path, new_name)
     
