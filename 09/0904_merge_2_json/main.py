@@ -75,7 +75,7 @@ for filename, json1_path in tqdm(json1_dict.items()):
         obj_dict = json1_file['objects'][0]
         info = json1_file['info']
 
-        [obj_dict['attributes'].append(obj) for obj in json2_file['objects']]
+        [obj_dict['attributes'].append(att) for att in json2_file['objects'][0]['attributes']]
 
         new_json['objects'] = obj_dict
         new_json['info'] = info

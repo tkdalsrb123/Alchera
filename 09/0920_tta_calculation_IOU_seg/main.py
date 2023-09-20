@@ -7,7 +7,6 @@ from shapely.geometry import Polygon
 import time
 from tqdm import tqdm
 import numpy as np
-import visual
 
 def readxml(path, encoding='utf-8'):
     with open(path, 'r', encoding=encoding, errors='ignore') as f:
