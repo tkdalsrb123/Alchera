@@ -1,4 +1,4 @@
-import sys
+import sys, os
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 import pandas as pd
@@ -15,7 +15,10 @@ def 전처리(text):
 
 _, csv_path, output_dir = sys.argv
 
-df = pd.read_csv(csv_path, encoding='cp949')
+root, file = os.path.split(csv_path)
+filename, ext = os.path.split(file)
+
+df = pd.read_excel(csv_path)
 keyword_list = list(df['키워드'].values)
 
 df2list = []
@@ -94,5 +97,5 @@ for keyword in keyword_list:
                 print(link)
             
 df = pd.DataFrame(df2list, columns=['인입경로', '키워드', '기업명', '기업형태', '매출액', '담당자', '전화', '홈페이지', '업종'])
-df.to_excel(f'{output_dir}/saramin_채용정보.xlsx', index=False)
+df.to_excel(f'{output_dir}/saramin_{filename}_채용정보.xlsx', index=False)
 
