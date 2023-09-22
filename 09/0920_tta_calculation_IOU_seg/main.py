@@ -56,10 +56,6 @@ def findIOU(x):
     label = x['label']
     st_points = x['points']
     iou_points = iou.loc[iou['label'] == label, 'points'].values
-    print(label)
-    print(st_points)
-    print('------------')
-    print(iou_points)
     iou_list = []
     for iou_point in iou_points:
         try:
