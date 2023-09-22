@@ -56,6 +56,10 @@ def findIOU(x):
     label = x['label']
     st_points = x['points']
     iou_points = iou.loc[iou['label'] == label, 'points'].values
+    print(label)
+    print(st_points)
+    print('------------')
+    print(iou_points)
     iou_list = []
     for iou_point in iou_points:
         try:
@@ -102,5 +106,5 @@ for filename in tqdm(filename_list):
 
     st.apply(findIOU, axis=1)
 
-df = pd.DataFrame(df_list, columns=['filename', 'label', 'IOU'])
-df.to_excel(f'{save_dir}/iou.xlsx', index=False)
+# df = pd.DataFrame(df_list, columns=['filename', 'label', 'IOU'])
+# df.to_excel(f'{save_dir}/iou.xlsx', index=False)
