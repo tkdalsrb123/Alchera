@@ -49,7 +49,8 @@ for html in tqdm(html_list):
 
     td_count = 0
     for td in td_list:
-        td_count += len(td.get_text())
+        td_text = td.get_text().replace(' ', '')
+        td_count += len(td_text)
 
 
     list2df.append([file, td_count])
