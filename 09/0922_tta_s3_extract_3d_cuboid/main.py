@@ -20,6 +20,16 @@ def make_logger(log):
     
     return logger
 
+def s3_download(down_img_path, output_folder):
+    replace_name_list = [('Front_Left', 'FL'), ('Front_Right', 'FR'), ('Rear_Left', 'RL'), ('Rear_Right', 'RR')]
+    for replace_name in replace_name_list:
+        new_img_path = down_img_path.replace('Front_Center', replace_name[0]).replace('FC', replace_name[1])
+        new_filename = os.path.split(new_img_path)[-1]
+        output_file = os.path.join(output_folder, f"{new_filename}.jpg")
+        logger.info(new_img_path)
+        s3client.download_file(bucket_name, new_img_path, output_file)
+    
+
 
 _, s3_dir, excel_dir, output_dir = sys.argv
 
@@ -59,3 +69,4 @@ for i in tqdm(df2dict):
                                 output_file = os.path.join(folder, f"{file_name}.jpg")
                                 logger.info(output_file)
                                 s3client.download_file(bucket_name, down_img, output_file)
+                                s3_download(down_img, folder)
