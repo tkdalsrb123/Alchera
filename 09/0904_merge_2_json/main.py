@@ -79,30 +79,6 @@ for filename, json1_path in tqdm(json1_dict.items()):
 
         new_json['objects'] = obj_dict
         new_json['info'] = info
-        
-        # for att in json2_file['objects'][0]['attributes']:
-    #         if att['name'] == 'Y값 범위':
-    #             values = att['values'][0]['value']
-        
-    #     value_list = values.split('\n')
-    #     sort_val = []
-    #     try:
-    #         for value in value_list:
-    #             split_val = value.split('#')
-    #             split_val = [v.strip() for v in split_val]
-    #             sort_val.append(SortValue(split_val))
-    #     except:
-    #         error_list.append([file, split_val])
-    #         sort_val.append(split_val)
-    #     json1_file['unit-range'] = sort_val
-
-    #     with open(output_json_path, 'w', encoding='utf-8') as o:
-    #         json.dump(json1_file, o, indent=2, ensure_ascii=False)
-
-    #     logger.info(f'{output_json_path}  저장!!!')
-        
-    # else:
-    #     json1_file['unit-range'] = [""]
 
         with open(output_json_path, 'w', encoding='utf-8') as o:
             json.dump(new_json, o, indent=2, ensure_ascii=False)
