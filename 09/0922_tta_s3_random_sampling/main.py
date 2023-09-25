@@ -42,7 +42,7 @@ logger = make_logger('log.log')
 img_path_list = []
 excel = pd.read_excel(excel_dir)
 excel.apply(makePath, axis=1)
-
+error_list = []
 for img_path_dict in tqdm(img_path_list):
     sample_count = img_path_dict['count']
     img_path = img_path_dict['img_path']
@@ -52,15 +52,23 @@ for img_path_dict in tqdm(img_path_list):
     paginator = s3client.get_paginator('list_objects_v2')
     response = paginator.paginate(Bucket=bucket_name, Prefix=f"{json_path}/", Delimiter='/')
     for res in response:
-        random_content = random.sample(res['Contents'], sample_count)
-        s3_json_path = random_content[0]['Key']
-        root, file = os.path.split(s3_json_path)
-        filename, ext = os.path.splitext(file)
-        s3_img_path = '/'.join([img_path, filename])
+        res_contents = res.get('Contents')
+        if res_contents:
+            try:
+                random_content = random.sample(res_contents[1:], sample_count)
 
-        down_file_path(label_down_dir, s3_json_path)
-        down_file_path(img_down_dir, s3_img_path)
+                s3_json_path = random_content[0]['Key']
+                root, file = os.path.split(s3_json_path)
+                filename, ext = os.path.splitext(file)
+                s3_img_path = '/'.join([img_path, filename])
 
-        
-    
-    
+                down_file_path(label_down_dir, s3_json_path)
+                down_file_path(img_down_dir, s3_img_path)
+            except:
+                error_list.append([json_path, f'샘플수량:{sample_count}, 파일수량:{len(res_contents[1:])} / 샘플수량에러'])
+                pass
+        else:
+            error_list.append([json_path, 'image_B 에러'])
+
+df = pd.DataFrame(error_list, columns=['filename', '에러 이유'])
+df.to_excel(f'./error_list.xlsx', index=False)
