@@ -51,17 +51,88 @@ def makeOutputPath(file_path, file_dir, output_dir):
 
     return output_path
 
+def vis_points(joint_coor):
+    joint_list = []
+    for i in range(0, len(joint_coor), 2):
+        joint_list.append([round(joint_coor[i]), round(joint_coor[i+1])])
+        xy = (round(joint_coor[i]), round(joint_coor[i+1]))
+        cv2.circle(img, (xy), 3, color=(0,0,255), thickness=-1)
+
+    return joint_list
+
+def vis_line(joint_coor):
+    for i in joint_coor:
+        if len(i)>1:
+            for j in range(len(i)-1):
+                print(tuple(i[j]), tuple(i[j+1]))
+                cv2.line(img, tuple(i[j]), tuple(i[j+1]), color=(255,0,0))
+
+        
 _, input_dir, output_dir = sys.argv
 
 logger = make_logger('log.log')
 
-img_dict = readfiles(input_dir, '.png')
+img_dict = readfiles(input_dir, '.jpg')
 json_dict = readfiles(input_dir, '.json')
-print(img_dict)
-for filename, img_path in tqdm(img_dict.items()):
-    json_path = json_dict[filename]
-    output_img_path = makeOutputPath(img_path, input_dir, output_dir)
-    with open(json_path, encoding='utf-8') as f:
-        json_file = json.load(f)
 
-    print(json_file)
+for filename, img_path in tqdm(img_dict.items()):
+    filename = f"{filename}_label"
+    json_path = json_dict.get(filename)
+
+    if json_path:
+        output_img_path = makeOutputPath(img_path, input_dir, output_dir)
+        with open(json_path, encoding='utf-8') as f:
+            json_file = json.load(f)
+
+        img =read_img(img_path)
+        joint_pose = json_file['annotations']['joint_pose']
+        joint_face = json_file['annotations']['joint_face']
+        joint_hand_left = json_file['annotations']['joint_hand_left']
+        joint_hand_right = json_file['annotations']['joint_hand_right']
+                
+        pose_coor = vis_points(joint_pose)
+        face_coor = vis_points(joint_face)
+        left_coor = vis_points(joint_hand_left)
+        right_coor = vis_points(joint_hand_right)
+
+        # pose_line = [[pose_coor[0], pose_coor[15]],
+        #              [pose_coor[0], pose_coor[16]],
+        #              [pose_coor[1], pose_coor[0]],
+        #              [pose_coor[1], pose_coor[2]],
+        #              [pose_coor[1], pose_coor[5]],
+        #              [pose_coor[1], pose_coor[8]],
+        #              [pose_coor[2], pose_coor[1]],
+        #              [pose_coor[2], pose_coor[3]],
+        #              [pose_coor[3], pose_coor[2]],
+        #              [pose_coor[3], pose_coor[4]],
+        #              [pose_coor[4], pose_coor[3]],
+        #              [pose_coor[5], pose_coor[1]],
+        #              [pose_coor[5], pose_coor[6]],
+        #              [pose_coor[6], pose_coor[5]],
+        #              [pose_coor[7], pose_coor[6]],
+        #              [pose_coor[8], pose_coor[1]],
+        #              [pose_coor[8], pose_coor[9]],
+        #              [pose_coor[8], pose_coor[12]],
+        #              [pose_coor[9], pose_coor[8]],
+        #              [pose_coor[9], pose_coor[10]],
+        #              ]
+        # pose_line = [[pose_coor[17], pose_coor[15], pose_coor[0], pose_coor[16], pose_coor[18]],
+        #              [pose_coor[0], pose_coor[1], pose_coor[8]],
+        #              [pose_coor[2], pose_coor[1], pose_coor[5]],
+        #              [pose_coor[2], pose_coor[3], pose_coor[4]],
+        #              [pose_coor[5], pose_coor[6], pose_coor[7]],
+        #              [pose_coor[9], pose_coor[8], pose_coor[12]],
+        #              [pose_coor[9], pose_coor[10], pose_coor[11], pose_coor[22]],
+        #              [pose_coor[12], pose_coor[13], pose_coor[14], pose_coor[19]],
+        #              [pose_coor[11], pose_coor[24]],
+        #              [pose_coor[22], pose_coor[23]],
+        #              [pose_coor[14], pose_coor[21]],
+        #              [pose_coor[19], pose_coor[20]]]
+        # face_line = [[face_coor[0], face_coor[1], face_coor[2], face_coor[3], face_coor[4],face_coor[5],face_coor[6],face_coor[7],face_coor[8],face_coor[9],face_coor[10],face_coor[11],face_coor[12],face_coor[13],face_coor[14],face_coor[15], face_coor[16]],
+        #               [face_coor[17], face_coor[18], face_coor[19], face_coor[20], face_coor[21]],
+        #               [face_coor[22], face_coor[23], face_coor[24], face_coor[25], face_coor[26]]]
+
+        # vis_line(pose_line)
+        # vis_line(face_line)
+        save_img(output_img_path, img)
+
