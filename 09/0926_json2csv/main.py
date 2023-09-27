@@ -25,41 +25,35 @@ for json_path in json_list:
     sha_points = None
     con_2_points = None
     con_points = None
+    nail_points = None
+    hangnail_points = None
     for json_info in json_file:
-    # if type(json_file['objects']) == list:
-        for obj in json_info['objects']:
-            name = obj['name']
-            if  name == "Object_segmentation":
-                obj_points = obj['points']
-            elif name == "Shadow_segmentation":
-                sha_points = obj['points']
-            
-            elif name == "contact_line_2":
-                con_2_points = obj['points']
-            
-            elif name == "contact_line":
-                con_points = obj['points']
-            
-    # elif type(json_file['objects']) == dict:
-    #     name = json_file['objects']['name']
-    #     obj_points = None
-    #     sha_points = None
-    #     con_2_points = None
-    #     con_points = None
-    #     if 'Object' in name:
-    #         obj_points = json_file['objects']['points']
-        
-    #     elif 'Shadow' in name:
-    #         sha_points = json_file['objects']['points']
-        
-    #     elif '2' in name:
-    #         con_2_points = json_file['objects']['points']
-        
-    #     elif 'contact' in name:
-    #         con_points = json_file['objects']['points']
-        
-        
-    df2list.append([file, obj_points, sha_points, con_points, con_2_points])
+        json_obj = json_info.get('objects')
+        if json_obj:
+            for obj in json_obj:
+                name = obj['name']
+                if  name == "Object_segmentation":
+                    obj_points = obj['points']
+                    
+                elif name == "Shadow_segmentation":
+                    sha_points = obj['points']
+                
+                elif name == "contact_line_2":
+                    con_2_points = obj['points']
+                
+                elif name == "contact_line":
+                    con_points = obj['points']
+        else:
+            name = json_info['name']
 
-df = pd.DataFrame(df2list, columns=['filename', 'Object_segmentation', 'Shadow_segmentation', 'contact_lin', 'contact_line_2'])
+            if name == "nail":
+                nail_points = json_info['points']
+            
+            elif name == 'hangnail':
+                hangnail_points = json_info['points']
+
+        
+    df2list.append([file, obj_points, sha_points, con_points, con_2_points, nail_points, hangnail_points])
+
+df = pd.DataFrame(df2list, columns=['filename', 'Object_segmentation', 'Shadow_segmentation', 'contact_lin', 'contact_line_2', 'nail', 'hangnail'])
 df.to_csv(f"{output_dir}/seg_points.csv", encoding='utf-8', index=False)

@@ -77,60 +77,62 @@ def create_text(text, font, img_w, img_h):
         text = text[:split] + '\n' + text[split:]
     return text
 
-_, input_dir, output_dir = sys.argv
+if __name__ == "__main__":
 
-logger = make_logger('log.log')
+    _, input_dir, output_dir = sys.argv
 
-img_dict = readfiles(input_dir, '.jpg')
-json_dict = readfiles(input_dir, '.json')
+    logger = make_logger('log.log')
 
-for filename, img_path in tqdm(img_dict.items()):
-    json_path = json_dict.get(filename)
-    if json_path:
-        output_img_path = makeOutputPath(img_path, input_dir, output_dir)
-        with open(json_path, encoding='utf-8') as f:
-            json_file = json.load(f)
-        
-        
-        size = 13
-        font = ImageFont.truetype('malgunbd.ttf', size)
-        
-        img = Image.open(img_path)
-        width, height = img.size
-        
-        add_img = add_margin(img, 0, width, 0, 0, (255, 255,255))
-        add_w, add_h = add_img.size
-        draw = ImageDraw.Draw(add_img)
-        for idx, ann in enumerate(json_file['annotations']):
-            title = ann['title']
-            title_text = f"title: {title}"
-            legend = ','.join(ann["legend"])
-            legend_text = f"legend: {legend}"
-            unit = ann['unit']
-            unit_text = f"unit: {unit}"
-            x_axis = ','.join(ann['axis_label']['x_axis'])
-            x_axis_text = f"axis_label - x_axis: {x_axis}"
-            y_axis = ','.join(ann['axis_label']['y_axis'])
-            y_axis_text = f"axis_label - y_axis: {y_axis}"
-            data_label = ','.join([str(d)for d in ann['data_label'][0]])
-            data_label_text = f"data_lable: {data_label}"
+    img_dict = readfiles(input_dir, '.jpg')
+    json_dict = readfiles(input_dir, '.json')
+
+    for filename, img_path in tqdm(img_dict.items()):
+        json_path = json_dict.get(filename)
+        if json_path:
+            output_img_path = makeOutputPath(img_path, input_dir, output_dir)
+            with open(json_path, encoding='utf-8') as f:
+                json_file = json.load(f)
             
-            title_text = create_text(title_text, font, width, add_h)
-            legend_text = create_text(legend_text, font, width, add_h)
-            unit_text = create_text(unit_text, font, width, add_h)
-            x_axis_text = create_text(x_axis_text, font, width, add_h)
-            y_axis_text= create_text(y_axis_text, font, width, add_h)
-            data_label_text= create_text(data_label_text, font, width, add_h)
+            
+            size = 13
+            font = ImageFont.truetype('malgunbd.ttf', size)
+            
+            img = Image.open(img_path)
+            width, height = img.size
+            
+            add_img = add_margin(img, 0, width, 0, 0, (255, 255,255))
+            add_w, add_h = add_img.size
+            draw = ImageDraw.Draw(add_img)
+            for idx, ann in enumerate(json_file['annotations']):
+                title = ann['title']
+                title_text = f"title: {title}"
+                legend = ','.join(ann["legend"])
+                legend_text = f"legend: {legend}"
+                unit = ann['unit']
+                unit_text = f"unit: {unit}"
+                x_axis = ','.join(ann['axis_label']['x_axis'])
+                x_axis_text = f"axis_label - x_axis: {x_axis}"
+                y_axis = ','.join(ann['axis_label']['y_axis'])
+                y_axis_text = f"axis_label - y_axis: {y_axis}"
+                data_label = ','.join([str(d)for d in ann['data_label'][0]])
+                data_label_text = f"data_lable: {data_label}"
+                
+                title_text = create_text(title_text, font, width, add_h)
+                legend_text = create_text(legend_text, font, width, add_h)
+                unit_text = create_text(unit_text, font, width, add_h)
+                x_axis_text = create_text(x_axis_text, font, width, add_h)
+                y_axis_text= create_text(y_axis_text, font, width, add_h)
+                data_label_text= create_text(data_label_text, font, width, add_h)
 
-            text = '\n'.join([title_text, legend_text, unit_text, x_axis_text, y_axis_text, data_label_text])
-    
-            if idx > 0:
-                text = copy_text + '\n ---- \n' + text
+                text = '\n'.join([title_text, legend_text, unit_text, x_axis_text, y_axis_text, data_label_text])
+        
+                if idx > 0:
+                    text = copy_text + '\n ---- \n' + text
 
-            copy_text = text
+                copy_text = text
 
 
-            draw.text((width+5, 0), text, (0,0,0), font=font )
-        add_img.save(output_img_path, 'PNG')
-    else:
-        print(img_path)
+                draw.text((width+5, 0), text, (0,0,0), font=font )
+            add_img.save(output_img_path, 'PNG')
+        else:
+            print(img_path)
