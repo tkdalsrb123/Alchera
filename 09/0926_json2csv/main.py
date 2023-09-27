@@ -49,10 +49,10 @@ if __name__ == '__main__':
         con_points = None
         nail_points = None
         hangnail_points = None
-        if type(json_file) == list:
+        if type(json_file) == list:     # start with list
             for json_info in json_file:
                 json_obj = json_info.get('objects')
-                if json_obj:
+                if json_obj:        # in objects
                     for obj in json_obj:
                         name = obj['name']
                         if  name == "Object_segmentation":
@@ -66,17 +66,36 @@ if __name__ == '__main__':
                         
                         elif name == "contact_line":
                             con_points = obj['points']
-                else:
+                            
+                        elif name == "nail":
+                            nail_points = obj['points']
+                        
+                        elif name == 'hangnail':
+                            hangnail_points = obj['points']
+                            
+                else:           # not in object
                     name = json_info['name']
-
-                    if name == "nail":
+                    if  name == "Object_segmentation":
+                        obj_points = json_info['points']
+                        
+                    elif name == "Shadow_segmentation":
+                        sha_points = json_info['points']
+                    
+                    elif name == "contact_line_2":
+                        con_2_points = json_info['points']
+                    
+                    elif name == "contact_line":
+                        con_points = json_info['points']
+                        
+                    elif name == "nail":
                         nail_points = json_info['points']
                     
                     elif name == 'hangnail':
                         hangnail_points = json_info['points']
-        elif type(json_file) == dict:
+                        
+        elif type(json_file) == dict:   # start with dict
                 json_obj = json_file.get('objects')
-                if json_obj:
+                if json_obj:        # not in object
                     for obj in json_obj:
                         name = obj['name']
                         if  name == "Object_segmentation":
@@ -90,15 +109,12 @@ if __name__ == '__main__':
                         
                         elif name == "contact_line":
                             con_points = obj['points']
-                else:
-                    name = json_info['name']
-
-                    if name == "nail":
-                        nail_points = json_info['points']
-                    
-                    elif name == 'hangnail':
-                        hangnail_points = json_info['points']
-            
+                            
+                        elif name == "nail":
+                            nail_points = obj['points']
+                        
+                        elif name == 'hangnail':
+                            hangnail_points = obj['points']
 
             
         df2list.append([file, obj_points, sha_points, con_points, con_2_points, nail_points, hangnail_points])
