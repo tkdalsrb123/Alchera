@@ -47,11 +47,11 @@ def makeOutputPath(file_path, file_dir, output_dir, type=None):
     filename, ext = os.path.splitext(file)
     relpath = os.path.relpath(file_path, file_dir)
     mid_dir = os.path.split(relpath)[0]
-    new_filename = f"blur_{filename}.jpg"
-    if type=='blur':
-        output_path = os.path.join(output_dir, mid_dir, new_filename)
-    else:
-        output_path = os.path.join(output_dir, mid_dir, file)
+    # new_filename = f"blur_{filename}.jpg"
+    # if type=='blur':
+    #     output_path = os.path.join(output_dir, mid_dir, new_filename)
+    # else:
+    output_path = os.path.join(output_dir, mid_dir, file)
         
     os.makedirs(os.path.dirname(output_path), exist_ok=True)
 
@@ -68,23 +68,24 @@ for filename, img_path in tqdm(img_dict.items()):
     json_path = json_dict.get(filename)
     if json_path:
         output_img_path = makeOutputPath(img_path, img_dir, output_dir)
-        output_blur_img_path = makeOutputPath(img_path, img_dir, output_dir, type='blur')
+        # output_blur_img_path = makeOutputPath(img_path, img_dir, output_dir, type='blur')
         with open(json_path, encoding='utf-8') as f:
             json_file = json.load(f)
         
         img = read_img(img_path)
-        save_img(output_img_path, img)
+        # save_img(output_img_path, img)
         
         for obj in json_file['objects']:
-            x1 = round(obj['points'][0][0])
-            y1 = round(obj['points'][0][1])
-            width = round(obj['points'][1][0]) - x1
-            height =round(obj['points'][1][1]) - y1
-            
-            roi = img[y1:y1+height, x1:x1+width]
-            blur_img = cv2.GaussianBlur(roi, (51,51),0)
+            if len(obj['points']) > 1:
+                x1 = round(obj['points'][0][0])
+                y1 = round(obj['points'][0][1])
+                width = round(obj['points'][1][0]) - x1
+                height =round(obj['points'][1][1]) - y1
+                
+                roi = img[y1:y1+height, x1:x1+width]
+                blur_img = cv2.GaussianBlur(roi, (51,51),0)
 
-            img[y1:y1+height, x1:x1+width] = blur_img
+                img[y1:y1+height, x1:x1+width] = blur_img
             
-        save_img(output_blur_img_path, img)
+        save_img(output_img_path, img)
             

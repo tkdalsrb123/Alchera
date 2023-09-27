@@ -1,6 +1,7 @@
 import os, sys, json
 import pandas as pd
 import logging
+from tqdm import tqdm
 
 def make_logger(log):
     logger = logging.getLogger()
@@ -37,7 +38,7 @@ if __name__ == '__main__':
     json_list = readfiles(input_dir)
 
     df2list = []
-    for json_path in json_list:
+    for json_path in tqdm(json_list):
         root, file = os.path.split(json_path)
         logger.info(json_path)
         with open(json_path, encoding='utf-8-sig') as f:
@@ -48,30 +49,56 @@ if __name__ == '__main__':
         con_points = None
         nail_points = None
         hangnail_points = None
-        for json_info in json_file:
-            json_obj = json_info.get('objects')
-            if json_obj:
-                for obj in json_obj:
-                    name = obj['name']
-                    if  name == "Object_segmentation":
-                        obj_points = obj['points']
+        if type(json_file) == list:
+            for json_info in json_file:
+                json_obj = json_info.get('objects')
+                if json_obj:
+                    for obj in json_obj:
+                        name = obj['name']
+                        if  name == "Object_segmentation":
+                            obj_points = obj['points']
+                            
+                        elif name == "Shadow_segmentation":
+                            sha_points = obj['points']
                         
-                    elif name == "Shadow_segmentation":
-                        sha_points = obj['points']
-                    
-                    elif name == "contact_line_2":
-                        con_2_points = obj['points']
-                    
-                    elif name == "contact_line":
-                        con_points = obj['points']
-            else:
-                name = json_info['name']
+                        elif name == "contact_line_2":
+                            con_2_points = obj['points']
+                        
+                        elif name == "contact_line":
+                            con_points = obj['points']
+                else:
+                    name = json_info['name']
 
-                if name == "nail":
-                    nail_points = json_info['points']
-                
-                elif name == 'hangnail':
-                    hangnail_points = json_info['points']
+                    if name == "nail":
+                        nail_points = json_info['points']
+                    
+                    elif name == 'hangnail':
+                        hangnail_points = json_info['points']
+        elif type(json_file) == dict:
+                json_obj = json_file.get('objects')
+                if json_obj:
+                    for obj in json_obj:
+                        name = obj['name']
+                        if  name == "Object_segmentation":
+                            obj_points = obj['points']
+                            
+                        elif name == "Shadow_segmentation":
+                            sha_points = obj['points']
+                        
+                        elif name == "contact_line_2":
+                            con_2_points = obj['points']
+                        
+                        elif name == "contact_line":
+                            con_points = obj['points']
+                else:
+                    name = json_info['name']
+
+                    if name == "nail":
+                        nail_points = json_info['points']
+                    
+                    elif name == 'hangnail':
+                        hangnail_points = json_info['points']
+            
 
             
         df2list.append([file, obj_points, sha_points, con_points, con_2_points, nail_points, hangnail_points])
