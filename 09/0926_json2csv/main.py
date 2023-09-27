@@ -1,5 +1,21 @@
 import os, sys, json
 import pandas as pd
+import logging
+
+def make_logger(log):
+    logger = logging.getLogger()
+    logger.setLevel(logging.DEBUG)
+    
+    # formatter
+    file_formatter = logging.Formatter("%(asctime)s [%(levelname)s:%(lineno)d] -- %(message)s")
+    # file_handler
+    file_handler = logging.FileHandler(log, mode='w')
+    file_handler.setFormatter(file_formatter)
+    file_handler.setLevel(logging.INFO)
+    # logger.add
+    logger.addHandler(file_handler)
+    
+    return logger
 
 def readfiles(dir):
     file_list = []
@@ -16,11 +32,14 @@ if __name__ == '__main__':
     
     _, input_dir, output_dir = sys.argv
 
+    logger = make_logger('log.log')
+
     json_list = readfiles(input_dir)
 
     df2list = []
     for json_path in json_list:
         root, file = os.path.split(json_path)
+        logger.info(json_path)
         with open(json_path, encoding='utf-8-sig') as f:
             json_file = json.load(f)
         obj_points = None
