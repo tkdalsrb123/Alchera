@@ -80,6 +80,7 @@ def jsonTree(filename, points, score, output_path):
                 }
     }
     saveJson(output_path, tree)
+    
 if __name__ == '__main__':
     
     _, json_dir, csv_dir, output_dir = sys.argv

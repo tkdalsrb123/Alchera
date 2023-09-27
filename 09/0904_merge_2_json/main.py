@@ -43,6 +43,31 @@ def make_logger(log):
     
     return logger
 
+def y_tree():
+    {
+    "id": "ca9dc9e6-f198-4a0f-b0cd-2a299dc96227",
+    "name": "Y값 범위",
+    "type": "INPUT",
+    "isValid": True,
+    "option": {
+    "type": "STRING",
+    "required": True,
+    "minimum": 1,
+    "maximum": 9999
+    },
+    "values": [
+    {
+    "value": "",
+    "selected": True
+        }
+    ]
+}
+
+def saveJson(output_path, json_tree):
+    with open(output_path, 'w', encoding='utf-8') as o:
+        json.dump(json_tree, o, indent=2, ensure_ascii=False)
+    
+    
 _, input1_dir, input2_dir, output_dir = sys.argv
 
 logger = make_logger('log.log')
@@ -52,7 +77,7 @@ json2_dict = readfiles(input2_dir)
 
 error_list = []
 for filename, json1_path in tqdm(json1_dict.items()):
-    json_have = json2_dict.get(filename)
+    json2_path = json2_dict.get(filename)
 
     logger.info(json1_path)
     root, file = os.path.split(json1_path)    
@@ -65,25 +90,34 @@ for filename, json1_path in tqdm(json1_dict.items()):
     with open(json1_path, encoding='utf-8') as f1:
         json1_file = json.load(f1)
         
-    if json_have != None:
-        new_json = {}
-        json2_path = json2_dict[filename]
-
+    obj_dict = json1_file['objects'][0]
+    info = json1_file['info']
+    new_json = {}
+    if json2_path:
         with open(json2_path, encoding='utf-8') as f2:
             json2_file = json.load(f2)
-        
-        obj_dict = json1_file['objects'][0]
-        info = json1_file['info']
+
 
         [obj_dict['attributes'].append(att) for att in json2_file['objects'][0]['attributes']]
 
         new_json['objects'] = obj_dict
         new_json['info'] = info
 
-        with open(output_json_path, 'w', encoding='utf-8') as o:
-            json.dump(new_json, o, indent=2, ensure_ascii=False)
+        saveJson(output_json_path, new_json)
 
-        logger.info(f'{output_json_path} "unit-range 공백 저장"!!!')
+        logger.info(f'{output_json_path} 저장!!')
+
+    else:
+        obj_dict['attributes'].append(y_tree)
+        
+        new_json['objects'] = obj_dict
+        new_json['info'] = info
+        
+        saveJson(output_json_path, new_json)
+        
+        logger.info(f'{output_json_path} input2 x 저장!!')
+        
+        
         
 error_xlsx = os.path.join(output_dir, 'error_list.xlsx')
 df = pd.DataFrame(error_list, columns = ['파일명', 'value'])
