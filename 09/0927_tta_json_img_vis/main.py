@@ -114,7 +114,7 @@ if __name__ == "__main__":
                 x_axis_text = f"axis_label - x_axis: {x_axis}"
                 y_axis = ','.join(ann['axis_label']['y_axis'])
                 y_axis_text = f"axis_label - y_axis: {y_axis}"
-                data_label = ','.join([str(d)for d in ann['data_label'][0]])
+                data_label = ','.join([str(d) for data in ann['data_label'] for d in data])
                 data_label_text = f"data_lable: {data_label}"
                 
                 title_text = create_text(title_text, font, width, add_h)
