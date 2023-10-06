@@ -38,7 +38,7 @@ def extract_patterns(text):
                 
                 # 5. 특수 문자 (Special Characters)
                 special_characters_matches = re.findall(r'[^a-zA-Z0-9가-힣\s]+', i)
-
+    
         byte += sum([len(j) for j in whitespace_matches])
         byte += sum([len(j)*2 for j in korean_matches])
         byte += sum([len(j) for j in english_matches])
@@ -83,6 +83,8 @@ def readJson(path):
 if __name__ == '__main__':
     _, input_dir, output_dir = sys.argv
     
+    output_filename = f"{os.path.split(output_dir)[-1]}_report_byte.xlsx"
+    output_path = os.path.join(output_dir, output_filename)
     key_list = ['title', 'source', 'additional', 'writer']
     sub_key_list = ['legend', 'x', 'y', 'unit', 'x-unit', 'y-unit', 'unit-range']
     json_dict = readfiles(input_dir, '.json')
@@ -91,7 +93,7 @@ if __name__ == '__main__':
     for filename, json_path in tqdm(json_dict.items()):
         json_file = readJson(json_path)
 
-        info_dict = {'filename':filename}
+        info_dict = {}
         for key in key_list:
             score = extract_patterns(json_file[key])
             info_dict.update({key:score})
@@ -101,7 +103,11 @@ if __name__ == '__main__':
             score = extract_patterns(value)
             info_dict.update({sub_key:score})
 
+        sum_val = sum(info_dict.values())
+        info_dict.update({'sum_byte':sum_val})
+        info_dict.update({'filename':filename})
         df_list.append(info_dict)
-    
+
     df = pd.DataFrame.from_dict(df_list)
-    df.to_excel(f"{output_dir}/report_byte.xlsx", index=False)
+    df = df[['filename', 'title', 'source', 'additional', 'writer', 'legend', 'x', 'y', 'unit', 'x-unit', 'y-unit', 'unit-range', 'sum_byte']]
+    df.to_excel(output_path, index=False)
