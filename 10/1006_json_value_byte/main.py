@@ -22,8 +22,20 @@ def extract_patterns(text):
             
             # 5. 특수 문자 (Special Characters)
             special_characters_matches = re.findall(r'[^a-zA-Z0-9가-힣\s]+', t)
+
+            byte += sum([len(j) for j in whitespace_matches])
+            byte += sum([len(j)*2 for j in korean_matches])
+            byte += sum([len(j) for j in english_matches])
+            byte += sum([len(j) for j in number_matches])
+            byte += sum([len(j) for j in special_characters_matches])
+            
         elif type(t) == list:
             for i in t:
+                whitespace_matches = 0
+                korean_matches = 0
+                english_matches = 0
+                number_matches = 0
+                special_characters_matches = 0
                 # 1. 공백 (Whitespace)
                 whitespace_matches = re.findall(r'\s+', i)
                 
@@ -38,13 +50,13 @@ def extract_patterns(text):
                 
                 # 5. 특수 문자 (Special Characters)
                 special_characters_matches = re.findall(r'[^a-zA-Z0-9가-힣\s]+', i)
+                
+                byte += sum([len(j) for j in whitespace_matches])
+                byte += sum([len(j)*2 for j in korean_matches])
+                byte += sum([len(j) for j in english_matches])
+                byte += sum([len(j) for j in number_matches])
+                byte += sum([len(j) for j in special_characters_matches])
     
-        byte += sum([len(j) for j in whitespace_matches])
-        byte += sum([len(j)*2 for j in korean_matches])
-        byte += sum([len(j) for j in english_matches])
-        byte += sum([len(j) for j in number_matches])
-        byte += sum([len(j) for j in special_characters_matches])
-
     return byte
         
 def make_logger(log):
