@@ -111,9 +111,12 @@ if __name__ == '__main__':
             info_dict.update({key:score})
     
         for sub_key in sub_key_list:
-            value = json_file['contents'][0][sub_key]
-            score = extract_patterns(value)
-            info_dict.update({sub_key:score})
+            if json_file['contents'][0].get(sub_key):
+                value = json_file['contents'][0][sub_key]
+                score = extract_patterns(value)
+                info_dict.update({sub_key:score})
+            else:
+                info_dict.update({sub_key:0})
 
         sum_val = sum(info_dict.values())
         info_dict.update({'sum_byte':sum_val})

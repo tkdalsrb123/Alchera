@@ -10,3 +10,4 @@ python main.py [input 경로] [output 경로]
 
 1. 수정사항
 - 이중 list인 경우 값이 제대로 출력 안되는 버그 수정
+- unit-range가 없는 경우에 출력이 안되는 버그 수정
