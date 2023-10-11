@@ -27,7 +27,7 @@ def extract_patterns(text):
             byte += sum([len(j)*2 for j in korean_matches])
             byte += sum([len(j) for j in english_matches])
             byte += sum([len(j) for j in number_matches])
-            byte += sum([len(j) for j in special_characters_matches])
+            byte += sum([len(j.encode('euc-kr')) for j in special_characters_matches])
             
         elif type(t) == list:
             for i in t:
@@ -55,7 +55,7 @@ def extract_patterns(text):
                 byte += sum([len(j)*2 for j in korean_matches])
                 byte += sum([len(j) for j in english_matches])
                 byte += sum([len(j) for j in number_matches])
-                byte += sum([len(j) for j in special_characters_matches])
+                byte += sum([len(j.encode('euc-kr')) for j in special_characters_matches])
     
     return byte
         
