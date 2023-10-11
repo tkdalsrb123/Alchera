@@ -6,6 +6,7 @@ from collections import defaultdict
 
 def extract_patterns(text):
     byte = 0
+    error_char = ""
     for t in text:
         if type(t) == str:
             # 1. 공백 (Whitespace)
@@ -27,7 +28,13 @@ def extract_patterns(text):
             byte += sum([len(j)*2 for j in korean_matches])
             byte += sum([len(j) for j in english_matches])
             byte += sum([len(j) for j in number_matches])
-            byte += sum([len(j.encode('euc-kr')) for j in special_characters_matches])
+            for char in special_characters_matches:
+                for c in char:
+                    try:
+                        byte += len(c.encode('euc_kr'))
+                    except:
+                        error_char += c
+            # byte += sum([len(j.encode('euc-kr')) for j in special_characters_matches])
             
         elif type(t) == list:
             for i in t:
@@ -55,10 +62,18 @@ def extract_patterns(text):
                 byte += sum([len(j)*2 for j in korean_matches])
                 byte += sum([len(j) for j in english_matches])
                 byte += sum([len(j) for j in number_matches])
-                byte += sum([len(j.encode('euc-kr')) for j in special_characters_matches])
+                for char in special_characters_matches:
+                    for c in char:
+                        try:
+                            byte += len(c.encode('euc_kr'))
+                        except:
+                            error_char += c
+                            
+                # byte += sum([len(j.encode('euc-kr')) for j in special_characters_matches])
     
-    return byte
-        
+    return byte, error_char
+
+    
 def make_logger(log):
     logger = logging.getLogger()
     logger.setLevel(logging.DEBUG)
@@ -95,6 +110,7 @@ def readJson(path):
 if __name__ == '__main__':
     _, input_dir, output_dir = sys.argv
     
+    logger = make_logger('log.log')
     output_filename = f"{os.path.split(output_dir)[-1]}_report_byte.xlsx"
     output_path = os.path.join(output_dir, output_filename)
     key_list = ['title', 'source', 'additional', 'writer']
@@ -103,26 +119,30 @@ if __name__ == '__main__':
 
     df_list = []
     for filename, json_path in tqdm(json_dict.items()):
+        logger.info(json_path)
         json_file = readJson(json_path)
-
         info_dict = {}
+        error_text = ""
         for key in key_list:
-            score = extract_patterns(json_file[key])
+            score, error_char = extract_patterns(json_file[key])
             info_dict.update({key:score})
-    
+            error_text += error_char
+            
         for sub_key in sub_key_list:
             if json_file['contents'][0].get(sub_key):
                 value = json_file['contents'][0][sub_key]
-                score = extract_patterns(value)
+                score, error_char = extract_patterns(value)
                 info_dict.update({sub_key:score})
+                error_text += error_char
             else:
                 info_dict.update({sub_key:0})
 
         sum_val = sum(info_dict.values())
         info_dict.update({'sum_byte':sum_val})
         info_dict.update({'filename':filename})
+        info_dict.update({'error-char':error_text})
         df_list.append(info_dict)
 
     df = pd.DataFrame.from_dict(df_list)
-    df = df[['filename', 'title', 'source', 'additional', 'writer', 'legend', 'x', 'y', 'unit', 'x-unit', 'y-unit', 'unit-range', 'sum_byte']]
+    df = df[['filename', 'title', 'source', 'additional', 'writer', 'legend', 'x', 'y', 'unit', 'x-unit', 'y-unit', 'unit-range', 'error-char', 'sum_byte']]
     df.to_excel(output_path, index=False)
