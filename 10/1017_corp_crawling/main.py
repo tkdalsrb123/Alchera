@@ -31,7 +31,7 @@ if __name__ == '__main__':
         
         
     driver = webdriver.Chrome()
-    for search_info in tqdm(search_list[:2], desc='기업리스트 수집중'):
+    for search_info in tqdm(search_list, desc='기업리스트 수집중'):
         category = search_info[0]
         no = search_info[1]
         keyword = search_info[2]
