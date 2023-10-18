@@ -98,7 +98,7 @@ if __name__ == '__main__':
 
     img_dict = readfiles(img_dir, '.jpg')
     json_dict = readfiles(json_dir, '.json')
-    font_path = r"C:\Users\Alchera115\wj.alchera\Alchera_data\10\1018_ocr_json_vis\NotoSansCJKkr-hinted\NotoSansCJKkr-Light.otf"
+    font_path = './NotoSansCJKkr-Light.otf'
     font = ImageFont.truetype(font_path, 15)
     for filename, json_path in tqdm(json_dict.items()):
         img_path = img_dict.get(filename)
@@ -132,58 +132,22 @@ if __name__ == '__main__':
             img = add_margin(img, 0, w, 0, 0, (255, 255, 255))
             draw = ImageDraw.Draw(img)
             
-            # text1 = text_list[0]
-            # t1_h, t1_w = get_text_size(draw, text1)
-            # # print(height//t1_h)
-            # val = round(height//t1_h) - 15
-            # # print(val)
-            # a = 0
-            # p = 5
-            # for i in range(0, len(text_list), val):
-            #     # l = len(text_list[a:i])
-            #     text = '\n'.join(text_list[a:i])
-            #     # print(l, text)
-            #     t_h, t_w = get_text_size(draw, text)
-            #     draw.text((width+p, 0), text, (0, 0 ,0), font=font)
-            #     a = i
-            #     p += t_w
-            # if i != len(text_list):
-            #     text = '\n'.join(text_list[i:len(text_list)])
-            #     draw.text((width+p, 0), text, (0, 0 ,0), font=font)
-            # print('-------------')
-            
             text = '\n'.join(text_list)
-            text_bbox = draw.textbbox((0, 0), text, font=font)
-            text_h = text_bbox[3] - text_bbox[1]
-
-            if text_h < height:
+            text_h, text_w = get_text_size(draw, text)
+            if text_h <= height:
                 draw.text((width+5, 0), text, (0, 0 ,0), font=font)
-            
             else:
-                j = 0
+                s = 0
                 p = 5
-                for i in range(100, len(text_list)):
-                    text = '\n'.join(text_list[j:i])
-                    text_bbox = draw.textbbox((0, 0), text, font=font)
-                    text_h = text_bbox[3] - text_bbox[1]
-                    if text_h >= height:
-                       
-                        text_w = text_bbox[2] - text_bbox[0]
-                        t = '\n'.join(text_list[j:i-1])
-                        draw.text((width+p, 0), t, (0,0,0), font=font)
-                        p += text_w
-                        j = i-1
+                for i in range(150, len(text_list), 10):
+                    th, tw = get_text_size(draw, '\n'.join(text_list[s:i]))
+                    if th > height:
+                        draw.text((width+p, 0), '\n'.join(text_list[s:i-10]), (0,0,0), font=font)
+                        s = i-10
+                        p += tw
+                if s  < len(text_list):
+                    draw.text((width+p, 0), '\n'.join(text_list[s:len(text_list)]), (0,0,0), font=font)
 
-                        sample = '\n'.join(text_list[j:len(text_list)])
-                        sample_bbox = draw.textbbox((0, 0), sample, font=font)
-                        sample_h = sample_bbox[3] - sample_bbox[1]
-                    sample = '\n'.join(text_list[j:len(text_list)])
-                    sample_bbox = draw.textbbox((0, 0), sample, font=font)
-                    sample_h = sample_bbox[3] - sample_bbox[1]
-                    if sample_h < height:
-                        draw.text((width+p, 0), sample, (0,0,0), font=font)
-                        break
-                    
             img.save(output_img_path, 'JPEG')
             
         else:
