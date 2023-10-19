@@ -51,6 +51,7 @@ def jsonTree(x):
     i = x.iloc[8]
     if np.NAN in [a, c, d, e, g, h]:
         error_list.append(a)
+        copy = a
         return
     else:    
         b = if_nan(b)
@@ -78,9 +79,20 @@ def jsonTree(x):
             ]
         }
         }
+
+        if copy == a:
+            if os.path.isfile(f'{output_folder}/{copy}.json'):
+                os.rename(f'{output_folder}/{copy}.json', f'{output_folder}/{copy}_1.json')
+                num = 2
+            else:
+                saveJson(tree, f'{output_folder}/{a}_{num}.json')
+                num += 1
         
-        saveJson(tree, f'{output_folder}/{a}.json')
-    
+        else:
+            saveJson(tree, f'{output_folder}/{a}.json')
+            
+        copy = a
+        
 if __name__ == '__main__':
     _, input_dir, output_dir = sys.argv
     
@@ -89,8 +101,10 @@ if __name__ == '__main__':
     for filename, excel_path in tqdm(excel_dict.items(), desc='전체 excelfile', position=0):
         output_folder = makeOutputPath(excel_path, input_dir, output_dir)
         excel = pd.read_excel(excel_path)
-
+        
+        copy = ""
         excel.progress_apply(jsonTree, axis=1)
+
 
     df = pd.DataFrame(error_list, columns=['error_name'])
     df.to_excel(f'{output_dir}/error_list.xlsx', index=False)
