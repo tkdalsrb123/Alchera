@@ -46,8 +46,8 @@ if __name__ == '__main__':
     xml_dict = readfiles(input_dir, '.xml')
     
     listup = []
-    stop = 'continue'
     for filename, xml_path_list in tqdm(xml_dict.items(), 'all xml', position=0):
+        stop = 'continue'
         for idx, xml_path in tqdm(enumerate(xml_path_list), desc=f"{filename}", position=1):
             logger.info(xml_path)
             data = readxml(xml_path)
