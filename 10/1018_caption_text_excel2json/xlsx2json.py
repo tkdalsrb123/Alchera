@@ -17,6 +17,16 @@ def readfiles(dir, Ext):
                 file_dict[filename] = file_path
     return file_dict
 
+def makeOutputPath(file_path, file_dir, output_dir):
+    root, file = os.path.split(file_path)
+    filename, ext = os.path.splitext(file)
+    relpath = os.path.relpath(file_path, file_dir)
+    mid_dir = os.path.split(relpath)[0]
+    output_folder = os.path.join(output_dir, mid_dir, filename)
+    os.makedirs(output_folder, exist_ok=True)
+
+    return output_folder
+
 
 def saveJson(file, path):
     with open(path, 'w') as f:
@@ -54,11 +64,15 @@ def jsonTree(x):
     }
     
     filename = a.split('.')[0]
-    saveJson(tree, f'{output_dir}/{filename}.json')
+    saveJson(tree, f'{output_folder}/{filename}.json')
     
 if __name__ == '__main__':
-    _, excel_dir, output_dir = sys.argv
+    _, input_dir, output_dir = sys.argv
     
-    excel = pd.read_excel(excel_dir)
+    excel_dict = readfiles(input_dir, '.xlsx')
 
-    excel.progress_apply(jsonTree, axis=1)
+    for filename, excel_path in tqdm(excel_dict.items(), desc='전체 excelfile', position=0):
+        output_folder = makeOutputPath(excel_path, input_dir, output_dir)
+        excel = pd.read_excel(excel_path)
+
+        excel.progress_apply(jsonTree, axis=1)
