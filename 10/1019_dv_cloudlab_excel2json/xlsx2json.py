@@ -49,29 +49,31 @@ def saveJson(file, path):
         json.dump(file, f, indent=2, ensure_ascii=False)
 
 def if_nan(t):
-    if t == np.NAN:
+    if np.NAN in [t]:
         return ""
     else:
         return t
 
 
 def jsonTree(x):
-    a = x.iloc[0]
-    b = x.iloc[1]
-    c = x.iloc[2]
-    d = x.iloc[3]
-    e = x.iloc[4]
-    f = x.iloc[5]
-    g = x.iloc[6]
-    h = x.iloc[7]
-    i = x.iloc[8]
+    a = x['Value.ID']
+    b = x['Value.WBS']
+    c = x.get('Value.Type')
+    if c is None:
+        c = x.get('Value.TYPE')
+    d = x['Value.CAUSE']
+    e = x['CAUSE.Keyword1']
+    f = x['CAUSE.Keyword2']
+    g = x['Value.COUNTERMEASURE']
+    h = x['COUNTERMEASURE.Keyword1']
+    i = x['COUNTERMEASURE.Keyword2']
     if np.NAN in [a, c, d, e, g, h]:
         error_list.append(a)
-        return
-    else:    
+    else:
         b = if_nan(b)
         f = if_nan(f)
         i = if_nan(i)
+
             
         tree = {
             "ojects": {
@@ -95,18 +97,7 @@ def jsonTree(x):
         }
         }
 
-        if copy == a:
-            if os.path.isfile(f'{output_folder}/{copy}.json'):
-                os.rename(f'{output_folder}/{copy}.json', f'{output_folder}/{copy}_1.json')
-                num = 2
-            else:
-                saveJson(tree, f'{output_folder}/{a}_{num}.json')
-                num += 1
-            
-        else:
-            saveJson(tree, f'{output_folder}/{a}.json')
-            
-        copy = a
+        return tree
 
         
 if __name__ == '__main__':
@@ -120,63 +111,27 @@ if __name__ == '__main__':
         logger.info(excel_path)
         output_folder = makeOutputPath(excel_path, input_dir, output_dir)
         excel = pd.read_excel(excel_path)
-        # excel.progress_apply(jsonTree, axis=1)
-        copy = ""
-        for i in range(excel.shape[0]):
-            x = excel.loc[i]
-            a = x.iloc[0]
-            b = x.iloc[1]
-            c = x.iloc[2]
-            d = x.iloc[3]
-            e = x.iloc[4]
-            f = x.iloc[5]
-            g = x.iloc[6]
-            h = x.iloc[7]
-            i = x.iloc[8]
-            logger.info(a)
-            if np.NAN in [a, c, d, e, g, h]:
-                error_list.append(a)
-            else:    
-                b = if_nan(b)
-                f = if_nan(f)
-                i = if_nan(i)
-                    
-                tree = {
-                    "ojects": {
-                        "contents": [
-                        {
-                            "Value.ID": a,
-                            "Value.WBS": b,
-                            "Value.TYPE": c 
-                        },
-                        {
-                            "Value.CAUSE": d,
-                            "CAUSE.Keyword1": e,
-                            "CAUSE.Keyword2": f
-                        },
-                        {
-                            "Value.COUNTERMEASURE": g,
-                            "COUNTERMEASURE.Keyword1": h,
-                            "COUNTERMEASURE.Keyword2": i
-                        }
-                    ]
-                }
-                }
-
-                if copy == a:
-                    if os.path.isfile(f'{output_folder}/{copy}.json'):
-                        os.rename(f'{output_folder}/{copy}.json', f'{output_folder}/{copy}_1.json')
-                        saveJson(tree, f'{output_folder}/{copy}_2.json')
-                        num = 3
-                    else:
-                        saveJson(tree, f'{output_folder}/{copy}_{num}.json')
-                        num += 1
-                    
-                else:
-                    saveJson(tree, f'{output_folder}/{a}.json')
-                    
-                copy = a
-
+        excel2dict = excel.to_dict('records')
+        
+        file_dict = defaultdict(list)
+        [file_dict[val['Value.ID']].append(val) for val in excel2dict]
+        
+        for filename, v in file_dict.items():
+            if len(v) > 1:
+                num = 1
+                for info in v:
+                    json_tree = jsonTree(info)
+                    if json_tree:
+                        saveJson(json_tree, f"{output_folder}/{filename}_{num}.json")
+                        logger.info(f"{output_folder}/{filename}_{num}.json")
+                    num += 1
+                
+            else:
+                info = v[0]
+                json_tree = jsonTree(info)
+                if json_tree:
+                    saveJson(json_tree, f"{output_folder}/{filename}.json")
+                    logger.info(f"{output_folder}/{filename}.json")
 
     df = pd.DataFrame(error_list, columns=['error_name'])
     df.to_excel(f'{output_dir}/error_list.xlsx', index=False)
