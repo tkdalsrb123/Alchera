@@ -87,41 +87,42 @@ if __name__ == "__main__":
                         }
 
             shapes_dict = {}
-            img_poly = img['polygon']
-            if type(img_poly) == dict:
-                img_poly = [img_poly]
-                
-            for polygon in img_poly:
-                Class = polygon['@label']
-                points = [[float(pts.split(',')[0]), float(pts.split(',')[1])] for pts in polygon['@points'].split(';')]
-
-                poly_att = polygon.get('attribute')
-                if poly_att:
-                    if type(poly_att) == dict:
-                        poly_att = [poly_att]
-                    Id = ""
-                    # print(poly_att)
-                    for att in poly_att:
-                        if att['@name'] == 'ID':
-                            Id = att['#text']
-                        elif att['@name'] == 'subClass':
-                            subclass = att['#text']
-                    
-                    if Class != 'Background':
-                        shapes_dict.update({Class:{"class":Class, "subclass":subclass, "id":Id, "points": points, "shape_type": "Polygon"}})
-
-                else:
-                    shapes_dict.update({Class:{"class":Class, "subclass":"", "id":"", "points":[[1792.0, 0.0], [1792.0,1024.0], [-0.0,1024.0], [-0.0,0.0]], "shape_type": "Polygon"}})
-        
             shapes_list = []
-            for seq in shapes_seq:
-                v = shapes_dict.get(seq)
-                if v:
-                    shapes_list.append(v)
+            img_poly = img.get('polygon')
+            if img_poly:
+                if type(img_poly) == dict:
+                    img_poly = [img_poly]
                     
-            for key, val in shapes_dict.items():
-                if key not in shapes_seq:
-                    shapes_list.append(val)                 
+                for polygon in img_poly:
+                    Class = polygon['@label']
+                    points = [[float(pts.split(',')[0]), float(pts.split(',')[1])] for pts in polygon['@points'].split(';')]
+
+                    poly_att = polygon.get('attribute')
+                    if poly_att:
+                        if type(poly_att) == dict:
+                            poly_att = [poly_att]
+                        Id = ""
+                        # print(poly_att)
+                        for att in poly_att:
+                            if att['@name'] == 'ID':
+                                Id = att['#text']
+                            elif att['@name'] == 'subClass':
+                                subclass = att['#text']
+                        
+                        if Class != 'Background':
+                            shapes_dict.update({Class:{"class":Class, "subclass":subclass, "id":Id, "points": points, "shape_type": "Polygon"}})
+
+                    else:
+                        shapes_dict.update({Class:{"class":Class, "subclass":"", "id":"", "points":[[1792.0, 0.0], [1792.0,1024.0], [-0.0,1024.0], [-0.0,0.0]], "shape_type": "Polygon"}})
+            
+                for seq in shapes_seq:
+                    v = shapes_dict.get(seq)
+                    if v:
+                        shapes_list.append(v)
+                        
+                for key, val in shapes_dict.items():
+                    if key not in shapes_seq:
+                        shapes_list.append(val)                 
             
             output_json_path = os.path.join(output_folder, output_filename)
             
