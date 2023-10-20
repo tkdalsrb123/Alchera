@@ -3,6 +3,7 @@ import logging
 import numpy as np
 from collections import defaultdict
 from tqdm import tqdm
+from PIL import Image, ImageDraw
 
 def make_logger(log):
     logger = logging.getLogger()
@@ -89,6 +90,7 @@ if __name__ == "__main__":
     logger = make_logger('log.log')
 
     seq = ["Shadow_segmentation", "Object_segmentation", "Void", "contact_line", "contact_line_2"]
+    # seq = ["Object_segmentation"]
     img_dict = readfiles(img_dir, '.jpg')
     json_dict = readfiles(json_dir, '.json')
     
@@ -102,6 +104,8 @@ if __name__ == "__main__":
             img = read_img(img_path)
             w, h, _ = img.shape
             canvas = np.zeros((h, w, 3), np.uint8)
+            canvas = Image.fromarray(canvas)
+            draw = ImageDraw.Draw(canvas)
             vis_dict = defaultdict(list)
             for obj in json_file['objects']:
                 name = obj['name']
@@ -114,15 +118,21 @@ if __name__ == "__main__":
                 color = select_color(obj_name)
                 if obj_points_list:
                     for obj_points in obj_points_list:
-                        obj_points = [[round(p[0]), round(p[1])] for p in obj_points]
+                        obj_points = [(round(p[0]), round(p[1])) for p in obj_points]
                         if len(obj_points) > 2:
-                            obj_points = np.array(obj_points, np.int32)
-                            cv2.fillPoly(canvas, [obj_points], color)
-                        elif len(obj_points) <= 2:
-                            for obj_seg_points in vis_dict['Object_segmentation']:
-                                contact_points = contact_line(obj_points, obj_seg_points)
-                                cv2.polylines(canvas, [contact_points], False, color, 10)
-            
+                            
+                            draw.polygon(obj_points, outline=color)
+                            
+                            # canvas.save(output_img_path, 'JPEG')
+
+                            # obj_points = np.array(obj_points, np.int32)
+                            # cv2.fillPoly(canvas, [obj_points], color)
+                        # elif len(obj_points) <= 2:
+                        #     for obj_seg_points in vis_dict['Object_segmentation']:
+                        #         contact_points = contact_line(obj_points, obj_seg_points)
+                        #         cv2.polylines(canvas, [contact_points], False, color, 10)
+
+            canvas = np.array(canvas)
             save_img(output_img_path, canvas)
                 
                 
