@@ -1,5 +1,6 @@
 import os, sys, xmltodict, json, logging
 from tqdm import tqdm
+from collections import defaultdict
 
 def make_logger(log):
     logger = logging.getLogger()
@@ -74,11 +75,12 @@ if __name__ == "__main__":
         output_folder = makeOutputPath(xml_path, input_dir, output_dir)
         
         for img in tqdm(data['annotations']['image'], desc='create json', position=1):
-            output_filename = f"{os.path.splitext(img['@name'])[0]}.json"
-            image_name = img['@name'].replace('jpg', 'png')
-            lidar = image_name.split('_')[2].split('-')[0]
-            lidar_name = image_name.replace(lidar, 'Lidar').replace('png', 'bin')
-            segment_name = image_name.replace(f'GT_{lidar}', 'SD_Color')
+            name = img['@name'].split('_')[2].split('-')[0]
+            output_name = img['@name'].replace(name, 'SD')
+            output_filename = f"{os.path.splitext(output_name)[0]}.json"
+            image_name = img['@name'].replace(name, 'Frame').replace('jpg', 'png')
+            lidar_name = img['@name'].replace(name, 'Lidar').replace('png', 'bin')
+            segment_name = img['@name'].replace(f'GT_{name}', 'SD_Color')
             
             image_size = {
                         "imgWidth": img['@width'],
@@ -86,7 +88,7 @@ if __name__ == "__main__":
                         "imgDepth": depth_num
                         }
 
-            shapes_dict = {}
+            shapes_dict = defaultdict(list)
             shapes_list = []
             img_poly = img.get('polygon')
             if img_poly:
@@ -102,7 +104,7 @@ if __name__ == "__main__":
                         if type(poly_att) == dict:
                             poly_att = [poly_att]
                         Id = ""
-                        # print(poly_att)
+                        
                         for att in poly_att:
                             if att['@name'] == 'ID':
                                 Id = att['#text']
@@ -110,19 +112,21 @@ if __name__ == "__main__":
                                 subclass = att['#text']
                         
                         if Class != 'Background':
-                            shapes_dict.update({Class:{"class":Class, "subclass":subclass, "id":Id, "points": points, "shape_type": "Polygon"}})
+                            shapes_dict[Class].append({"class":Class, "subclass":subclass, "id":Id, "points": points, "shape_type": "Polygon"})
 
                     else:
-                        shapes_dict.update({Class:{"class":Class, "subclass":"", "id":"", "points":[[1792.0, 0.0], [1792.0,1024.0], [-0.0,1024.0], [-0.0,0.0]], "shape_type": "Polygon"}})
+                        shapes_dict[Class].append({"class":Class, "subclass":"", "id":"", "points":[[1792.0, 0.0], [1792.0,1024.0], [-0.0,1024.0], [-0.0,0.0]], "shape_type": "Polygon"})
             
                 for seq in shapes_seq:
-                    v = shapes_dict.get(seq)
-                    if v:
-                        shapes_list.append(v)
+                    v_list = shapes_dict.get(seq)
+                    if v_list:
+                        for v in v_list:
+                            shapes_list.append(v)
                         
                 for key, val in shapes_dict.items():
                     if key not in shapes_seq:
-                        shapes_list.append(val)                 
+                        for v in val:
+                            shapes_list.append(v)                 
             
             output_json_path = os.path.join(output_folder, output_filename)
             
