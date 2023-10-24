@@ -18,7 +18,7 @@ if __name__ == '__main__':
     
     fbx_list = readfiles(input_dir)
     df2list = []
-    for fbx_path in fbx_list[:3]:
+    for fbx_path in fbx_list:
         filename = os.path.split(fbx_path)[-1]
         bpy.ops.import_scene.fbx(filepath=fbx_path)
 
@@ -28,20 +28,22 @@ if __name__ == '__main__':
         # create dict with meshes
         for m in bpy.data.meshes:
             mesh_objects[m.name] = []
-        print(mesh_objects)
-        
-        bpy.ops.object.select_all(action='SELECT')
-        bpy.ops.object.delete(use_global=False)
-    #     # attach objects to dict keys
-    #     for o in bpy.context.scene.objects:
-    #         # only for meshes
-    #         if o.type == 'MESH':
-    #             # if this mesh exists in the dict
-    #             if o.data.name in mesh_objects:
-    #                 # object name mapped to mesh
-    #                 # mesh_objects[o.data.name].append(o.name)
-    #                 df2list.append([filename, o.data.name, o.name])
 
-    # df = pd.DataFrame(df2list, columns=['file_name', 'index', 'object'])
-    # df = df[df['index'] != 'Cube']
-    # df.to_csv(f'{output_dir}/fbx_objects.csv', index=False)
+        
+        # attach objects to dict keys
+        for o in bpy.context.scene.objects:
+            # only for meshes
+            if o.type == 'MESH':
+                # if this mesh exists in the dict
+                if o.data.name in mesh_objects:
+                    # object name mapped to mesh
+                    # mesh_objects[o.data.name].append(o.name)
+                    df2list.append([filename, o.data.name, o.name])
+
+        for m in bpy.data.meshes:
+            mesh = bpy.data.meshes[m.name]
+            bpy.data.meshes.remove(mesh)
+
+    df = pd.DataFrame(df2list, columns=['file_name', 'index', 'object'])
+    df = df[df['index'] != 'Cube']
+    df.to_csv(f'{output_dir}/fbx_objects.csv', index=False)
