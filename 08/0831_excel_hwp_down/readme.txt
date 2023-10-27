@@ -8,3 +8,7 @@ python main.py [엑셀 경로]
 
 저장경로는 chrome에서 설정
 참고: https://www.howtogeek.com/231002/how-to-change-the-chrome-download-folder-location/
+
+1027 상우진
+1. 수정사항
+- button xpath 변경
