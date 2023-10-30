@@ -37,6 +37,7 @@ def jsonTree(x):
     c = x.iloc[2]
     d = x.iloc[3]
     e = x.iloc[4]
+    f = x.iloc[5]
     a = x.iloc[0]
     tree = {'ojects': {
         "caption": [
@@ -55,6 +56,10 @@ def jsonTree(x):
             {
                 "summary": "그래프 요약(큰 흐름)",
                 "text": e
+            },
+            {   
+                "DataAccuracy":"정확도",
+                "text": f
             }
         ]
     },

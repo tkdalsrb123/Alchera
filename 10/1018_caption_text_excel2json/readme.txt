@@ -5,3 +5,8 @@
 
 2. 실행방법
 python xlsx2json.py [excel dir] [output dir]
+
+1030
+
+수정사항
+- column 값 추가
