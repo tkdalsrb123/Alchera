@@ -60,7 +60,7 @@ def save_img(img_path, img, ext):
 def img_vis(img, pts, color, text=None):
     cv2.circle(img, pts, n, color, -1)
     if text:
-        cv2.putText(img, (pts[0]+n+8, pts[1]), text, cv2.FONT_HERSHEY_SIMPLEX, 1, color)
+        cv2.putText(img, str(text), (pts[0]+2, pts[1]), cv2.FONT_HERSHEY_SIMPLEX, 0.2, color)
 
 def distance(p1, p2):
     return math.sqrt((p1[0] - p2[0])**2 + (p1[1] - p2[1])**2)
@@ -75,52 +75,60 @@ def calculate_distances(points):
 if __name__ == '__main__':
     _, img_dir, json_dir, output_dir = sys.argv
     
+    logger = make_logger('log.log')
     img_dict = readfiles(img_dir, '.jpg') 
     json_dict = readfiles(json_dir, '.json')
     
     for filename, json_path in tqdm(json_dict.items()):
-        
-        img_path = img_dict[filename]
+        logger.info(json_path)
+        img_path = img_dict.get(filename)
+        if img_path:
+            output_img_path = makeOutputPath(img_path, img_dir, output_dir, 'jpg')
+            json_file = readJson(json_path)
 
-        output_img_path = makeOutputPath(img_path, img_dir, output_dir, 'jpg')
-        json_file = readJson(json_path)
+            pts_list = json_file['face_landmark']
+            pts_len = len(pts_list)
+            
+            pts_list = [tuple(p) for p in pts_list]
+        
+            distances = calculate_distances(pts_list)
+            
+            sorted_distances = sorted(distances.items(), key=lambda x: x[1])
+                    
+            first_distance_pts = sorted_distances[0][0]
+            second_distance_pts = sorted_distances[1][0]
+            third_distance_pts = sorted_distances[2][0]
+            fourth_distance_pts = sorted_distances[3][0]
+            fifth_distance_pts = sorted_distances[4][0]
+            
+            pts_x_list = [first_distance_pts[0], second_distance_pts[0], third_distance_pts[0], fourth_distance_pts[0], fifth_distance_pts[0]]
+            pts_y_list = [first_distance_pts[1], second_distance_pts[1], third_distance_pts[1], fourth_distance_pts[1], fifth_distance_pts[1]]
+            
+            
+            pts_count = Counter(pts_list)
+            
+            pts_set = [k for k, v in pts_count.items() if v > 1]
 
-        pts_list = json_file['face_landmark']
-        pts_len = len(pts_list)
-        
-        pts_list = [tuple(p) for p in pts_list]
-    
-        distances = calculate_distances(pts_list)
-        
-        sorted_distances = sorted(distances.items(), key=lambda x: x[1])
-                
-        first_distance_pts = sorted_distances[0][0]
-        second_distance_pts = sorted_distances[1][0]
-        
-        pts_count = Counter(pts_list)
-        
-        pts_set = set(pts_list)
-        
-        img = read_img(img_path)
-        
-        n = 5
-        for pts in pts_list:
-            color = (0, 0, 255)
-            if pts in pts_set:
-                color = (0, 255, 0)
-                text = pts_count[pts]
-                img_vis(img, pts, color, text)
-            elif pts == first_distance_pts[0] or pts == second_distance_pts[0]:
-                color = (255, 255, 0)
-                img_vis(img, pts, color)
-            elif pts == first_distance_pts[1] or pts == second_distance_pts[1]:
-                color = (0, 255, 255)
-                img_vis(img, pts, color)
-            else:
-                img_vis(img, pts, color)
-        
-        cv2.putText(img, (5, 5), str(pts_len), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255))
-        
-        
-        
-        save_img(output_img_path, img)
+            img = read_img(img_path)
+            
+            n = 1
+            for pts in pts_list:
+                color = (0, 0, 255)
+                if pts in pts_set:
+                    color = (0, 255, 0)
+                    text = pts_count[pts]
+                    img_vis(img, pts, color, text)
+                elif pts in pts_x_list:
+                    color = (255, 255, 0)
+                    img_vis(img, pts, color)
+                elif pts in pts_y_list:
+                    color = (0, 255, 255)
+                    img_vis(img, pts, color)
+                else:
+                    img_vis(img, pts, color)
+            
+            cv2.putText(img, str(pts_len), (5, 15), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255))
+            
+            
+            save_img(output_img_path, img, 'jpg')
+            logger.info(f"{output_img_path} save!!")
