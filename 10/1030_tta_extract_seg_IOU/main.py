@@ -58,21 +58,23 @@ if __name__ == "__main__":
         treed_data = openJson(treed_path)
 
         for obj in treed_data['objects']:
-            ann_list = source_data['image_inside_info']['annotations']
-            if ann_list:
-                for ann in ann_list:
-                    source_points = [[round(poly['x']), round(poly['y'])] for poly in ann['polygon_info']]
-                    treed_points = [[round(p[0]), round(p[1])] for p in obj['points']]
-                    try:
-                        polygon1 = Polygon(treed_points)
-                        polygon2 = Polygon(source_points)
-                        intersect = polygon1.intersection(polygon2).area
-                        union = polygon1.union(polygon2).area
-                        iou_val = intersect/union
-                        if iou_val > 0:
-                            iou_list.append([filename, iou_val])
-                    except:
-                        print(filename)
+            name = obj['name']
+            if name == '영역오류':
+                ann_list = source_data['image_inside_info']['annotations']
+                if ann_list:
+                    for ann in ann_list:
+                        source_points = [[round(poly['x']), round(poly['y'])] for poly in ann['polygon_info']]
+                        treed_points = [[round(p[0]), round(p[1])] for p in obj['points']]
+                        try:
+                            polygon1 = Polygon(treed_points)
+                            polygon2 = Polygon(source_points)
+                            intersect = polygon1.intersection(polygon2).area
+                            union = polygon1.union(polygon2).area
+                            iou_val = intersect/union
+                            if iou_val > 0:
+                                iou_list.append([filename, iou_val])
+                        except:
+                            print(filename)
                     
     df = pd.DataFrame(iou_list, columns=['filename', 'IoU'])
     df.to_csv(f"{output_dir}/IoU_list.csv", index=False)
