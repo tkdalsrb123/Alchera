@@ -1,4 +1,5 @@
 import os, sys, json, logging
+import numpy as np
 import pandas as pd
 from collections import defaultdict
 from tqdm import tqdm
@@ -33,12 +34,14 @@ def saveJson(file, path):
         json.dump(file, f, indent=2, ensure_ascii=False)
 
 def jsonTree(x):
-    b = x.iloc[1]
-    c = x.iloc[2]
-    d = x.iloc[3]
-    e = x.iloc[4]
+    b = str(x.iloc[1])
+    c = str(x.iloc[2])
+    d = str(x.iloc[3])
+    e = str(x.iloc[4])
     f = x.iloc[5]
-    a = x.iloc[0]
+    a = str(x.iloc[0])
+    if type(f) == float:
+        error_list.append(a)
     tree = {'ojects': {
         "caption": [
             {
@@ -75,9 +78,12 @@ if __name__ == '__main__':
     _, input_dir, output_dir = sys.argv
     
     excel_dict = readfiles(input_dir, '.xlsx')
-
+    error_list = []
     for filename, excel_path in tqdm(excel_dict.items(), desc='전체 excelfile', position=0):
         output_folder = makeOutputPath(excel_path, input_dir, output_dir)
         excel = pd.read_excel(excel_path)
 
         excel.progress_apply(jsonTree, axis=1)
+
+    df= pd.DataFrame(error_list, columns=['error file'])
+    df.to_excel(f'{output_dir}/error_list.xlsx', index=False)
