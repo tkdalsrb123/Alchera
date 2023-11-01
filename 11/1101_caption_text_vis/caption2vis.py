@@ -99,14 +99,14 @@ def text_vis(draw, name, value, x, y, img_w):
     return draw, y
     
 if __name__ == '__main__':    
-    _, img_dir, json_dir, output_dir = sys.argv
+    _, img_dir, json_dir, output_dir, font_size = sys.argv
 
     logger = make_logger('log.log')
 
     img_dict = readfiles(img_dir, ['.jpg', '.png'])
     json_dict = readfiles(json_dir, ['.json'])
     font_path = 'malgunbd.ttf'
-    font = ImageFont.truetype(font_path, 10)
+    font = ImageFont.truetype(font_path, int(font_size))
     for filename, json_path in tqdm(json_dict.items()):
         img_path = img_dict.get(filename)
         if img_path:
