@@ -118,21 +118,69 @@ if __name__ == '__main__':
             img = Image.open(img_path)
 
             img_width, img_higth = img.size
-            img = add_margin(img, 0, round(img_width*0.7), 0, 0, (255,255,255))
-            img_add_w, img_add_h = img.size
-            draw = ImageDraw.Draw(img)
-            h = 5
-            for i, att in enumerate(json_file['objects'][0]['attributes']):
-                name = att['name']
-                name = f'{i+1}. {name}'
-                value = att['values'][0]['value']
-                
-                value_list = value.replace('다.', '다.;').split(';')
- 
-                draw, height = text_vis(draw, name, value_list, img_width+5, h, round(img_width*0.7))
-                
-                h = height+20
-   
+            if img_higth < 710:
+                img = add_margin(img, 0, 0, round(img_higth*1.2), 0, (255,255,255))
+                img_add_w, img_add_h = img.size
+                draw = ImageDraw.Draw(img)
+                h = img_higth+5
+                for i, att in enumerate(json_file['objects'][0]['attributes']):
+                    name = att['name']
+                    name = f'{i+1}. {name}'
+                    value = att['values'][0]['value']
+                    
+                    value_list = value.replace('다.', '다.;').split(';')
+    
+                    draw, height = text_vis(draw, name, value_list, 5, h, img_width)
+                    
+                    h = height+20
+            
+            elif img_higth < 1200:
+                img = add_margin(img, 0, 0, round(img_higth*0.7), 0, (255,255,255))
+                img_add_w, img_add_h = img.size
+                draw = ImageDraw.Draw(img)
+                h = img_higth+5
+                for i, att in enumerate(json_file['objects'][0]['attributes']):
+                    name = att['name']
+                    name = f'{i+1}. {name}'
+                    value = att['values'][0]['value']
+                    
+                    value_list = value.replace('다.', '다.;').split(';')
+    
+                    draw, height = text_vis(draw, name, value_list, 5, h, img_width)
+                    
+                    h = height+20
+                    
+            elif img_higth < 1500:
+                img = add_margin(img, 0, 0, round(img_higth*0.5), 0, (255,255,255))
+                img_add_w, img_add_h = img.size
+                draw = ImageDraw.Draw(img)
+                h = img_higth+5
+                for i, att in enumerate(json_file['objects'][0]['attributes']):
+                    name = att['name']
+                    name = f'{i+1}. {name}'
+                    value = att['values'][0]['value']
+                    
+                    value_list = value.replace('다.', '다.;').split(';')
+    
+                    draw, height = text_vis(draw, name, value_list, 5, h, img_width)
+                    
+                    h = height+20
+                    
+            elif img_higth >= 1500:
+                img = add_margin(img, 0, 0, round(img_higth*0.2), 0, (255,255,255))
+                img_add_w, img_add_h = img.size
+                draw = ImageDraw.Draw(img)
+                h = img_higth+5
+                for i, att in enumerate(json_file['objects'][0]['attributes']):
+                    name = att['name']
+                    name = f'{i+1}. {name}'
+                    value = att['values'][0]['value']
+                    
+                    value_list = value.replace('다.', '다.;').split(';')
+    
+                    draw, height = text_vis(draw, name, value_list, 5, h, img_width)
+                    
+                    h = height+20
             saveImg(output_img_path, img, ext)
 
                 
