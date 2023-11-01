@@ -32,8 +32,8 @@ def label(img, text, size, color, org, alpha):
     if org[1] + size[1] > height:
         org = (org[0], height - size[1])
 
-    top_left = (int(org[0]), int(org[1]))
-    bottom_right = (int(org[0] + size[0]), int(org[1] + size[1]))
+    top_left = (int(width-text_bbox[2]), int(org[1]))
+    bottom_right = (int(width), int(org[1] + size[1]))
 
     sub_img = img[top_left[1]:bottom_right[1], top_left[0]:bottom_right[0]]
     white_rect = np.ones(sub_img.shape, dtype=np.uint8) * 255
