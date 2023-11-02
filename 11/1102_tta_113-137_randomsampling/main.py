@@ -59,9 +59,10 @@ if __name__ == '__main__':
             [file_list.append(c) for c in r['Contents']]
         
         con = random.sample(file_list, data[1])
-        raw_file = con[0]['Key']
-        label_file = raw_file.replace('1.원천데이터', '2.라벨링데이터')
-        down_path_list.append([raw_file, label_file])
+        raw_file_list =[c['Key'] for c in con]
+        label_file_list = [raw_file.replace('1.원천데이터', '2.라벨링데이터') for raw_file in raw_file_list]
+        for i in range(len(raw_file_list)):
+            down_path_list.append([raw_file_list[i], label_file_list[i]])
     
     for down_path in tqdm(down_path_list, desc='download file'):
         down_file_path(raw_down_dir, down_path[0])
