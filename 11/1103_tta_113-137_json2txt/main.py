@@ -65,6 +65,8 @@ if __name__ == '__main__':
         source_data = readJson(source_path)
         label_data = readJson(label_path)
 
+        claims = None
+        
         documentid = source_data['dataset']['documentId']
         abstract = source_data['dataset']['abstract']
         claims = source_data['dataset']['claims']
@@ -74,7 +76,10 @@ if __name__ == '__main__':
         output_filename = f'{sno}_{stext}_{documentid}'
         output_text_path = makeOutputPath(label_path, label_dir, output_dir, '.txt', output_filename)
 
-        text = f'발명의 요약: {abstract}\n\n청구항: {claims}\n\n소분류 코드: {sno}\n\n소분류 설명: {stext}\n\n\n\nPass(o)/Fail(x):'
+        if claims:
+            text = f'발명의 요약: {abstract}\n\n청구항: {claims}\n\n소분류 코드: {sno}\n\n소분류 설명: {stext}\n\n\n\nPass(o)/Fail(x) :\n오류내용'
+        else:
+            text = f'발명의 요약: {abstract}\n\n소분류 코드: {sno}\n\n소분류 설명: {stext}\n\n\n\nPass(o)/Fail(x) :\n오류내용'
         
         with open(output_text_path, 'w', encoding='utf-8') as f:
             f.write(text)
