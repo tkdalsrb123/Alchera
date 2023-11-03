@@ -46,13 +46,20 @@ def saveJson(file, path):
     with open(path, 'w') as f:
         json.dump(file, f, indent=2, ensure_ascii=False)
         
+def split_range(x_List, val):
+    for i in range(0, len(x_List)):
+        if i == 0:
+            if val < x_List[i][1]:
+                return x_List[i][0]
+        else:
+            if x_List[i-1][1] < val and x_List[i][1] > val:
+                return x_List[i][0]
+
 
 if __name__ == '__main__':
     _, json_dir, output_dir = sys.argv
 
     json_list = readfiles(json_dir)
-    
-    
     json_list = sorted(json_list, key=lambda x: int(x[0]))
     
     sequence_list = []
@@ -68,13 +75,23 @@ if __name__ == '__main__':
         obj_list = []
         for json_data in sequence:
             data = readJson(json_data[2])
+
             obj_list.append((len(data['objects']), data['objects']))
         max_obj = max(obj_list, key=lambda x: x[0])[1]
-        x_list = [obj['points'][1][0] for obj in max_obj]
-        x_list = sorted(x_list)
+        
+        x_list = [(obj['trackId'], obj['points'][1][0]) for obj in max_obj]
+        x_list = sorted(x_list, key=lambda x: x[1])
         
         for json_data in sequence:
+            root, file = os.path.split(json_data[2])
             data = readJson(json_data[2])
+            for obj in data['objects']:
+                x = obj['points'][0][0]
+                trackId = split_range(x_list, x)
+                obj['trackId'] = trackId
+            
+            saveJson(data, f'{output_dir}/{file}')
+                
             
         
         
