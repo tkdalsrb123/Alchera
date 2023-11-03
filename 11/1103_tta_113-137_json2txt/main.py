@@ -72,7 +72,7 @@ if __name__ == '__main__':
         stext = label_data['dataset']['Stext']
         
         output_filename = f'{sno}_{stext}_{documentid}'
-        output_text_path = makeOutputPath(label_path, label_dir, output_dir, '.txt', output_filename)
+        output_text_path = makeOutputPath(label_path, label_dir, output_dir, 'txt', output_filename)
 
         if claims:
             text = f'발명의 요약: {abstract}\n\n청구항: {claims}\n\n소분류 코드: {sno}\n\n소분류 설명: {stext}\n\n\n\nPass(o)/Fail(x) :\n오류내용'
