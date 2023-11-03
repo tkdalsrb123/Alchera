@@ -64,12 +64,10 @@ if __name__ == '__main__':
         
         source_data = readJson(source_path)
         label_data = readJson(label_path)
-
-        claims = None
-        
+       
         documentid = source_data['dataset']['documentId']
         abstract = source_data['dataset']['abstract']
-        claims = source_data['dataset']['claims']
+        claims = source_data['dataset'].get('claims')
         sno = label_data['dataset']['Sno']
         stext = label_data['dataset']['Stext']
         
