@@ -73,8 +73,9 @@ for filename, img_path in img_dict.items():
         for i in range(len(sorted_contours)):
             if i>0:
                 contour = sorted_contours[i]
+                print([contour])
                 cv2.drawContours(img, [contour], -1, (0,0,255), 3)
 
-        save_img(output_img_path, img)
+        # save_img(output_img_path, img)
         
         
