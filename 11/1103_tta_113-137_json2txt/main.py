@@ -70,14 +70,17 @@ if __name__ == '__main__':
         claims = source_data['dataset'].get('claims')
         sno = label_data['dataset']['Sno']
         stext = label_data['dataset']['Stext']
-        
+        number = label_data['dataset']['application_number']
+        abstract = abstract.replace('.', '.\n')
+                
         output_filename = f'{sno}_{stext}_{documentid}'
         output_text_path = makeOutputPath(label_path, label_dir, output_dir, 'txt', output_filename)
 
         if claims:
-            text = f'발명의 요약: {abstract}\n\n청구항: {claims}\n\n소분류 코드: {sno}\n\n소분류 설명: {stext}\n\n\n\nPass(o)/Fail(x) :\n오류내용'
+            claims = claims.replace('.', '.\n')
+            text = f'발명의 요약: {abstract}\n\n청구항: {claims}\n\n소분류 코드: {sno}\n\n소분류 설명: {stext}\n\n특허번호: {number}\n\n\n\nPass(o)/Fail(x) :\n오류내용'
         else:
-            text = f'발명의 요약: {abstract}\n\n소분류 코드: {sno}\n\n소분류 설명: {stext}\n\n\n\nPass(o)/Fail(x) :\n오류내용'
+            text = f'발명의 요약: {abstract}\n\n소분류 코드: {sno}\n\n소분류 설명: {stext}\n\n특허번호: {number}\n\n\n\nPass(o)/Fail(x) :\n오류내용'
         
         with open(output_text_path, 'w', encoding='utf-8') as f:
             f.write(text)

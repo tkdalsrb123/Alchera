@@ -31,8 +31,8 @@ def down_file_path(output_dir, from_down_path):
     s3client.download_file(bucket_name, from_down_path, output_file)
 
 def make_path(x):
-    path = '/'.join(x[:8])
-    count = x[8]
+    path = '/'.join(x[:9])
+    count = x[9]
     path_list.append([path, count])
         
 def response(path):
@@ -56,15 +56,16 @@ if __name__ == '__main__':
         res = response(data[0])
         file_list = []
         for r in res:
-            [file_list.append(c) for c in r['Contents']]
+            print(r)
+            # [file_list.append(c) for c in r['Contents']]
         
-        con = random.sample(file_list, data[1])
-        raw_file_list =[c['Key'] for c in con]
-        label_file_list = [raw_file.replace('1.원천데이터', '2.라벨링데이터') for raw_file in raw_file_list]
-        for i in range(len(raw_file_list)):
-            down_path_list.append([raw_file_list[i], label_file_list[i]])
+    #     con = random.sample(file_list, data[1])
+    #     raw_file_list =[c['Key'] for c in con]
+    #     label_file_list = [raw_file.replace('1.원천데이터', '2.라벨링데이터') for raw_file in raw_file_list]
+    #     for i in range(len(raw_file_list)):
+    #         down_path_list.append([raw_file_list[i], label_file_list[i]])
     
-    for down_path in tqdm(down_path_list, desc='download file'):
-        down_file_path(raw_down_dir, down_path[0])
-        down_file_path(label_down_dir, down_path[1])
+    # for down_path in tqdm(down_path_list, desc='download file'):
+    #     down_file_path(raw_down_dir, down_path[0])
+    #     down_file_path(label_down_dir, down_path[1])
         

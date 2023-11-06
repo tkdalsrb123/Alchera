@@ -10,3 +10,8 @@ python main.py [source dir] [label dir] [output dir]
 
 1. 수정사항
 - 청구항 키값이 없을 경우 생략
+
+1106
+
+1. 수정사항
+- application_number(특허번호) 추가, .을 기준으로 개행
