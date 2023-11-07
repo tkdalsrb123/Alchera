@@ -63,11 +63,13 @@ if __name__ == '__main__':
     for filename, img_path_lr in tqdm(img_dict.items()):
         r_img_path = img_path_lr['R']
         l_img_path = img_path_lr['L']
+        f_img_path = img_path_lr['F']
         
         output_img_path = makeOutputPath(r_img_path, input_dir, output_dir, filename)
         r_img = read_img(r_img_path)
         l_img = read_img(l_img_path)
+        f_img = read_img(f_img_path)
         
-        merge_img = cv2.hconcat([r_img, l_img])
+        merge_img = cv2.hconcat([r_img, f_img, l_img])
         save_img(output_img_path, merge_img)
         

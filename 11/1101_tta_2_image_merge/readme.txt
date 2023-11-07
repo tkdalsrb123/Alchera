@@ -5,3 +5,8 @@
 
 2. 실행방법
 python main.py [input dir] [output dir] 
+
+1107
+
+1. 수정사항
+- Front 사진 추가, 총 3장의 사진 merge
