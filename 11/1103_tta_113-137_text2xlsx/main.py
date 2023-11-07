@@ -30,8 +30,8 @@ if __name__ == '__main__':
             for l in lines:
                 if 'Pass' in l:
                     pass_text = l.split(':')[1].replace('\n', '')
-                elif '오류' in l:
-                    error_text = l.split(':')[1]
+                elif '오류내용' in l:
+                    error_text = l.split(':')
             
             dict2df[filename]['pass/fail'].append(pass_text.strip())
             dict2df[filename]['error'].append(error_text.strip())
