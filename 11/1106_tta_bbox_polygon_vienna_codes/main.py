@@ -23,7 +23,7 @@ def make_logger(log):
 def readfiles(dir, Ext):
     file_dict = defaultdict(str)
     for root, dirs, files in os.walk(dir):
-        for file in files:
+        for file in files:      
             filename, ext = os.path.splitext(file)
             if ext == Ext:
                 file_path = os.path.join(root, file)
@@ -133,7 +133,7 @@ for filename, json_path in tqdm(json_dict.items()):
     for text in text_info:
         tp = text['text_points']
         bp = text['background_points']
-        t = text['text']
+        t = text['text']    
         cv2.rectangle(overlay, bp[0], bp[1], color=(255,255,255), thickness=-1)
         cv2.putText(img, t, tp, fontFace=font, fontScale=fontScale, color=(0,0,0), thickness=1)
        
