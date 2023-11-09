@@ -96,60 +96,59 @@ for filename, json_path in tqdm(json_dict.items()):
     draw_points = []
     text_info = []
     
+    draw_dict = defaultdict(list)
     font = cv2.FONT_HERSHEY_PLAIN
     fontScale = int(font_size)
     bbox_count = 0
     poly_count = 0
-    if bbox:
-        if type(bbox) == dict:
-            bbox = [bbox]
-        
-        for box in bbox:
-            codes = box["vienna_code"]
-            points_list = box["vienna_points"]
-            for points in points_list:
-                x1y1 = (round(points[0][0]), round(points[0][1]))
-                x2y2 = (round(points[1][0]), round(points[1][1]))
-                draw_points.append((x1y1, x2y2))
-                bbox_count += 1
-            for code in codes:
-                text_info.append(code)
+    if bbox:        
+        codes = bbox["vienna_code"]
+        points_list = bbox["vienna_points"]
+        for idx, points in enumerate(points_list):
+            x1y1 = (round(points[0][0]), round(points[0][1]))
+            x2y2 = (round(points[1][0]), round(points[1][1]))
+            draw_dict[(x1y1, x2y2)].append(codes[idx])
+            #     draw_points.append((x1y1, x2y2))
+            bbox_count += 1
+            # for code in codes:
+            #     text_info.append(code)
 
     if polygon:
-        if type(polygon) == dict:
-            polygon = [polygon]
-        
-        for poly in polygon:
-            code = poly["vienna_code"]
-            points_list = poly["vienna_points"]
-            for points in points_list:
-                points = [[round(i[0]), round(i[1])] for i in points]
-                x1y1 = tuple(map(round, points[0]))
-                pts = np.array(points, np.int32)
-                draw_points.append([pts])
-                poly_count += 1
-            for code in codes:
-                text_info.append(code)
+        codes = polygon["vienna_code"]
+        points_list = polygon["vienna_points"]
+        for idx, points in enumerate(points_list):
+            points = [[round(i[0]), round(i[1])] for i in points]
+            x1y1 = tuple(map(round, points[0]))
+            pts = np.array(points, np.int32)
+            draw_dict[x1y1].append((pts, codes[idx]))
+                # draw_points.append([pts])
+            poly_count += 1
+            # for code in codes:
+            #     text_info.append(code)
 
     list2df.append([filename, bbox_count, poly_count, bbox_count+poly_count])
     img = read_img(img_path)
 
-    t = text_info[0]
+
+    t = '000000'
     w, h = get_textsize(t, font, fontScale)
     text_coor = [5, h]
-    for idx, draw in enumerate(draw_points):
-        color = select_color(idx)
-        if len(draw) == 2:
-            text = text_info[idx]
-            cv2.rectangle(img, draw[0], draw[1], color=color, thickness=2)
-            cv2.putText(img, text, tuple(text_coor), fontFace=font, fontScale=fontScale, color=color, thickness=2)
+    i = 0
+    for key, codes_list in draw_dict.items():
+        color = select_color(i)
+        if type(key[0]) == tuple:
+            cv2.rectangle(img, key[0], key[1], color=color, thickness=2)
+            for text in codes_list:
+                cv2.putText(img, text, tuple(text_coor), fontFace=font, fontScale=fontScale, color=color, thickness=2)
+                text_coor[1] += h+5
         else:
-            text = text_info[idx]
-            cv2.polylines(img, draw, isClosed=True, color=color, thickness=2)
-            cv2.putText(img, text, tuple(text_coor), fontFace=font, fontScale=fontScale, color=color, thickness=2)
-        
-        text_coor[1] += h+5
-        
+            for codes in codes_list:
+                pts = codes[0]
+                text = codes[1]
+                cv2.polylines(img, [pts], isClosed=True, color=color, thickness=2)
+                cv2.putText(img, text, tuple(text_coor), fontFace=font, fontScale=fontScale, color=color, thickness=2)
+                text_coor[1] += h+5
+        i += 1
     save_img(output_img_path, img, 'jpg')
 
 df = pd.DataFrame(list2df, columns=['파일명', 'bbox', 'polygon', '합'])
