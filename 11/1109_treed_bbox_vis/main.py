@@ -65,12 +65,13 @@ logger = make_logger('log.log')
 img_dict = readfiles(img_dir, '.jpg')
 json_dict = readfiles(json_dir, '.json')
 
-for filename, img_path in tqdm(img_dict.items()):
-    json_path = json_dict.get(filename)
-    if json_path:
+for filename, json_path in tqdm(json_dict.items()):
+    # json_path = json_dict.get(filename)
+    json_file = readJson(json_path)
+    img_name = os.path.splitext(json_file['info']['imageName'])[0]
+    img_path = img_dict.get(img_name)
+    if img_path:
         output_img_path = makeOutputPath(img_path, img_dir, output_dir, 'jpg')
-        
-        json_file = readJson(json_path)
         
         color = (0,0,255)
         img = read_img(img_path)

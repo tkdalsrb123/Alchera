@@ -55,6 +55,20 @@ def saveJson(file, path):
     with open(path, 'w') as f:
         json.dump(file, f, indent=2, ensure_ascii=False)
 
+
+info = {
+    "imageName": "furniture_0001_light_1_1.JPG",
+    "width": 4032,
+    "height": 3024,
+    "labeler": "이준기",
+    "examinator": "이준기",
+    "timestamp": 20231109150037,
+    "format": "JPG",
+    "fileSize": 3821748,
+    "dirPath": "사물 세그멘테이션 검수-test-20231109150623051/test_20231109",
+    "projectName": "사물 세그멘테이션 검수",
+    "taskName": "test"}
+
 if __name__ == '__main__':
     _, bbox_dir, polygon_dir, output_dir = sys.argv
     
@@ -68,25 +82,28 @@ if __name__ == '__main__':
         filename_split.pop(3)
         new_filename = '_'.join(filename_split)
         bbox_path_list = bbox_dict.get(new_filename)
-        if bbox_path_list:
-            tree = {"objects": []}
-            output_json_path = makeOutputPath(polygon_path, polygon_dir, output_dir, 'json')
-            logger.info(output_json_path)
-            polygon_data = readJson(polygon_path)
-            
-            for data in polygon_data:
-                obj = data['objects']
-                if type(obj) == dict:
-                    obj = [obj]
-                for o in obj:
-                    tree['objects'].append(o)
 
+        tree = {"objects": [],
+                "info": None}
+        output_json_path = makeOutputPath(polygon_path, polygon_dir, output_dir, 'json')
+        logger.info(output_json_path)
+        polygon_data = readJson(polygon_path)
+        
+        for data in polygon_data:
+            obj = data['objects']
+            if type(obj) == dict:
+                obj = [obj]
+            for o in obj:
+                tree['objects'].append(o)
+                
+        if bbox_path_list:
             for bbox_path in bbox_path_list:
                 logger.info(bbox_path)
                 bbox_data = readJson(bbox_path)
                 for bbox_obj in bbox_data['objects']:
                     tree['objects'].append(bbox_obj)
-                    
-                
-            saveJson(tree, output_json_path)
-            logger.info(output_json_path)
+        
+        tree['info'] = info
+            
+        saveJson(tree, output_json_path)
+        logger.info(output_json_path)
