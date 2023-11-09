@@ -25,12 +25,12 @@ def readfiles(dir, type):
             filename, ext = os.path.splitext(file)
             filename_split = filename.split('_')
             filename_split.pop(3)
-            filename = '_'.join(filename_split)
+            new_filename = '_'.join(filename_split)
             ext = ext.lower()   
             if ext == '.json':
                 file_path = os.path.join(root, file)
                 if type == 'bbox':
-                    file_dict[filename].append(file_path)
+                    file_dict[new_filename].append(file_path)
                 elif type == 'polygon':
                     file_dict[filename] = file_path
                     
@@ -64,7 +64,10 @@ if __name__ == '__main__':
     polygon_dict = readfiles(polygon_dir, 'polygon')
     
     for filename, polygon_path in tqdm(polygon_dict.items()):
-        bbox_path_list = bbox_dict.get(filename)
+        filename_split = filename.split('_')
+        filename_split.pop(3)
+        new_filename = '_'.join(filename_split)
+        bbox_path_list = bbox_dict.get(new_filename)
         if bbox_path_list:
             tree = {"objects": []}
             output_json_path = makeOutputPath(polygon_path, polygon_dir, output_dir, 'json')
