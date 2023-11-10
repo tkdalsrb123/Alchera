@@ -55,19 +55,34 @@ def saveJson(file, path):
     with open(path, 'w') as f:
         json.dump(file, f, indent=2, ensure_ascii=False)
 
+def jsonTree(imageName):
+    info = {
+        "imageName": imageName,
+        "width": "",
+        "height": "",
+        "labeler": "",
+        "examinator": "",
+        "timestamp": "",
+        "format": "JPG",
+        "fileSize": "",
+        "dirPath": "",
+        "projectName": "사물 세그멘테이션 검수",
+        "taskName": "test3"}
+    
+    return info
 
-info = {
-    "imageName": "furniture_0001_light_1_1.JPG",
-    "width": 4032,
-    "height": 3024,
-    "labeler": "이준기",
-    "examinator": "이준기",
-    "timestamp": 20231109150037,
-    "format": "JPG",
-    "fileSize": 3821748,
-    "dirPath": "사물 세그멘테이션 검수-test-20231109150623051/test_20231109",
-    "projectName": "사물 세그멘테이션 검수",
-    "taskName": "test"}
+def get_classId(key):
+    id = {
+    "Object_segmentation":"a279da37-a4d2-4105-81f3-ab92e2917cc3",
+    "Shadow_segmentation":"3eea1feb-282d-476a-bdb9-30bbdfffb747",
+    "contact_line":"3cddd9fd-9085-4093-81ac-fc2dfc2031c6",
+    "Void":"e97c8829-2902-4461-a8a2-a84cce895765",
+    "contact_line_polygon":"8f710a88-7cbb-4ed1-9cd4-1368374d20b0"
+    }
+    
+    val = id[key]
+
+    return val
 
 if __name__ == '__main__':
     _, bbox_dir, polygon_dir, output_dir = sys.argv
@@ -94,6 +109,7 @@ if __name__ == '__main__':
             if type(obj) == dict:
                 obj = [obj]
             for o in obj:
+                o['classId'] = get_classId(o['name'])
                 tree['objects'].append(o)
                 
         if bbox_path_list:
@@ -101,8 +117,10 @@ if __name__ == '__main__':
                 logger.info(bbox_path)
                 bbox_data = readJson(bbox_path)
                 for bbox_obj in bbox_data['objects']:
+                    bbox_obj['classId'] = get_classId(bbox_obj['name'])
                     tree['objects'].append(bbox_obj)
-        
+                    
+        info = jsonTree(f"{filename}.JPG")
         tree['info'] = info
             
         saveJson(tree, output_json_path)
