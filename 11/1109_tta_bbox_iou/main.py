@@ -81,12 +81,12 @@ if __name__ == '__main__':
         label_list = []
         for ann in label_data['annotations']:
             coor = ann['coordinates']
-            if len(coor) > 4:
+            if len(coor) == 4:
                 x1 = coor[0]
                 y1 = coor[1]
-                x2 = coor[0]+coor[2]
-                y2 = coor[1]+coor[3]
-                label_list.append(((x1, y2, x2, y2), ann['class']))
+                x2 = x1+coor[2]
+                y2 = y1+coor[3]
+                label_list.append(((x1, y1, x2, y2), ann['class']))
         
         treeD_list = []
         for obj in treeD_data['objects']:
@@ -100,8 +100,8 @@ if __name__ == '__main__':
 
         for treeD in treeD_list:
             iou_list = []
+            cla = None
             for label in label_list:
-            
                 iou = IoU(treeD, label[0])
                 iou_list.append((iou, label[1]))
 
