@@ -89,8 +89,9 @@ if __name__ == "__main__":
 
     logger = make_logger('log.log')
 
-    seq = ["Shadow_segmentation", "Object_segmentation", "Void", "contact_line"]
-    # seq = ["Object_segmentation"]
+    seq = ["Shadow_segmentation", "Object_segmentation", "Void"]
+    seq_contact = ["contact_line"]
+
     img_dict = readfiles(img_dir, '.jpg')
     json_dict = readfiles(json_dir, '.json')
     
@@ -105,13 +106,9 @@ if __name__ == "__main__":
             h, w, _ = img.shape
 
             canvas = np.zeros((h, w, 3), np.uint8)
-
+            
+   
             vis_dict = defaultdict(list)
-            if type(json_file) == list:
-                json_file = json_file[0]
-            json_obj = json_file['objects']
-            if type(json_obj) == dict:
-                json_obj = [json_obj]
             
             for obj in json_file['objects']:
                 name = obj['name']
@@ -119,6 +116,7 @@ if __name__ == "__main__":
                 
                 vis_dict[name].append(points)
 
+            mask_cv2 = np.zeros_like(canvas, np.uint8)
             for obj_name in seq:
                 obj_points_list = vis_dict.get(obj_name)
                 color = select_color(obj_name)
@@ -128,11 +126,40 @@ if __name__ == "__main__":
                         if len(obj_points) > 2:
                             obj_points = np.array(obj_points, np.int32)
                             cv2.fillPoly(canvas, [obj_points], color)
-                        elif len(obj_points) <= 2:
-                            for obj_seg_points in vis_dict['Object_segmentation']:
-                                contact_points = contact_line(obj_points, obj_seg_points)
-                                cv2.polylines(canvas, [contact_points], False, color, 10)
+            
+            overlay = canvas.copy()
+            obj_points_list = vis_dict.get("Object_segmentation")
+            color = select_color("Object_segmentation")
+            if obj_points_list:
+                for obj_points in obj_points_list:
+                    obj_points = [[round(p[0]), round(p[1])] for p in obj_points]
+                    if len(obj_points) > 2:
+                        obj_points = np.array(obj_points, np.int32)
+                        cv2.polylines(overlay, [obj_points], isClosed=False, color =(0,0,255), thickness=5)
+                        
+            for obj_name in seq_contact:
+                obj_points_list = vis_dict.get(obj_name)
+                if obj_points_list:
+                    for obj_points in obj_points_list:
+                        obj_points = [[round(p[0]), round(p[1])] for p in obj_points]
+                                               
+                        cv2.rectangle(mask_cv2, obj_points[0], obj_points[1], (1, 1, 1), -1)
 
-            save_img(output_img_path, canvas)
-                
-                
+                        obj_points = np.array(obj_points, np.int32)
+                        cv2.fillPoly(mask_cv2, [obj_points], (1, 1, 1))
+                            
+            result = canvas.copy()
+            mask = mask_cv2.astype(bool)
+            result[mask] = overlay[mask]
+            
+            obj_points_list = vis_dict.get("Object_segmentation")
+            color = select_color("Object_segmentation")
+            if obj_points_list:
+                for obj_points in obj_points_list:
+                    obj_points = [[round(p[0]), round(p[1])] for p in obj_points]
+                    if len(obj_points) > 2:
+                        obj_points = np.array(obj_points, np.int32)
+                        cv2.fillPoly(result, [obj_points], color)
+        
+                        
+            save_img(output_img_path, result)
