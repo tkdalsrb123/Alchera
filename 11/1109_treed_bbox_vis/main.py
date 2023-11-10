@@ -1,6 +1,7 @@
 import cv2, os, sys, json
 import logging
 import numpy as np
+from label import label
 from tqdm import tqdm
 from collections import defaultdict
 
@@ -65,21 +66,21 @@ logger = make_logger('log.log')
 img_dict = readfiles(img_dir, '.jpg')
 json_dict = readfiles(json_dir, '.json')
 
-for filename, json_path in tqdm(json_dict.items()):
-    # json_path = json_dict.get(filename)
-    json_file = readJson(json_path)
-    img_name = os.path.splitext(json_file['info']['imageName'])[0]
-    img_path = img_dict.get(img_name)
-    if img_path:
+for filename, img_path in tqdm(img_dict.items()):
+    json_path = json_dict.get(filename)
+    if json_path:
         output_img_path = makeOutputPath(img_path, img_dir, output_dir, 'jpg')
+        
+        json_file = readJson(json_path)
         
         color = (0,0,255)
         img = read_img(img_path)
         for obj in json_file['objects']:
             points = obj['points']
+            name = obj['name']
             x1y1 = tuple([round(p) for p in points[0]])
             x2y2 = tuple([round(p) for p in points[1]])
 
             cv2.rectangle(img, x1y1, x2y2, color =color, thickness=3)
-            
-            save_img(output_img_path, img)
+            img = label(img, name, 10, color, x1y1, 0.5)        
+        save_img(output_img_path, img)
