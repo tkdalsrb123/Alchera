@@ -43,4 +43,4 @@ if __name__ == '__main__':
 
     driver.close()
     
-    os.remove(f"./kostat_src_list.p")
+    os.remove(f"./kyungin_src_list.p")
