@@ -34,7 +34,7 @@ def readfiles(dir, Ext):
 def readJson(path):
     with open(path, 'r', encoding='utf-8') as f:
         data = json.load(f)
-    return data
+    return data 
 
 def saveJson(file, path):
     with open(path, 'w') as f:

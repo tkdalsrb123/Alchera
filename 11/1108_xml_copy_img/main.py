@@ -54,13 +54,19 @@ if __name__ == '__main__':
         for img in data['annotations']['image']:
             img_path = img['@name']
             name = os.path.split(img_path)[-1][:-4]
+            if 'FR' in name:
+                new_name = name.replace('FR', 'SD')
+            elif 'SD' in name:
+                new_name = name.replace('SD', 'FR')
+
             imgname_list.append(name)
-    
+            imgname_list.append(new_name)
+        
     for imgname in tqdm(imgname_list, desc='copy image'):
         img_path = img_dict.get(imgname)
         logger.info(img_path)
         if img_path:
-            path_split = img_path.split('\\')[-4:] 
+            path_split = img_path.split('\\')[-4:]
             file = path_split[-1]
             mid = '\\'.join(path_split[:-1])
 
@@ -68,8 +74,9 @@ if __name__ == '__main__':
             os.makedirs(folder, exist_ok=True)
             output_img_path = os.path.join(folder, file)
             
-            shutil.copy2(img_path, output_img_path)
-            logger.info(output_img_path)
+            if not os.path.exists(output_img_path):
+                shutil.copy2(img_path, output_img_path)
+                logger.info(output_img_path)
             
 
             
