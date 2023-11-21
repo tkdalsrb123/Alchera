@@ -34,17 +34,17 @@ if __name__ == "__main__":
         lhrh = path_split[-4]
         seq = path_split[-5]
         data = readxml(xml_path)
-        objects = data['annotation']['object']
-
-        if type(objects) == dict:
-            objects = [objects]
-        
-        for obj in objects:
-            ID = obj['cuboid_id']
-  
-            if ID == 0:
-                file_list.append([seq, lhrh, filename])
-                break
+        objects = data['annotation'].get('object')
+        if objects:
+            if type(objects) == dict:
+                objects = [objects]
+            
+            for obj in objects:
+                ID = obj['cuboid_id']
+    
+                if ID == 0:
+                    file_list.append([seq, lhrh, filename])
+                    break
         
     
     df = pd.DataFrame(file_list, columns=['sequence', 'lhrh', 'filename'])
