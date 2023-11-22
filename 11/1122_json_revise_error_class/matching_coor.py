@@ -33,23 +33,41 @@ if __name__ == '__main__':
             new_data = readJson(new_json_path)
             revise_data = readJson(revise_path)
             
-            objects = revise_data['objects']
-            if type(objects) == dict:
-                objects = [objects]
-            
-            for obj in objects:
-                _class = obj['class']
-                _sub_class1 = obj['sub_class1']
-                _sub_class2 = obj['sub_class2']
-                xmin = obj['xmin']
-                xmax = obj['xmax']
-                ymin = obj['ymin']
-                ymax = obj['ymax']
+            if new_data:
+                objects = revise_data['objects']
+                if type(objects) == dict:
+                    objects = [objects]
+                
+                for obj in objects:
+                    _class = obj['class']
+                    _sub_class1 = obj['sub_class1']
+                    _sub_class2 = obj['sub_class2']
+                    xmin = obj['xmin']
+                    xmax = obj['xmax']
+                    ymin = obj['ymin']
+                    ymax = obj['ymax']
+                    front = obj['include_class']['front']
 
-                for idx, new_obj in enumerate(new_data['objects']):
-                    if new_obj['xmin'] == xmin and new_obj['xmax'] == xmax and new_obj['ymin'] == ymin and new_obj['ymax'] == ymax:
-                        new_data['objects'][idx]['class'] = _class
-                        new_data['objects'][idx]['sub_class1'] = _sub_class1
-                        new_data['objects'][idx]['sub_class2'] = _sub_class2
+                    for idx, new_obj in enumerate(new_data['objects']):
+                        if new_obj['xmin'] == xmin and new_obj['xmax'] == xmax and new_obj['ymin'] == ymin and new_obj['ymax'] == ymax:
+                            new_data['objects'][idx]['class'] = _class
+                            new_data['objects'][idx]['sub_class1'] = _sub_class1
+                            new_data['objects'][idx]['sub_class2'] = _sub_class2
+
+                    if front:
+                        _class = front[0]['class']
+                        _sub_class1 = front[0]['sub_class1']
+                        _sub_class2 = front[0]['sub_class2']
+                        xmin = front[0]['xmin']
+                        xmax = front[0]['xmax']
+                        ymin = front[0]['ymin']
+                        ymax = front[0]['ymax']
+                        for idx, new_obj in enumerate(new_data['objects']):
+                            if new_obj['xmin'] == xmin and new_obj['xmax'] == xmax and new_obj['ymin'] == ymin and new_obj['ymax'] == ymax:
+                                new_data['objects'][idx]['class'] = _class
+                                new_data['objects'][idx]['sub_class1'] = _sub_class1
+                                new_data['objects'][idx]['sub_class2'] = _sub_class2
                         
-            saveJson(new_data, output_json_path)
+                        
+                saveJson(new_data, output_json_path)
+                

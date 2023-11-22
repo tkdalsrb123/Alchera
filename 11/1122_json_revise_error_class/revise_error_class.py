@@ -76,22 +76,37 @@ def revise_objects(count_dict, folder, path, output_path):
         for idx, o in enumerate(data['objects']):
             _id = o['HDP_VRFC']['id']
             value = count_dict[folder][_id]
+            front = o['include_class']['front']
             if data['objects'][idx]['class'] != value['class'] or data['objects'][idx]["sub_class1"] != value['sub_class1'] or data['objects'][idx]["sub_class2"] != value['sub_class2']:
                 data['objects'][idx]['class'] = value['class']
                 data['objects'][idx]["sub_class1"] = value['sub_class1']
                 data['objects'][idx]["sub_class2"] = value['sub_class2']
                 revise_list.append([path, output_path])
+            if front:
+                if front[0]['class'] != value['class'].split(' ')[0] or front[0]['sub_class1'] != value['sub_class1'] or front[0]['sub_class2'] != value['sub_class2']:
+                    front[0]['class'] = value['class'].split(' ')[0]
+                    front[0]['sub_class1'] = value['sub_class1']
+                    front[0]['sub_class2'] = value['sub_class2']
+                    revise_list.append([path, output_path])
 
     elif type(data['objects']) == dict:
         _id = data['objects']['HDP_VRFC']['id']
         value = count_dict[folder][_id]
-
+        front = data['objects']['include_class']['front']
+        
         if data['objects'][idx]['class'] != value['class'] or data['objects'][idx]["sub_class1"] != value['sub_class1'] or data['objects'][idx]["sub_class2"] != value['sub_class2']:
             data['objects']['class'] = value['class']
             data['objects']["sub_class1"] = value['sub_class1']
             data['objects']["sub_class2"] = value['sub_class2']
             revise_list.append([path, output_path])
-            
+
+        if front:
+            if front[0]['class'] != value['class'].split(' ')[0] or front[0]['sub_class1'] != value['sub_class1'] or front[0]['sub_class2'] != value['sub_class2']:
+                front[0]['class'] = value['class'].split(' ')[0]
+                front[0]['sub_class1'] = value['sub_class1']
+                front[0]['sub_class2'] = value['sub_class2']
+                revise_list.append([path, output_path])
+
     saveJson(data, output_path)
                 
 def get_max_value(_list, key):
@@ -143,7 +158,7 @@ if __name__ == "__main__":
             revise_objects(count_dict, folder, json_path, output_json_path)
     
     make_excel(special_list, ['sequence', 'file_path', 'id'], f"{output_dir}/special_list.xlsx")
-    make_excel(special_list, ['input_file_path', 'output_file_path'], f"{output_dir}/revise_list.xlsx")
+    make_excel(revise_list, ['input_file_path', 'output_file_path'], f"{output_dir}/revise_list.xlsx")
     
 
     
