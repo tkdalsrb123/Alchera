@@ -5,3 +5,8 @@
 
 2. 실행방법
 python main.py [input dir] [output dir]
+
+1123
+
+1. 수정사항
+- 각 프레임의 초를 이미지 좌측 하단에 시각화

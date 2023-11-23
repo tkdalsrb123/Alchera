@@ -39,6 +39,10 @@ def saveImage(saveDir, img):
         with open(saveDir, mode='w+b') as f:
             encoded_img.tofile(f)
 
+def get_time_text(second, current):
+    current_second = round(second * current, 3)
+    return str(current_second)
+    
 _, input_dir, output_dir = sys.argv
 
 logger = make_logger('log.log')
@@ -67,24 +71,36 @@ for filename, mp4_path in tqdm(mp4_dict.items()):
     if (end_frame - start_frame) > 0:
         
         video = cv2.VideoCapture(mp4_path)
+        frame_count = int(video.get(cv2.CAP_PROP_FRAME_COUNT))
+        fps = video.get(cv2.CAP_PROP_FPS) 
+        duration = frame_count/fps
+
+        perSecond = duration/frame_count
+
         currentframe = 0
 
         while True:
             ret, frame = video.read() 
             if not ret:
                 break
-            
+            h, w, _ = frame.shape
             num = str(currentframe).zfill(8)
             frame_filename = f'{filename}_{num}.jpg'
             output_img_path = os.path.join(folder, frame_filename)
             if currentframe >= start_frame-20 and currentframe <= end_frame+20:
                 if currentframe == start_frame:
+                    time = get_time_text(perSecond, currentframe)
+                    frame = label(frame, time, text_size, (0,0,0), (0, h), 0.5)
                     frame = label(frame, start_text, text_size, (0,0,255), (0,0), 0.5)
                     
                 elif currentframe == end_frame:
+                    time = get_time_text(perSecond, currentframe)
+                    frame = label(frame, time, text_size, (0,0,0), (0, h), 0.5)
                     frame = label(frame, end_text, text_size, (0,0,255), (0,0), 0.5)
                     
                 else:
+                    time = get_time_text(perSecond, currentframe)
+                    frame = label(frame, time, text_size, (0,0,0), (0, h), 0.5)
                     frame = label(frame, f'# {currentframe}', text_size, (0,0,255), (0,0), 0.5)
                 
                 saveImage(output_img_path, frame)
