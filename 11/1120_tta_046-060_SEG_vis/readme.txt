@@ -5,3 +5,8 @@
 
 2. 실행방법
 python main.py [image dir] [json dir] [output dir]
+
+1124
+
+1. 수정사항
+- 파일명에 따라 시각화 방법 다르게 적용

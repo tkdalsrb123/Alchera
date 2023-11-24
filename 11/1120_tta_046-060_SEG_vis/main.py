@@ -107,6 +107,7 @@ if __name__ == '__main__':
     
     for filename, json_path in tqdm(json_dict.items()):
         logger.info(json_path)
+        unique = filename.split('_')[3]
         img_path = img_dict[filename]
 
         output_img_path = makeOutputPath(img_path, img_dir, output_dir, 'jpg')
@@ -118,27 +119,33 @@ if __name__ == '__main__':
         if type(annotations) == dict:
             annotations = [annotations]
         
-        for ann in annotations: 
-            category_id = ann['category_id']
-            bbox = ann.get('bbox')
-            seg = ann.get('segmentation')
-            category = categories.get(category_id)
-            if bbox:
-                x1 = round(bbox[0])
-                y1 = round(bbox[1])
-                x2 = x1 + round(bbox[2])
-                y2 = y1 + round(bbox[3])
-                cv2.rectangle(img, (x1,y1), (x2, y2), color=(0, 0, 255), thickness=3)
-                if category:
-                    img = label(img, category, 20, (255, 0, 0), (x1, y2), 0.5)
+        if unique in ['04', '05']:
+            for ann in annotations: 
+                category_id = ann['category_id']
+                seg = ann.get('segmentation')
+                category = categories.get(category_id)
                 
-            if seg:
-                points = [(round(seg[i]), round(seg[i+1])) for i in range(0, len(seg), 2)]
-                points = np.array(points, np.int32)
-                cv2.polylines(img, [points], isClosed=True, color=(0, 0, 255), thickness=3)
-                if category:
-                    img = label(img, category, 20, (255, 0, 0), points[0], 0.5)
+                if seg:
+                    points = [(round(seg[i]), round(seg[i+1])) for i in range(0, len(seg), 2)]
+                    points = np.array(points, np.int32)
+                    cv2.polylines(img, [points], isClosed=True, color=(0, 0, 255), thickness=3)
+                    if category:
+                        img = label(img, category, 20, (255, 0, 0), points[0], 0.5)
+
+        elif unique in ['01', '02', '03', '06']:
+            for ann in annotations: 
+                category_id = ann['category_id']
+                bbox = ann.get('bbox')
+                category = categories.get(category_id)
+                
+                if bbox:
+                    x1 = round(bbox[0])
+                    y1 = round(bbox[1])
+                    x2 = x1 + round(bbox[2])
+                    y2 = y1 + round(bbox[3])
+                    cv2.rectangle(img, (x1,y1), (x2, y2), color=(0, 0, 255), thickness=3)
+                    if category:
+                        img = label(img, category, 20, (255, 0, 0), (x1, y2), 0.5)
             
-        
         save_img(output_img_path, img, 'jpg')
         logger.info(output_img_path)

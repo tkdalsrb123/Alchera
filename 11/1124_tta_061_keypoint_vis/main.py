@@ -121,7 +121,8 @@ if __name__ == "__main__":
 
         if annotations:
             for ann in annotations:
-                keypoints_list = [[[round(ann['keypoint'][idx]), round(ann['keypoint'][idx+1])], round(ann['keypoint'][idx+2])] for idx in range(0, len(ann['keypoint']), 3)]
-                vis_skeleton(img, keypoints_list)
+                if ann['keypoint']:
+                    keypoints_list = [[[round(ann['keypoint'][idx]), round(ann['keypoint'][idx+1])], round(ann['keypoint'][idx+2])] for idx in range(0, len(ann['keypoint']), 3)]
+                    vis_skeleton(img, keypoints_list)
         
         save_img(output_img_path, img, 'jpg')
