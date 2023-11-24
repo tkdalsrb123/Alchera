@@ -14,7 +14,7 @@ def processing(x):
         if type(val[i]) == str:
             pne_class_list.append([val[i+1], val[i]])
             pne_list.append([val[i], val[i+1]])
-    
+    print(form)
     for pne in pne_list:
         if pne[0] not in form:
             typo_list.append([ID, sen_id, per, form, pne[0], pne[1]])

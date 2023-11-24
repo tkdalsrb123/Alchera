@@ -65,15 +65,15 @@ if __name__ == "__main__":
                 
                 else:
                     
-                    attribute = poly['attribute']
-
-                    if type(poly['attribute']) == dict:
-                        attribute = [poly['attribute']]
-                        
-                    for att in attribute:
-                        if att['@name'] == 'ID':
-                            id_text = att['#text']
-                            count_dict[poly['@label']].add(id_text)
+                    attribute = poly.get('attribute')
+                    if attribute:
+                        if type(poly['attribute']) == dict:
+                            attribute = [poly['attribute']]
+                            
+                        for att in attribute:
+                            if att['@name'] == 'ID':
+                                id_text = att['#text']
+                                count_dict[poly['@label']].add(id_text)
                             
             for key, val in count_dict.items():
                 class_dict[filename][key] += len(val)

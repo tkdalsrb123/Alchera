@@ -86,7 +86,7 @@ def vis_skeleton(img, kp_list):
     for line in line_vis_list:
         pts = [[i[0]] for i in line if i[0] != [0, 0]]
         pts = np.array(pts)
-        cv2.polylines(img, np.int32([pts]), False, (0,255,))
+        cv2.polylines(img, np.int32([pts]), False, (0,255,0))
     
     for idx, keypoints in enumerate(kp_list):
         if keypoints[1] == 0:
@@ -121,7 +121,7 @@ if __name__ == "__main__":
 
         if annotations:
             for ann in annotations:
-                if ann['keypoint']:
+                if ann['keypoint'] and len(ann['keypoint']) == 16:
                     keypoints_list = [[[round(ann['keypoint'][idx]), round(ann['keypoint'][idx+1])], round(ann['keypoint'][idx+2])] for idx in range(0, len(ann['keypoint']), 3)]
                     vis_skeleton(img, keypoints_list)
         
