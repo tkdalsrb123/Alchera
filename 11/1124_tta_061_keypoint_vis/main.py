@@ -87,7 +87,7 @@ def vis_skeleton(img, kp_list):
         pts = [[i[0]] for i in line if i[0] != [0, 0]]
         pts = np.array(pts)
         cv2.polylines(img, np.int32([pts]), False, (0,255,0))
-    
+
     for idx, keypoints in enumerate(kp_list):
         if keypoints[1] == 0:
             pass
@@ -96,6 +96,16 @@ def vis_skeleton(img, kp_list):
             cv2.circle(img, keypoints[0], 3, color=color, thickness=1)
         elif keypoints[1] == 2:
             color = select_color(idx)
+            cv2.circle(img, keypoints[0], 3, color=color, thickness=-1) 
+    
+def vis_visible(vis_list):
+    color = (0, 0, 255)
+    for idx, keypoints in enumerate(vis_list):
+        if keypoints[1] == 0:
+            pass
+        elif keypoints[1] == 1:
+            cv2.circle(img, keypoints[0], 3, color=color, thickness=1)
+        elif keypoints[1] == 2:
             cv2.circle(img, keypoints[0], 3, color=color, thickness=-1)            
     
     
@@ -124,5 +134,8 @@ if __name__ == "__main__":
                 if ann['keypoint'] and len(ann['keypoint']) == 16:
                     keypoints_list = [[[round(ann['keypoint'][idx]), round(ann['keypoint'][idx+1])], round(ann['keypoint'][idx+2])] for idx in range(0, len(ann['keypoint']), 3)]
                     vis_skeleton(img, keypoints_list)
-        
+                else:
+                    keypoints_list = [[[round(ann['keypoint'][idx]), round(ann['keypoint'][idx+1])], round(ann['keypoint'][idx+2])] for idx in range(0, len(ann['keypoint']), 3)]
+                    vis_visible(keypoints_list)
+                    
         save_img(output_img_path, img, 'jpg')
