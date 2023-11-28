@@ -25,10 +25,11 @@ def readfiles(dir, Ext):
         for file in files:
             filename, ext = os.path.splitext(file)
             ext = ext.lower()
-            if ext == Ext:
-                file_path = os.path.join(root, file)
-            
-                file_dict[filename] = file_path
+            if Ext == 'img':
+                if ext == Ext:
+                    file_path = os.path.join(root, file)
+                
+                    file_dict[filename] = file_path
     return file_dict
 
 def makeOutputPath(file_path, file_dir, output_dir, Ext):
@@ -89,24 +90,31 @@ def vis_skeleton(img, kp_list):
         cv2.polylines(img, np.int32([pts]), False, (0,255,0))
 
     for idx, keypoints in enumerate(kp_list):
-        if keypoints[1] == 0:
+        if keypoints[1] == 0.0:
             pass
-        elif keypoints[1] == 1:
+        elif keypoints[1] == 1.0:
             color = select_color(idx)
             cv2.circle(img, keypoints[0], 3, color=color, thickness=1)
-        elif keypoints[1] == 2:
+        elif keypoints[1] == 2.0:
             color = select_color(idx)
             cv2.circle(img, keypoints[0], 3, color=color, thickness=-1) 
-    
+        else:
+            color = (128, 0, 128)
+            cv2.circle(img, keypoints[0], 3, color=color, thickness=-1)
+            
 def vis_visible(vis_list):
     color = (0, 0, 255)
     for idx, keypoints in enumerate(vis_list):
-        if keypoints[1] == 0:
+        if keypoints[1] == 0.0:
             pass
-        elif keypoints[1] == 1:
+        elif keypoints[1] == 1.0:
             cv2.circle(img, keypoints[0], 3, color=color, thickness=1)
-        elif keypoints[1] == 2:
-            cv2.circle(img, keypoints[0], 3, color=color, thickness=-1)            
+        elif keypoints[1] == 2.0:
+            cv2.circle(img, keypoints[0], 3, color=color, thickness=-1)
+        else:
+            color = (128, 0, 128)
+            cv2.circle(img, keypoints[0], 3, color=color, thickness=-1)
+                        
     
     
 if __name__ == "__main__":
@@ -131,11 +139,11 @@ if __name__ == "__main__":
 
         if annotations:
             for ann in annotations:
-                if ann['keypoint'] and len(ann['keypoint']) == 16:
-                    keypoints_list = [[[round(ann['keypoint'][idx]), round(ann['keypoint'][idx+1])], round(ann['keypoint'][idx+2])] for idx in range(0, len(ann['keypoint']), 3)]
+                if ann['keypoint'] and len(ann['keypoint']) == 51:
+                    keypoints_list = [[[round(ann['keypoint'][idx]), round(ann['keypoint'][idx+1])], ann['keypoint'][idx+2]] for idx in range(0, len(ann['keypoint']), 3)]
                     vis_skeleton(img, keypoints_list)
                 else:
-                    keypoints_list = [[[round(ann['keypoint'][idx]), round(ann['keypoint'][idx+1])], round(ann['keypoint'][idx+2])] for idx in range(0, len(ann['keypoint']), 3)]
+                    keypoints_list = [[[round(ann['keypoint'][idx]), round(ann['keypoint'][idx+1])], ann['keypoint'][idx+2]] for idx in range(0, len(ann['keypoint']), 3)]
                     vis_visible(keypoints_list)
                     
         save_img(output_img_path, img, 'jpg')
