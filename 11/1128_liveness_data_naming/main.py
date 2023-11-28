@@ -55,7 +55,7 @@ def makeOutputPath(file_path, file_dir, output_dir, new_name, Ext):
     return output_path
 
 def error_check(text=""):
-    if len(text) > 3:
+    if len(text) > 10:
         error_list.append(filename)
         text = ""
     return text
