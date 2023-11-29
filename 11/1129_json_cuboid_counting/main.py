@@ -44,7 +44,7 @@ def makeOutputPath(file_path, file_dir, output_dir, Ext):
     return output_path
 
 def readJson(path):
-    with open(path, 'r', encoding='utf-8') as f:
+    with open(path, 'r', encoding='utf-8-sig') as f:
         data = json.load(f)
     return data
 
