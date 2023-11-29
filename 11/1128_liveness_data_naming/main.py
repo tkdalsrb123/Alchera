@@ -170,6 +170,7 @@ if __name__ == "__main__":
                 num += 1
         else:
             shutil.copy2(copy_list[0][0], copy_list[0][1])
+            
             shutil.copy2(copy_list[0][2], copy_list[0][3])
 
         
