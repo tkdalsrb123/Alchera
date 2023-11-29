@@ -1,5 +1,0 @@
-access_key = '8F19168D4ABB28DFB29A'
-secret_key = '6EF8395550D7FE84AB85A44859E303F0786A6C67'
-endpoint_url = 'https://kr.object.gov-ncloudstorage.com'
-region_name = 'kr-standard'
-bucket_name = 'aidata-2023-057-072'
