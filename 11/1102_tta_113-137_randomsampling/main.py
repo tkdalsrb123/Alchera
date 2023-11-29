@@ -57,7 +57,7 @@ if __name__ == '__main__':
         file_list = []
         for r in res:
             print(r)
-            # [file_list.append(c) for c in r['Contents']]
+    #         [file_list.append(c) for c in r['Contents']]
         
     #     con = random.sample(file_list, data[1])
     #     raw_file_list =[c['Key'] for c in con]

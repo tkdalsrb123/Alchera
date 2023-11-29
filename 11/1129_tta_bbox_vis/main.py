@@ -72,7 +72,6 @@ if __name__ == "__main__":
             
             json_file = readJson(json_path)
             
-            
             img = read_img(img_path)
             for obj in json_file['objects']:
                 points = obj['points']
