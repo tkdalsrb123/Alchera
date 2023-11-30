@@ -38,7 +38,16 @@ def make_path(x):
 def response(path):
     res = paginator.paginate(Bucket=bucket_name, Prefix=f"{path}/", Delimiter='/')
     return res
+
+def preprocessing(path):
+    root, file = os.path.split(path)
+    filename, ext = os.path.splitext(file)
+    new_root = root.replace('2.라벨링데이터', '1.원천데이터').replace('/서브라벨링','')
+    new_filename = 'S' + filename[1:]
+    new_path = new_root + '/' + f"{new_filename}.JPEG"
+    return new_path
     
+
 if __name__ == '__main__':
     _, excel_dir, raw_down_dir, label_down_dir = sys.argv
     
@@ -59,15 +68,13 @@ if __name__ == '__main__':
             [file_list.append(c) for c in r['Contents']]
         
         con = random.sample(file_list, data[1])
-        [down_path_list.append(c['Key']) for c in con]
-        # label_file_list = [raw_file.replace('1.원천데이터', '2.라벨링데이터').replace('jpg', 'json') for raw_file in raw_file_list]
-        
-        # for i in range(len(raw_file_list)):
-            # down_path_list.append([raw_file_list[i], label_file_list[i]])
-        
+        raw_file_list =[c['Key'] for c in con]
+        # label_file_list = [raw_file.replace('2.라벨링데이터', '1.원천데이터').replace('json', 'JPEG').replace('/서브라벨링','') for raw_file in raw_file_list]
+        label_file_list = [preprocessing(raw_file) for raw_file in raw_file_list]
+  
+        for i in range(len(raw_file_list)):
+            down_path_list.append([raw_file_list[i], label_file_list[i]])
     
     for down_path in tqdm(down_path_list, desc='download file'):
-        if os.path.splitext(down_path)[-1] == '.json':
-            down_file_path(label_down_dir, down_path)
-        else:
-            down_file_path(raw_down_dir, down_path)
+        down_file_path(label_down_dir, down_path[0])
+        down_file_path(raw_down_dir, down_path[1])
