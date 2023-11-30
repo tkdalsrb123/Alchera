@@ -10,3 +10,8 @@ python main.py [image dir] [json dir] [output dir]
 
 1. 수정사항
 - 파일명에 따라 시각화 방법 다르게 적용
+
+1130
+
+1. 수정사항
+- 4차경로 구분에 따라 시각화 방법 다르게 적용
