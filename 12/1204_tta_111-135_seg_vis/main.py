@@ -56,6 +56,17 @@ def save_img(img_path, img, ext):
     if result:
         with open(img_path, mode='w+b') as f:
             encoded_img.tofile(f)
+
+def center_point(polygon_coordinates):
+    sum_x = 0
+    sum_y = 0
+    for point in polygon_coordinates:
+        sum_x += point[0]
+        sum_y += point[1]
+    avg_x = sum_x / len(polygon_coordinates)
+    avg_y = sum_y / len(polygon_coordinates)
+    return (round(avg_x), round(avg_y))
+
 category = {
 "1":(151,219,242),
 "2":(197,0,255),
@@ -94,9 +105,11 @@ if __name__ == "__main__":
                 color = (55,125,247)
             color = (color[2], color[1], color[0])
             pts = [[round(coor[0]), round(coor[1])] for coor in coordinate]
+            center = center_point(pts)
             pts = np.array(pts, dtype=np.int32)
 
             cv2.fillPoly(overlay, [pts], color)
+            cv2.putText(img, _id, center, cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0 ,0), 3)
         result = cv2.addWeighted(img, 0.5, overlay, 0.5, 0.0)
             
         save_img(output_img_path, result, 'jpg')

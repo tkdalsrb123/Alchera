@@ -143,18 +143,25 @@ def visualization(obj):
             x2 = pil['xmin'] + pil['width']
             y2 = pil['ymin'] + pil['height']
             outline = select_outline(pil['class'].lower())
+            y_text = f'{str(y2 - y1)}px'
             if pil['sub_class1'][:3] != 'fix':
                 draw.rectangle(((x1, y1),(x2, y2)), outline=outline, width=1)
                 draw.text((x1, y1-18), pil_text, font=font, fill=outline)
+                if pil['class'].lower() in ["vehicle", "vehicle whole", "emergency", "emergency whole", "lightbeam"]:
+                    draw.text((x1, y2), y_text, font=font, fill=outline)
             elif pil['sub_class1'][:3] == 'fix':
                 if pil['sub_class2'][:3] == 'lig':
                     pil_text = pil['sub_class2'][:3]
                     draw.rectangle(((x1, y1),(x2, y2)), outline=outline, width=1)
                     draw.text((x2, y1), pil_text, font=font, fill=outline)
+                    if pil['class'].lower() in ["vehicle", "vehicle whole", "emergency", "emergency whole", "lightbeam"]:
+                        draw.text((x2, y1), y_text, font=font, fill=outline)
                 else:
                     pil_text = pil['sub_class2'][:3]
                     draw.rectangle(((x1, y1),(x2, y2)), outline=outline, width=1)
                     draw.text((x1, y1-18), pil_text, font=font, fill=outline)
+                    if pil['class'].lower() in ["vehicle", "vehicle whole", "emergency", "emergency whole", "lightbeam"]:
+                        draw.text((x2, y1), y_text, font=font, fill=outline)
         elif pil['occlusion'] != '0':
             occlusion = pil['occlusion']
             truncation = pil['truncation']
@@ -168,21 +175,28 @@ def visualization(obj):
             x2 = pil['xmin'] + pil['width']
             y2 = pil['ymin'] + pil['height']
             outline = select_outline(pil['class'].lower())
+            y_text = f'{str(y2 - y1)}px'
             if pil['sub_class1'][:3] != 'fix':
                 d.dashed_rectangle(((x1, y1),(x2, y2)), dash=(7,5), outline=outline, width=1)
                 draw.text((x1, y1-18), pil_text, font=font, fill=outline)
                 draw.text((x1, ymax), text, font=sub_font, fill=outline)
+                if pil['class'].lower() in ["vehicle", "vehicle whole", "emergency", "emergency whole", "lightbeam"]:
+                    draw.text((x2, y1), y_text, font=font, fill=outline)
             elif pil['sub_class1'][:3] == 'fix':
                 if pil['sub_class2'][:3] == 'lig':
                     pil_text = pil['sub_class2'][:3]
                     d.dashed_rectangle(((x1, y1),(x2, y2)), dash=(7,5), outline=outline, width=1)
                     draw.text((x2, y1), pil_text, font=font, fill=outline)
                     draw.text((x1, ymax), text, font=sub_font, fill=outline)
+                    if pil['class'].lower() in ["vehicle", "vehicle whole", "emergency", "emergency whole", "lightbeam"]:
+                        draw.text((x2, y1), y_text, font=font, fill=outline)
                 else:
                     pil_text = pil['sub_class2'][:3]
                     d.dashed_rectangle(((x1, y1),(x2, y2)), dash=(7,5), outline=outline, width=1)
                     draw.text((x1, y1-15), pil_text, font=font, fill=outline)
                     draw.text((x1, ymax), text, font=sub_font, fill=outline)
+                    if pil['class'].lower() in ["vehicle", "vehicle whole", "emergency", "emergency whole", "lightbeam"]:
+                        draw.text((x2, y1), y_text, font=font, fill=outline)
         elif pil['truncation'] != '0':
             occlusion = pil['occlusion']
             truncation = pil['truncation']
@@ -196,21 +210,28 @@ def visualization(obj):
             x2 = pil['xmin'] + pil['width']
             y2 = pil['ymin'] + pil['height']
             outline = select_outline(pil['class'].lower())
+            y_text = f'{str(y2 - y1)}px'
             if pil['sub_class1'][:3] != 'fix':
                 d.dashed_rectangle(((x1, y1),(x2, y2)), dash=(1,1), outline=outline, width=1)
                 draw.text((x1, y1-15), pil_text, font=font, fill=outline)
                 draw.text((x1, ymax+5), text, font=sub_font, fill=outline)
+                if pil['class'].lower() in ["vehicle", "vehicle whole", "emergency", "emergency whole", "lightbeam"]:
+                    draw.text((x2, y1), y_text, font=font, fill=outline)
             elif pil['sub_class1'][:3] == 'fix':
                 if pil['sub_class2'][:3] == 'lig':
                     pil_text = pil['sub_class2'][:3]
                     d.dashed_rectangle(((x1, y1),(x2, y2)), dash=(1,1), outline=outline, width=1)
                     draw.text((x2, y1), pil_text, font=font, fill=outline)
                     draw.text((x1, ymax+5), text, font=sub_font, fill=outline)
+                    if pil['class'].lower() in ["vehicle", "vehicle whole", "emergency", "emergency whole", "lightbeam"]:
+                        draw.text((x2, y1), y_text, font=font, fill=outline)
                 else:
                     pil_text = pil['sub_class2'][:3]
                     d.dashed_rectangle(((x1, y1),(x2, y2)), dash=(1,1), outline=outline, width=1)
                     draw.text((x1, y1-18), pil_text, font=font, fill=outline)
                     draw.text((x1, ymax+5), text, font=sub_font, fill=outline)
+                    if pil['class'].lower() in ["vehicle", "vehicle whole", "emergency", "emergency whole", "lightbeam"]:
+                        draw.text((x2, y1), y_text, font=font, fill=outline)
 
 def text_background(obj):
     font = cv2.FONT_HERSHEY_PLAIN
