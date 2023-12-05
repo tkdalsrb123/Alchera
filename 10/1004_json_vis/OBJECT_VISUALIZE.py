@@ -4,6 +4,7 @@ import numpy as np
 from collections import defaultdict
 from tqdm import tqdm
 from PIL import Image, ImageDraw
+from shapely.geometry import box, Polygon
 
 def make_logger(log):
     logger = logging.getLogger()
@@ -55,7 +56,7 @@ def makeOutputPath(file_path, file_dir, output_dir):
     return output_path
 
 def select_color(name):
-    if name == 'contact_line' or name == 'contact_line_2':
+    if name == 'contact_line' or name == 'contact_line_polygon':
         color = (0, 0, 255)
     elif name == 'Object_segmentation':
         color = (255, 0, 0)
@@ -83,13 +84,37 @@ def contact_line(box_point,obj_seg_points):
     contact_points = np.array(contact_points, np.int32)
     return contact_points
 
+def contact_line(box_point, obj_seg_poitns):
+    intersection_coords = []
+
+    if len(box_point) == 2:
+        contact_x = [point[0] for point in box_point]
+        contact_y = [point[1] for point in box_point]
+        shape1 = box(min(contact_x), min(contact_y), max(contact_x), max(contact_y))
+        shape2 = Polygon(obj_seg_poitns)
+    else:
+        shape1 = Polygon(box_point)
+        shape2 = Polygon(obj_seg_poitns)
+    
+    intersection = shape2.intersection(shape1)
+
+    if intersection.geom_type == 'Polygon':
+        # Polygon일 경우 좌표 출력
+        intersection_coords = list(intersection.exterior.coords)
+        intersection_coords = [list(c) for c in intersection_coords]
+        intersection_coords = [coord for coord in obj_seg_poitns if coord in intersection_coords]
+        
+    intersection_coords = np.array(intersection_coords, dtype=np.int32)
+    
+    return intersection_coords
+
 if __name__ == "__main__":
 
     _, img_dir, json_dir, output_dir = sys.argv
 
     logger = make_logger('log.log')
 
-    seq = ["Shadow_segmentation", "Object_segmentation", "Void", "contact_line"]
+    seq = ["Shadow_segmentation", "Object_segmentation", "Void", "contact_line", "contact_line_polygon"]
     # seq = ["Object_segmentation"]
     img_dict = readfiles(img_dir, '.jpg')
     json_dict = readfiles(json_dir, '.json')
@@ -125,14 +150,15 @@ if __name__ == "__main__":
                 if obj_points_list:
                     for obj_points in obj_points_list:
                         obj_points = [[round(p[0]), round(p[1])] for p in obj_points]
-                        if len(obj_points) > 2:
+                        if obj_name in ["Shadow_segmentation", "Object_segmentation", "Void"]:
                             obj_points = np.array(obj_points, np.int32)
                             cv2.fillPoly(canvas, [obj_points], color)
-                        elif len(obj_points) <= 2:
+                            
+                        if obj_name in ["contact_line", "contact_line_polygon"]:
                             for obj_seg_points in vis_dict['Object_segmentation']:
                                 contact_points = contact_line(obj_points, obj_seg_points)
                                 cv2.polylines(canvas, [contact_points], False, color, 10)
-
+      
             save_img(output_img_path, canvas)
-                
+
                 
