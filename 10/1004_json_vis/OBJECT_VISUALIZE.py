@@ -3,8 +3,10 @@ import logging
 import numpy as np
 from collections import defaultdict
 from tqdm import tqdm
+import pandas as pd
 from PIL import Image, ImageDraw
 from shapely.geometry import box, Polygon
+from shapely.validation import explain_validity
 
 def make_logger(log):
     logger = logging.getLogger()
@@ -96,6 +98,7 @@ def contact_line(box_point, obj_seg_poitns):
         shape1 = Polygon(box_point)
         shape2 = Polygon(obj_seg_poitns)
     
+
     intersection = shape2.intersection(shape1)
 
     if intersection.geom_type == 'Polygon':
@@ -103,8 +106,8 @@ def contact_line(box_point, obj_seg_poitns):
         intersection_coords = list(intersection.exterior.coords)
         intersection_coords = [list(c) for c in intersection_coords]
         intersection_coords = [coord for coord in obj_seg_poitns if coord in intersection_coords]
-        
-    intersection_coords = np.array(intersection_coords, dtype=np.int32)
+    
+        intersection_coords = np.array(intersection_coords, dtype=np.int32)
     
     return intersection_coords
 
@@ -119,6 +122,7 @@ if __name__ == "__main__":
     img_dict = readfiles(img_dir, '.jpg')
     json_dict = readfiles(json_dir, '.json')
     
+    error_list = []
     for filename, img_path in tqdm(img_dict.items()):
         json_path = json_dict.get(filename)
         if json_path:
@@ -153,12 +157,28 @@ if __name__ == "__main__":
                         if obj_name in ["Shadow_segmentation", "Object_segmentation", "Void"]:
                             obj_points = np.array(obj_points, np.int32)
                             cv2.fillPoly(canvas, [obj_points], color)
+                        # if obj_name in ["Object_segmentation"]:
+                        #     obj_points = np.array(obj_points, np.int32)
                             
+                        #     cv2.polylines(canvas, [obj_points], False, color, 10)
+                        #     color = (0, color[1] + 30, color[2] + 30)
+
                         if obj_name in ["contact_line", "contact_line_polygon"]:
                             for obj_seg_points in vis_dict['Object_segmentation']:
                                 contact_points = contact_line(obj_points, obj_seg_points)
-                                cv2.polylines(canvas, [contact_points], False, color, 10)
-      
+                                if len(contact_points) > 0:
+                                    cv2.polylines(canvas, [contact_points], False, color, 10)
+                        # if obj_name in ["contact_line", "contact_line_polygon"]:
+                        #     for obj_seg_points in vis_dict['Object_segmentation']:
+                        #         contact_points = contact_line(obj_points, obj_seg_points)
+                        #         print(contact_points)
+                        #         cv2.polylines(canvas, [contact_points], False, color, 10)      
+                        #         color = (0, color[1] + 30, color[2] + 30)
+    
             save_img(output_img_path, canvas)
+    
+    df = pd.DataFrame(error_list, columns=['filename', 'coordinates'])
+    df.to_excel('./error_list.xlsx', index=False)
+  
 
                 
