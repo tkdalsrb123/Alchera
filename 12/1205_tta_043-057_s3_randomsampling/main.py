@@ -44,7 +44,9 @@ def revise_path(path, depth5, depth7, depth8, unique, Ext):
     root_split = root.split('/')
     filename, ext = os.path.splitext(file)
     filename_split = filename.split('_')
-    new_filename = file.replace(filename_split[3], unique).replace(ext, Ext)
+    filename_split[3] = unique
+    new_filename = '_'.join(filename_split).replace(ext, Ext)
+    
     root_split[4] = depth5
     root_split[6] = depth7
     root_split[7] = depth8
@@ -90,6 +92,7 @@ if __name__ == '__main__':
         [down_path_list.append(preprocessing(raw_file)) for raw_file in raw_file_list]
     
     for down_path in tqdm(down_path_list, desc='download file'):
+        logger.info(down_path)
         for down in down_path:
             if '원천' in down:
                 down_file_path(raw_down_dir, down)
