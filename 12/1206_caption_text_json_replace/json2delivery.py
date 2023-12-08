@@ -1,4 +1,5 @@
 import os, sys, json, logging
+import pandas as pd
 from collections import defaultdict
 from tqdm import tqdm
 
@@ -125,6 +126,7 @@ if __name__ == "__main__":
 
     json_dict = readfiles(input_dir, '.json')
 
+    error_list = []
     for filename, json_path in tqdm(json_dict.items()):
         logger.info(json_path)
         data = readJson(json_path)
@@ -142,21 +144,28 @@ if __name__ == "__main__":
                         att_dict[attributes['name']] = [attributes['values'][0]['value']]
                     elif attributes['name'] in ['부가설명', '단위', '범례', 'X값', 'Y값']:
                         value = attributes['values'][0]['value']
+                        if attributes['name'] in ['X값', 'Y값'] and not value:                            
+                            error_list.apped(json_filename, attributes['name'])
                         value = value.split('\n')
-                        if len(value[0]) > 1:
+                        if len(value) > 1:
                             att_dict[attributes['name']] = [[v.strip() for v in val.split('#')] for val in value]
                         else:
-                            value = value[0]
-                            att_dict[attributes['name']] = [v.strip() for v in value.split('#')]
+                            if value[0]:
+                                att_dict[attributes['name']] = [v.strip() for v in value[0].split('#')]
+                            else:
+                                att_dict[attributes['name']] = ['']
                     elif attributes['name'] in ['통합성']:
                         for values in attributes['values']:
                             if values['selected'] == True:
-                                att_dict[attributes['name']] = [values['value']] 
+                                att_dict[attributes['name']] = [int(values['value'][0])] 
             elif name in ['C', 'D']:
                 json_filename = objects['id'] # json file name
                 for attributes in objects['attributes']:
                     if attributes['name'] in ['제목(title)', '개요(outline)', '부가설명(additional)', '세부내용(contents-tabulization)', '경향성(contents-tendency)', '요약(summary)']:
-                        att_dict[attributes['name']] = attributes['values'][0]['value']
+                        value = attributes['values'][0]['value']
+                        if attributes['name'] in ['개요(outline)'] and not value:                            
+                            error_list.apped(json_filename, attributes['name'])
+                        att_dict[attributes['name']] = value
 
                     elif attributes['name'] in ['정확도(dataaccuracy)']:
                         for values in attributes['values']:
@@ -170,3 +179,6 @@ if __name__ == "__main__":
             os.makedirs(output_folder, exist_ok=True)
             output_json_path = os.path.join(output_folder, f"{json_filename}.json")
             json_format(name, att_dict, output_json_path)
+
+            df = pd.DataFrame(error_list, columns=['filename', 'name'])
+            df.to_excel(f'{output_dir}/error_list.xlsx', index=False)
