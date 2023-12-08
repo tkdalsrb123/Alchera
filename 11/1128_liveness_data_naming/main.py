@@ -137,6 +137,7 @@ if __name__ == "__main__":
             logger.info(mp4_path)
             data = readJson(json_path)
             
+            _id = data['id'].split('_')[0]
             mobile_no = data['tester']['mobile_no']
             env_text = make_env_text(data['environment'])
             text_type = data['test_type']
@@ -144,9 +145,9 @@ if __name__ == "__main__":
             new_filename = '_'.join([change(text_type), env_text])
             num = filename_category.get(new_filename)
             if num:
-                new_filename = f"{num}_{new_filename}_{mobile_no}"
+                new_filename = f"{_id}_{num}_{new_filename}_{mobile_no}"
             else:
-                new_filename = f"{new_filename}_{mobile_no}"
+                new_filename = f"{_id}_{new_filename}_{mobile_no}"
             output_json_path = makeOutputPath(json_path, input_dir, output_dir, new_filename, '.json')        
             output_mp4_path = makeOutputPath(mp4_path, input_dir, output_dir, new_filename, '.mp4')
             
@@ -165,7 +166,7 @@ if __name__ == "__main__":
                 new_filename = f"{filename}_{num}"
                 new_copy_path = [change_filename(new_filename, path) for path in copy_path]
                 shutil.copy2(copy_path[0], new_copy_path[1])
-                print(copy_path[0], new_copy_path[1])
+                # print(copy_path[0], new_copy_path[1])
                 shutil.copy2(copy_path[2], new_copy_path[3])
                 num += 1
         else:
