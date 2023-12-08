@@ -106,19 +106,20 @@ category = {
 "순광":"PL",
 "역광":"BL",
 "백색":"WL",
-"주백색":"D",
-"네온":"N",
+"주백색":"DL",
+"네온":"NL",
 "자연광":"NL",
 "복잡":"CB",
-"True":"T",
-"False":"F",
+"True":"Ture",
+"False":"False",
+"버스 정류장":"Bus",
 "버스정류장":"Bus",
 "가로등":"Steetlight",
 "편의점":"Store",
 "주간":"Day",
 "야간":"Night"}
 
-filename_category = {'real_indoor_SB_PL_WL': '001', 'real_indoor_SB_PL_D': '002', 'real_indoor_SB_PL_N': '003', 'real_indoor_SB_PL_NL': '004', 'real_indoor_SB_PL_WL+N': '005', 'real_indoor_SB_PL_WL+NL': '006', 'real_indoor_SB_PL_WL+D': '007', 'real_indoor_SB_BL_WL': '008', 'real_indoor_SB_BL_D': '009', 'real_indoor_SB_BL_N': '010', 'real_indoor_SB_BL_NL': '011', 'real_indoor_SB_BL_WL+N': '012', 'real_indoor_SB_BL_WL+NL': '013', 'real_indoor_SB_BL_WL+D': '014', 'real_indoor_CB_PL_WL': '015', 'real_indoor_CB_PL_D': '016', 'real_indoor_CB_PL_N': '017', 'real_indoor_CB_PL_NL': '018', 'real_indoor_CB_PL_WL+N': '019', 'real_indoor_CB_PL_WL+NL': '020', 'real_indoor_CB_PL_WL+D': '021', 'real_indoor_CB_BL_WL': '022', 'real_indoor_CB_BL_D': '023', 'real_indoor_CB_BL_N': '024', 'real_indoor_CB_BL_NL': '025', 'real_indoor_CB_BL_WL+N': '026', 'real_indoor_CB_BL_WL+NL': '027', 'real_indoor_CB_BL_WL+D': '028', 'real_outdoor_Day_T_Bus': '029', 'real_outdoor_Day_T_Steetlight': '030', 'real_outdoor_Day_T_Store': '031', 'real_outdoor_Day_F_Bus': '032', 'real_outdoor_Day_F_Steetlight': '033', 'real_outdoor_Day_F_Store': '034', 'fake_indoor_SB_PL_WL': '035', 'fake_indoor_SB_PL_D': '036', 'fake_indoor_SB_PL_N': '037', 'fake_indoor_SB_PL_NL': '038', 'fake_indoor_SB_PL_WL+N': '039', 'fake_indoor_SB_PL_WL+NL': '040', 'fake_indoor_SB_PL_WL+D': '041', 'fake_indoor_SB_BL_WL': '042', 'fake_indoor_SB_BL_D': '043', 'fake_indoor_SB_BL_N': '044', 'fake_indoor_SB_BL_NL': '045', 'fake_indoor_SB_BL_WL+N': '046', 'fake_indoor_SB_BL_WL+NL': '047', 'fake_indoor_SB_BL_WL+D': '048', 'fake_indoor_CB_PL_WL': '049', 'fake_indoor_CB_PL_D': '050', 'fake_indoor_CB_PL_N': '051', 'fake_indoor_CB_PL_NL': '052', 'fake_indoor_CB_PL_WL+N': '053', 'fake_indoor_CB_PL_WL+NL': '054', 'fake_indoor_CB_PL_WL+D': '055', 'fake_indoor_CB_BL_WL': '056', 'fake_indoor_CB_BL_D': '057', 'fake_indoor_CB_BL_N': '058', 'fake_indoor_CB_BL_NL': '059', 'fake_indoor_CB_BL_WL+N': '060', 'fake_indoor_CB_BL_WL+NL': '061', 'fake_indoor_CB_BL_WL+D': '062', 'fake_outdoor_Day_T_Bus': '063', 'fake_outdoor_Day_T_Steetlight': '064', 'fake_outdoor_Day_T_Store': '065', 'fake_outdoor_Day_F_Bus': '066', 'fake_outdoor_Day_F_Steetlight': '067', 'fake_outdoor_Day_F_Store': '068'}
+filename_category = {'real_indoor_SB_PL_WL': '001', 'real_indoor_SB_PL_DL': '002', 'real_indoor_SB_PL_NL': '003', 'real_indoor_SB_PL_NL': '004', 'real_indoor_SB_PL_WL+NL': '005', 'real_indoor_SB_PL_WL+NL': '006', 'real_indoor_SB_PL_WL+DL': '007', 'real_indoor_SB_BL_WL': '008', 'real_indoor_SB_BL_DL': '009', 'real_indoor_SB_BL_NL': '010', 'real_indoor_SB_BL_NL': '011', 'real_indoor_SB_BL_WL+N': '012', 'real_indoor_SB_BL_WL+NL': '013', 'real_indoor_SB_BL_WL+DL': '014', 'real_indoor_CB_PL_WL': '015', 'real_indoor_CB_PL_DL': '016', 'real_indoor_CB_PL_NL': '017', 'real_indoor_CB_PL_NL': '018', 'real_indoor_CB_PL_WL+NL': '019', 'real_indoor_CB_PL_WL+NL': '020', 'real_indoor_CB_PL_WL+DL': '021', 'real_indoor_CB_BL_WL': '022', 'real_indoor_CB_BL_DL': '023', 'real_indoor_CB_BL_NL': '024', 'real_indoor_CB_BL_NL': '025', 'real_indoor_CB_BL_WL+NL': '026', 'real_indoor_CB_BL_WL+NL': '027', 'real_indoor_CB_BL_WL+DL': '028', 'real_outdoor_Day_Ture_Bus': '029', 'real_outdoor_Day_Ture_Steetlight': '030', 'real_outdoor_Day_Ture_Store': '031', 'real_outdoor_Day_False_Bus': '032', 'real_outdoor_Day_False_Steetlight': '033', 'real_outdoor_Day_False_Store': '034', 'fake_indoor_SB_PL_WL': '035', 'fake_indoor_SB_PL_DL': '036', 'fake_indoor_SB_PL_NL': '037', 'fake_indoor_SB_PL_NL': '038', 'fake_indoor_SB_PL_WL+NL': '039', 'fake_indoor_SB_PL_WL+NL': '040', 'fake_indoor_SB_PL_WL+DL': '041', 'fake_indoor_SB_BL_WL': '042', 'fake_indoor_SB_BL_DL': '043', 'fake_indoor_SB_BL_NL': '044', 'fake_indoor_SB_BL_NL': '045', 'fake_indoor_SB_BL_WL+NL': '046', 'fake_indoor_SB_BL_WL+NL': '047', 'fake_indoor_SB_BL_WL+DL': '048', 'fake_indoor_CB_PL_WL': '049', 'fake_indoor_CB_PL_DL': '050', 'fake_indoor_CB_PL_NL': '051', 'fake_indoor_CB_PL_NL': '052', 'fake_indoor_CB_PL_WL+NL': '053', 'fake_indoor_CB_PL_WL+NL': '054', 'fake_indoor_CB_PL_WL+DL': '055', 'fake_indoor_CB_BL_WL': '056', 'fake_indoor_CB_BL_DL': '057', 'fake_indoor_CB_BL_NL': '058', 'fake_indoor_CB_BL_NL': '059', 'fake_indoor_CB_BL_WL+NL': '060', 'fake_indoor_CB_BL_WL+NL': '061', 'fake_indoor_CB_BL_WL+DL': '062', 'fake_outdoor_Day_Ture_Bus': '063', 'fake_outdoor_Day_Ture_Steetlight': '064', 'fake_outdoor_Day_Ture_Store': '065', 'fake_outdoor_Day_False_Bus': '066', 'fake_outdoor_Day_False_Steetlight': '067', 'fake_outdoor_Day_False_Store': '068','fake_outdoor_Night_Ture_Bus': '069', 'fake_outdoor_Night_Ture_Steetlight': '070', 'fake_outdoor_Night_Ture_Store': '071', 'fake_outdoor_Night_False_Bus': '072', 'fake_outdoor_Night_False_Steetlight': '073', 'fake_outdoor_Night_False_Store': '074'}
 
 if __name__ == "__main__":
     _, input_dir, output_dir = sys.argv
@@ -137,7 +138,7 @@ if __name__ == "__main__":
             logger.info(mp4_path)
             data = readJson(json_path)
             
-            _id = data['id'].split('_')[0]
+            _id = data['id']
             mobile_no = data['tester']['mobile_no']
             env_text = make_env_text(data['environment'])
             text_type = data['test_type']
@@ -145,9 +146,9 @@ if __name__ == "__main__":
             new_filename = '_'.join([change(text_type), env_text])
             num = filename_category.get(new_filename)
             if num:
-                new_filename = f"{_id}_{num}_{new_filename}_{mobile_no}"
+                new_filename = f"{_id}_{num}_{new_filename}"
             else:
-                new_filename = f"{_id}_{new_filename}_{mobile_no}"
+                new_filename = f"{_id}_{new_filename}"
             output_json_path = makeOutputPath(json_path, input_dir, output_dir, new_filename, '.json')        
             output_mp4_path = makeOutputPath(mp4_path, input_dir, output_dir, new_filename, '.mp4')
             

@@ -6,7 +6,7 @@ from tqdm import tqdm
 import pandas as pd
 from PIL import Image, ImageDraw
 from shapely.geometry import box, Polygon
-from shapely.validation import explain_validity
+import math
 
 def make_logger(log):
     logger = logging.getLogger()
@@ -69,22 +69,22 @@ def select_color(name):
     
     return color
 
-def contact_line(box_point,obj_seg_points):
-    box_points = np.array(box_point)
-    x_points = []
-    y_points = []
-    contact_points = []
-    #print(box_points)
-    for point in box_points:
-        x,y = point
-        x_points.append(x)
-        y_points.append(y)
-    for one_point in obj_seg_points:
-        x,y = one_point
-        if min(x_points)<=x and max(x_points)>=x and min(y_points)<=y and max(y_points)>=y:
-            contact_points.append(one_point)
-    contact_points = np.array(contact_points, np.int32)
-    return contact_points
+# def contact_line(box_point,obj_seg_points):
+#     box_points = np.array(box_point)
+#     x_points = []
+#     y_points = []
+#     contact_points = []
+#     #print(box_points)
+#     for point in box_points:
+#         x,y = point
+#         x_points.append(x)
+#         y_points.append(y)
+#     for one_point in obj_seg_points:
+#         x,y = one_point
+#         if min(x_points)<=x and max(x_points)>=x and min(y_points)<=y and max(y_points)>=y:
+#             contact_points.append(one_point)
+#     contact_points = np.array(contact_points, np.int32)
+#     return contact_points
 
 def contact_line(box_point, obj_seg_poitns):
     intersection_coords = []
@@ -105,9 +105,9 @@ def contact_line(box_point, obj_seg_poitns):
         # Polygon일 경우 좌표 출력
         intersection_coords = list(intersection.exterior.coords)
         intersection_coords = [list(c) for c in intersection_coords]
-        intersection_coords = [coord for coord in obj_seg_poitns if coord in intersection_coords]
-    
-        intersection_coords = np.array(intersection_coords, dtype=np.int32)
+        intersection_coords = [(round(coord[0]), round(coord[1])) for coord in obj_seg_poitns if coord in intersection_coords]
+        
+        # intersection_coords = np.array(intersection_coords, dtype=np.int32)
     
     return intersection_coords
 
@@ -118,7 +118,7 @@ if __name__ == "__main__":
     logger = make_logger('log.log')
 
     seq = ["Shadow_segmentation", "Object_segmentation", "Void", "contact_line", "contact_line_polygon"]
-    # seq = ["Object_segmentation"]
+
     img_dict = readfiles(img_dir, '.jpg')
     json_dict = readfiles(json_dir, '.json')
     
@@ -157,24 +157,14 @@ if __name__ == "__main__":
                         if obj_name in ["Shadow_segmentation", "Object_segmentation", "Void"]:
                             obj_points = np.array(obj_points, np.int32)
                             cv2.fillPoly(canvas, [obj_points], color)
-                        # if obj_name in ["Object_segmentation"]:
-                        #     obj_points = np.array(obj_points, np.int32)
-                            
-                        #     cv2.polylines(canvas, [obj_points], False, color, 10)
-                        #     color = (0, color[1] + 30, color[2] + 30)
 
                         if obj_name in ["contact_line", "contact_line_polygon"]:
                             for obj_seg_points in vis_dict['Object_segmentation']:
                                 contact_points = contact_line(obj_points, obj_seg_points)
                                 if len(contact_points) > 0:
-                                    cv2.polylines(canvas, [contact_points], False, color, 10)
-                        # if obj_name in ["contact_line", "contact_line_polygon"]:
-                        #     for obj_seg_points in vis_dict['Object_segmentation']:
-                        #         contact_points = contact_line(obj_points, obj_seg_points)
-                        #         print(contact_points)
-                        #         cv2.polylines(canvas, [contact_points], False, color, 10)      
-                        #         color = (0, color[1] + 30, color[2] + 30)
-    
+                                    for points in contact_points:
+                                        cv2.circle(canvas, points, 6, color, -1)
+                                    
             save_img(output_img_path, canvas)
     
     df = pd.DataFrame(error_list, columns=['filename', 'coordinates'])
