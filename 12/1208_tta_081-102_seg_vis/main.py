@@ -93,27 +93,28 @@ if __name__ == '__main__':
         for cat in data['Categories']:
             cat_dict[cat['id']] = cat['name']
             
-        ann_dict = {}
+        ann_dict = defaultdict(list)
         for ann in data['Annotations']:
             _id = ann['segments_info'][0]['category_id']
             seg = ann['segments_info'][0]['segmentation'][0]
             coordinates = [(seg[idx], seg[idx+1])for idx in range(0, len(seg), 2)]
-            ann_dict[_id] = coordinates
+            ann_dict[_id].append(coordinates)
         
         img = read_img(img_path)
         overlay = img.copy()
-        for _id, coor in ann_dict.items():
+        for _id, coordinate in ann_dict.items():
             if filename.split('_')[0] == 'R':
                 color = R_category_colors[_id]
             elif filename.split('_')[0] == 'E':
                 color = E_category_colors[_id]
             text = cat_dict[_id]
-            xymean = np.mean(coor, axis=0)
+            for coor in coordinate:
+                xymean = np.mean(coor, axis=0)
             
-            pts = np.array(coor, dtype=np.int32)
-            cv2.polylines(img, [pts], True, color, int(thickness))
-            cv2.fillPoly(overlay, [pts], color)
-            cv2.putText(img, text, (round(xymean[0]), round(xymean[1])), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 0), 2)
+                pts = np.array(coor, dtype=np.int32)
+                cv2.polylines(img, [pts], True, color, int(thickness))
+                cv2.fillPoly(overlay, [pts], color)
+                cv2.putText(img, text, (round(xymean[0]), round(xymean[1])), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 0), 2)
         
         img = cv2.addWeighted(overlay, alpha, img, 1-alpha, 0.0)
         save_img(output_img_path, img)
