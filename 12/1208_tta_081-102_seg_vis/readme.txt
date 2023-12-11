@@ -9,3 +9,8 @@ python main.py [img dir] [json dir] [output dir] [thickness] [투명도]
 type
 thickness int 
 투명도 0 ~ 1 float 
+
+1211 
+
+1. 수정사항
+- 파일별 시각화 생상 구분

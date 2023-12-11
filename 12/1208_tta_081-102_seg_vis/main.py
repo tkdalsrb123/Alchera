@@ -58,15 +58,22 @@ def save_img(img_path, img):
         with open(img_path, mode='w+b') as f:
             encoded_img.tofile(f)
             
-category_colors = {
+R_category_colors = {
     1: (212, 166, 255),
     2: (3, 195, 253),
     3: (246, 155, 68),
     4: (144, 255, 255),
     5: (240, 120, 140),
-    6: (83, 179, 36)
 }
 
+E_category_colors = {
+    1: (212, 166, 255),
+    2: (246, 155, 85),    
+    3: (240, 120, 140),
+    4: (83, 179, 36),
+    5: (144, 255, 255),
+    6: (3, 195, 253)
+}
             
 if __name__ == '__main__':
     _, img_dir, json_dir, output_dir, thickness, alpha = sys.argv
@@ -96,7 +103,10 @@ if __name__ == '__main__':
         img = read_img(img_path)
         overlay = img.copy()
         for _id, coor in ann_dict.items():
-            color = category_colors[_id]
+            if filename.split('_')[0] == 'R':
+                color = R_category_colors[_id]
+            elif filename.split('_')[0] == 'E':
+                color = E_category_colors[_id]
             text = cat_dict[_id]
             xymean = np.mean(coor, axis=0)
             
