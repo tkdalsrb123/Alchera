@@ -72,14 +72,14 @@ if __name__ == '__main__':
         car = 0
         vehicle_whole = 0
         for _class in class_list:
-            if 'Emergency' in _class[0]:
+            if 'Emergency Whole' in _class[0]:
                 if 'motocycle' in _class[1]:
                     ptw_moto += 1
                 else:
                     emergency_whole += 1
                 
-            elif 'Vehicle' in _class[0]:
-                if _class[1] in ['truck', 'van', 'bus']:
+            elif 'Vehicle Whole' in _class[0]:
+                if 'truck' == _class[1] or 'van' == _class[1] or 'bus' == _class[1]:
                     car += 1
                 else:
                     vehicle_whole += 1

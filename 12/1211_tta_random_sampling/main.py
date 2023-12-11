@@ -39,17 +39,41 @@ def response(path):
     res = paginator.paginate(Bucket=bucket_name, Prefix=f"{path}/", Delimiter='/')
     return res
 
-def preprocessing(path):
+def matching_img_path(path):
     root, file = os.path.split(path)
     filename, ext = os.path.splitext(file)
-    new_root = root.replace('2.라벨링데이터', '1.원천데이터').replace('/서브라벨링','')
-    new_filename = 'S' + filename[1:]
-    new_path = new_root + '/' + f"{new_filename}.JPEG"
-    return new_path
+    root_split = root.split('/')
+    root_split[5] = 'image'
+    root = '/'.join(root_split)
+    filename_split = filename.split('_')
+    file_list = []
+    for i in range(1, 8):
+        filename_split[1] = str(i).zfill(2)
+        filename = '_'.join(filename_split)
+        dir = '/'.join([root, f"{filename}.png"])
+        file_list.append(dir)
+    return file_list
+    
+def matching_json_path(path):
+    root, file = os.path.split(path)
+    filename, ext = os.path.splitext(file)
+    root_split = root.split('/')
+    root_split[4] = '2.라벨링데이터'
+    del root_split[5]
+    root_split.append('json')
+    root = '/'.join(root_split)
+    file = '/'.join([root, f"{filename}.json"])
+    return file
+    
+def preprocessing(path):
+    img_list = matching_img_path(path)
+    json_path = matching_json_path(path)
+    
+    return [img_list, json_path, path]
     
 
 if __name__ == '__main__':
-    _, excel_dir, raw_down_dir, label_down_dir = sys.argv
+    _, excel_dir, raw_down_dir, label_down_dir, obj_down_dir = sys.argv
     
     logger = make_logger('log.log')
     
@@ -63,18 +87,22 @@ if __name__ == '__main__':
     down_path_list = []
     for data in tqdm(path_list, desc='extract down file path'):
         res = response(data[0])
+        # res = response("026.3차원 안면 데이터/1.구축과정산출물/2.최종검증/1.Datasets/1.원천데이터/3D data/F0913")
+      
         file_list = []
+
         for r in res:
-            [file_list.append(c) for c in r['Contents']]
+            [file_list.append(c) for c in r['Contents'][1:]]
         
         con = random.sample(file_list, data[1])
         obj_file_list =[c['Key'] for c in con]
-        # label_file_list = [raw_file.replace('2.라벨링데이터', '1.원천데이터').replace('json', 'JPEG').replace('/서브라벨링','') for raw_file in raw_file_list]
-        label_file_list = [preprocessing(raw_file) for raw_file in raw_file_list]
-  
-        for i in range(len(raw_file_list)):
-            down_path_list.append([raw_file_list[i], label_file_list[i]])
+        
+        [down_path_list.append(preprocessing(obj_file)) for obj_file in obj_file_list]
     
     for down_path in tqdm(down_path_list, desc='download file'):
-        down_file_path(label_down_dir, down_path[0])
-        down_file_path(raw_down_dir, down_path[1])
+        for img_path in down_path[0]:
+            down_file_path(raw_down_dir, img_path)
+        down_file_path(label_down_dir, down_path[1])
+        down_file_path(obj_down_dir, down_path[2])
+
+
