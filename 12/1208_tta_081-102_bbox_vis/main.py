@@ -74,19 +74,21 @@ if __name__ == '__main__':
         cat_dict = {}
         for cat in data['Categories']:
             cat_dict[cat['id']] = cat['name']
-        ann_dict = {}
+
+        ann_dict = defaultdict(list)
         for ann in data['Annotations']:
             _id = ann['category_id']
-            ann_dict[_id] = [round(b) for b in ann['bbox']]
+            ann_dict[_id].append([round(b) for b in ann['bbox']])
         
         color = (0, 0, 255)
         img = read_img(img_path)
-        for _id, bbox in ann_dict.items():
+        for _id, bbox_list in ann_dict.items():
             text = cat_dict[_id]
-            x1y1 = (bbox[0], bbox[1])
-            x2y2 = (x1y1[0] + bbox[2], x1y1[1] + bbox[3])
-            cv2.rectangle(img, x1y1, x2y2, color, 3)
-            cv2.putText(img, text, (x1y1[0]+5, x1y1[1]+15), cv2.FONT_HERSHEY_SIMPLEX, 0.3, color, 1)
+            for bbox in bbox_list:
+                x1y1 = (bbox[0], bbox[1])
+                x2y2 = (x1y1[0] + bbox[2], x1y1[1] + bbox[3])
+                cv2.rectangle(img, x1y1, x2y2, color, 3)
+                cv2.putText(img, text, (x1y1[0]+5, x1y1[1]+15), cv2.FONT_HERSHEY_SIMPLEX, 0.3, color, 1)
         
         save_img(output_img_path, img)
             
