@@ -54,7 +54,7 @@ def makeOutputPath(file_path, file_dir, output_dir, Ext):
     return output_path
 
 def spacing_preprocessing(x):
-    CAUSE = x.iloc[3]
+    CAUSE = x.iloc[1]
     TYPE = x.iloc[4]
     COUNTER = x.iloc[5]
 

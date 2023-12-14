@@ -73,42 +73,48 @@ if __name__ == '__main__':
     
     list2df = []
     for filename, label_path in tqdm(label_dict.items()):
-        treeD_path = treeD_dict[filename]
+        treeD_path = treeD_dict.get(filename)
+        if treeD_path:
+            label_data = readJson(label_path)
+            treeD_data = readJson(treeD_path)
+            
+            label_list = []
+            for ann in label_data['annotaions']['boxes']:
+                coor = ann['coordinates']
+                if len(coor) == 4:
+                    x = coor['x']
+                    y = coor['y']
+                    w = coor['width']
+                    h = coor['height']
+                    x1 = int(x - w/2)
+                    y1 = int(y - h/2)
+                    x2 = int(x + w/2)
+                    y2 = int(y + h/2)
+                    label_list.append(((x1, y1, x2, y2), ann['class']))
 
-        label_data = readJson(label_path)
-        treeD_data = readJson(treeD_path)
-        
-        label_list = []
-        for ann in label_data['annotations']:
-            coor = ann['coordinates']
-            if len(coor) == 4:
-                x1 = coor[0]
-                y1 = coor[1]
-                x2 = x1+coor[2]
-                y2 = y1+coor[3]
-                label_list.append(((x1, y1, x2, y2), ann['class']))
-        
-        treeD_list = []
-        for obj in treeD_data['objects']:
-            if obj['name'] == '영역오류':
-                x1 = obj['points'][0][0]
-                y1 = obj['points'][0][1]
-                x2 = obj['points'][1][0]
-                y2 = obj['points'][1][1]
-                treeD_list.append((x1,y1,x2,y2))
-                
+            treeD_list = []
+            for obj in treeD_data['objects']:
+                if obj['name'] == '영역오류':
+                    x1 = obj['points'][0][0]
+                    y1 = obj['points'][0][1]
+                    x2 = obj['points'][1][0]
+                    y2 = obj['points'][1][1]
+                    treeD_list.append((x1,y1,x2,y2))
+                    
 
-        for treeD in treeD_list:
-            iou_list = []
-            cla = None
-            for label in label_list:
-                iou = IoU(treeD, label[0])
-                iou_list.append((iou, label[1]))
+            for treeD in treeD_list:
+                iou_list = []
+                cla = None
+                for label in label_list:
+                    iou = IoU(treeD, label[0])
+                    iou_list.append((iou, label[1]))
 
-            max_iou = max([ i[0] for i in iou_list])
-            cla = [i[1] for i in iou_list if i[0] == max_iou]
+                max_iou = max([ i[0] for i in iou_list])
+                cla = [i[1] for i in iou_list if i[0] == max_iou]
 
-            list2df.append([filename, cla, max_iou])
+                list2df.append([filename, cla, max_iou])
+        else:
+            print(filename)
         
     df = pd.DataFrame(list2df, columns=['파일명', 'class', 'IoU값'])
     df.to_excel(f"{output_dir}/IoU.xlsx", index=False)
