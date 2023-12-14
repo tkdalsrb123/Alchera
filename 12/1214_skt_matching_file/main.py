@@ -1,8 +1,6 @@
 import os, sys, json, logging
 import pandas as pd
 from openpyxl import load_workbook
-from openpyxl.drawing.image import Image
-from PIL import Image
 from collections import defaultdict
 from tqdm import tqdm
 from openpyxl.drawing.image import Image as XLImage
