@@ -53,14 +53,30 @@ def makeOutputPath(file_path, file_dir, output_dir, Ext):
 
     return output_path
 
+def is_nan(val):
+    if type(val) != float:
+        return val
+    else:
+        return ""
 def spacing_preprocessing(x):
-    CAUSE = x.iloc[1]
-    TYPE = x.iloc[4]
-    COUNTER = x.iloc[5]
+    col = ["정제_원인 문장", "정제_재해 유형", "정제_대책 문장"]
+    # CAUSE = x.iloc[1]
+    # TYPE = x.iloc[2]
+    # COUNTER = x.iloc[3]
 
-    x.iloc[3] = spacing(CAUSE)
-    x.iloc[4] = spacing(TYPE)
-    x.iloc[5] = spacing(COUNTER)
+    # x.iloc[1] = spacing(CAUSE)
+    # x.iloc[2] = spacing(TYPE)
+    # x.iloc[3] = spacing(COUNTER)
+    col0 = is_nan(x[col[0]])
+    col1 = is_nan(x[col[1]])
+    col2 = is_nan(x[col[2]])
+    
+    
+    x[col[0]] = spacing(col0)
+    x[col[1]] = spacing(col1)
+    x[col[2]] = spacing(col2)
+
+    return x
 
 if __name__ == '__main__':
     _, input_dir, output_dir = sys.argv
@@ -70,11 +86,13 @@ if __name__ == '__main__':
 
     spacing=Spacing()
 
-    for filename, excel_path in tqdm(excel_dict.items(), desc='all excel'):
+    for filename, excel_path in tqdm(excel_dict.items(), desc='all excel', position=0):
         logger.info(excel_path)
         output_xlsx_path = makeOutputPath(excel_path, input_dir, output_dir, 'xlsx')
         excel = pd.read_excel(excel_path)
 
-        excel.progress_apply(spacing_preprocessing, axis=1)
+        for index, row in tqdm(excel.iterrows(), total=excel.shape[0], desc='filename', position=1):
+            modified_row = spacing_preprocessing(row)
+            excel.at[index] = modified_row
         
         excel.to_excel(output_xlsx_path, index=False)

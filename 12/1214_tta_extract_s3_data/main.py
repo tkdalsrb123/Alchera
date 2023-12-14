@@ -68,6 +68,7 @@ if __name__ == '__main__':
     paginator = s3client.get_paginator('list_objects_v2')
     
     down_path_list = []
+    label_down_path_list = []
     label_path_list = list(set(label_path_list))
     for label_path in tqdm(label_path_list, desc='extract down file path'):
         try:
@@ -75,19 +76,22 @@ if __name__ == '__main__':
         except:
             print(label_path, '경로 존재 x')
     
+    if label_down_path_list:
 
-    label_dict = {'_'.join(extract_filename(path).split('_')[2:]): path for path in label_down_path_list if os.path.split(path)[-1] != ''}
-    
-    for filename, raw_path in tqdm(path_dict.items(), desc='download file'):
-        label_path = label_dict.get(filename)
-        if label_path:
-            try:
-                down_file_path(output_dir, raw_path)
-            except:
-                print(raw_path, '파일 x')
-            try:
-                down_file_path(output_dir, label_path)
-            except:
-                print(label_path, '파일 x')
-        else:
-            print(raw_path, label_path, '매칭 x')
+        label_dict = {'_'.join(extract_filename(path).split('_')[2:]): path for path in label_down_path_list if os.path.split(path)[-1] != ''}
+        
+        for filename, raw_path in tqdm(path_dict.items(), desc='download file'):
+            label_path = label_dict.get(filename)
+            if label_path:
+                try:
+                    down_file_path(output_dir, raw_path)
+                except:
+                    print(raw_path, '파일 x')
+                try:
+                    down_file_path(output_dir, label_path)
+                except:
+                    print(label_path, '파일 x')
+            else:
+                print(raw_path, label_path, '매칭 x')
+    else:
+        print(label_path, 'no file')
