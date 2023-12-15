@@ -67,32 +67,36 @@ def spacing_preprocessing(x):
     # x.iloc[1] = spacing(CAUSE)
     # x.iloc[2] = spacing(TYPE)
     # x.iloc[3] = spacing(COUNTER)
-    col0 = is_nan(x[col[0]])
-    col1 = is_nan(x[col[1]])
-    col2 = is_nan(x[col[2]])
-    
-    
-    x[col[0]] = spacing(col0)
-    x[col[1]] = spacing(col1)
-    x[col[2]] = spacing(col2)
+    try:
+        col0 = is_nan(x[col[0]])
+        col1 = is_nan(x[col[1]])
+        col2 = is_nan(x[col[2]])
 
+
+        x[col[0]] = spacing(col0)
+        x[col[1]] = spacing(col1)
+        x[col[2]] = spacing(col2)
+    except:
+        print(col0, col1, col2)
+        
     return x
 
 if __name__ == '__main__':
-    _, input_dir, output_dir = sys.argv
+    _, excel_dir, output_dir = sys.argv
     
     logger = make_logger('log.log')
-    excel_dict = readfiles(input_dir, '.xlsx')
+    # excel_dict = readfiles(input_dir, '.xlsx')
 
     spacing=Spacing()
 
-    for filename, excel_path in tqdm(excel_dict.items(), desc='all excel', position=0):
-        logger.info(excel_path)
-        output_xlsx_path = makeOutputPath(excel_path, input_dir, output_dir, 'xlsx')
-        excel = pd.read_excel(excel_path)
+    # for filename, excel_path in tqdm(excel_dict.items(), desc='all excel', position=0):
+        # logger.info(excel_path)
+        # output_xlsx_path = makeOutputPath(excel_path, input_dir, output_dir, 'xlsx')
+    file = os.path.split(excel_dir)[-1]
+    excel = pd.read_excel(excel_dir)
 
-        for index, row in tqdm(excel.iterrows(), total=excel.shape[0], desc='filename', position=1):
-            modified_row = spacing_preprocessing(row)
-            excel.at[index] = modified_row
-        
-        excel.to_excel(output_xlsx_path, index=False)
+    for index, row in tqdm(excel.iterrows(), total=excel.shape[0], desc='filename', position=1):
+        modified_row = spacing_preprocessing(row)
+        excel.at[index] = modified_row
+    
+    excel.to_excel(f"{output_dir}/{file}", index=False)
