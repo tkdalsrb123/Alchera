@@ -32,11 +32,11 @@ def readfiles(dir, Ext):
                 file_dict[sequence] = file_path
     return file_dict
 
-def makeOutputPath(file_path, file_dir, output_dir, seq, Ext):
+def makeOutputPath(file_path, file_dir, output_dir, seq, name, Ext):
     root, file = os.path.split(file_path)
     relpath = os.path.relpath(file_path, file_dir)
     mid_dir = os.path.split(relpath)[0]
-    output_path = os.path.join(output_dir, mid_dir, f"{seq}.{Ext}")
+    output_path = os.path.join(output_dir, mid_dir, seq, f"{name}.{Ext}")
     os.makedirs(os.path.dirname(output_path), exist_ok=True)
 
     return output_path
@@ -68,6 +68,15 @@ def preprocessing(x):
 
 def revise_info(name, val):
     att_list.append({'@name':name, '#text':str(val)})
+
+def xml_format(task, images, output_path):
+    format = {"annotations":{"task":task, "image":images}}
+
+    saveXml(output_path, format)
+    
+def make_xlsx(_list, col, output_path):
+    df = pd.DataFrame(_list, columns=col)
+    df.to_excel(output_path, index=False)
     
 if __name__ == '__main__':
     _, excel_dir, input_dir, output_dir = sys.argv
@@ -77,31 +86,72 @@ if __name__ == '__main__':
     df.apply(preprocessing, axis=1)
 
     xml_dict = readfiles(input_dir, '.xml')
-
-    for sequence, xml_path in xml_dict.items():
-        task = '_'.join(sequence.split('-')[0].split('_')[1:])
+    error_list = []
+    for sequence, xml_path in tqdm(xml_dict.items(), desc="xml", position=0):
         
-        info = info_dict[task]
-
-        output_xml_path = makeOutputPath(xml_path, input_dir, output_dir, sequence, 'xml')
         data = readxml(xml_path)
-        for i, image in enumerate(data['annotations']['image']):
-            for j, box in enumerate(image['box']):
-                att_list = []
-                # print(box['attribute'])
-                for k, attribute in enumerate(box['attribute']):
+        task_list = data['annotations']['meta']['project']['tasks']['task']
+
+        to_xml_task = {}
+        for task in task_list:
+            
+            if '-' not in task['name']:
+                name = task['name']
+                _id = task["id"]
+                to_xml_task[_id] = {"task":task, "task_name":name}
+
+        image_dict = defaultdict(list)
+                
+        for i, image in enumerate(tqdm(data['annotations']['image'], desc="gather xml image data", position=1)):
+            task_id = image['@task_id']
+            task_info = to_xml_task.get(task_id)
+            if task_info:
+                if len(task_info["task_name"].split('_')) < 5:
+                    task_name = task_info["task_name"]
+                    info = info_dict.get(task_name)
+                else:
+                    task_name = '_'.join(task_info["task_name"].split('_')[:-1])
+                    info = info_dict.get(task_name)
                     
-                    if attribute['@name'] == 'id':
-                        id_gender_age = info.get(int(attribute['#text']))
-                        revise_info('id', id_gender_age['ID'])
-                        revise_info('gender', id_gender_age['gender'])
-                        revise_info('age', id_gender_age['age'])
-                    elif attribute['@name'] == 'id_2':
-                        pass
-                    else:
-                        att_list.append(attribute)
-                att_list.append({'@name':'cloth id', '#text':str(task.split('_')[-1])})
+                if info:
 
-                data['annotations']['image'][i]['box'][j]['attribute'] = att_list
+                    box = image.get('box')
+                    if box:
+                        if type(box) == dict:
+                            box = [box]
+                        for j, box in enumerate(box):
+                            att_list = []
+     
+                            for k, attribute in enumerate(box['attribute']):
+                                
+                                if attribute['@name'] == 'id':
 
-        saveXml(output_xml_path, data)
+                                    id_gender_age = info.get(int(attribute['#text']))
+                                    try:
+                                        revise_info('id', id_gender_age['ID'])
+                                        revise_info('gender', id_gender_age['gender'])
+                                        revise_info('age', id_gender_age['age'])
+                                    except TypeError:
+                                        error_list.append([task_id, task_info['task_name'], box])
+                                elif attribute['@name'] == 'id_2':
+                                    pass
+                                else:
+                                    att_list.append(attribute)
+                            att_list.append({'@name':'cloth id', '#text':str(task_name.split('_')[-1])})
+                            
+                            try:
+                                data['annotations']['image'][i]['box'][j]['attribute'] = att_list
+                            except KeyError:
+                                data['annotations']['image'][i]['box']['attribute'] = att_list
+                                
+                        
+                        image_dict[task_id].append(data['annotations']['image'][i])
+
+        make_xlsx(error_list, ['id', 'sequence', 'box'], "./error_list.xlsx")
+        
+        for task_id, image_data in tqdm(image_dict.items(), desc="create xml"):
+            task = to_xml_task[task_id]['task']
+            task_name = to_xml_task[task_id]['task_name']
+            output_xml_path = makeOutputPath(xml_path, input_dir, output_dir, sequence, task_name, 'xml')
+            xml_format(task, image_data, output_xml_path)
+            
