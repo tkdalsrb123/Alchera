@@ -117,12 +117,17 @@ if __name__ == '__main__':
 
                     box = image.get('box')
                     if box:
+                        
                         if type(box) == dict:
                             box = [box]
                         for j, box in enumerate(box):
                             att_list = []
-     
-                            for k, attribute in enumerate(box['attribute']):
+                            if type(box['attribute']) == dict:
+                                box_attribute = [box['attribute']]
+                            else:
+                                box_attribute = box['attribute']
+                            
+                            for k, attribute in enumerate(box_attribute):
                                 
                                 if attribute['@name'] == 'id':
 

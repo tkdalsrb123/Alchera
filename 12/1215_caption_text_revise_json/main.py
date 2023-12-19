@@ -242,6 +242,7 @@ if __name__ == '__main__':
     make_output_folder('caption_json','D')
 
     error_list = []
+    result_list = []
     for filename, bbox_json_path in tqdm(bbox_json_dict.items()):
         caption_json_path = caption_json_dict.get(filename)
         if caption_json_path:
@@ -254,7 +255,7 @@ if __name__ == '__main__':
             bbox_info_dict = {}
             bbox_filname = bbox_data['info']['imageName']
             for obj in bbox_data['objects']:
-                bbox_info_dict[obj['id']] = obj['points']
+                bbox_info_dict[obj['id']] = (obj['name'], obj['points'])
             
             caption_info_dict = defaultdict(dict)
             for obj in caption_data['objects']:
@@ -270,18 +271,36 @@ if __name__ == '__main__':
              
   
             bbox_list = []
-            for _id, bbox_points in bbox_info_dict.items():
-                bbox_points = make_points(bbox_points)
-                
+            for _id, bbox_info in bbox_info_dict.items():
+                bbox_type, _bbox_points = bbox_info
+                bbox_points = make_points(_bbox_points)
+                bbox_filename = os.path.splitext(bbox_filname)[0]
+                result_list.append([bbox_filname, f"{bbox_filename}.json", f"{_id}.json", bbox_type])
+                tf = True
                 for caption_value in caption_info_dict.copy().values():
+                    
                     if caption_value and type(caption_value) == dict:
-                        if caption_value['type'] != 'Table':
+                        bbox_filename = os.path.splitext(bbox_filname)[0]
+                        
+                        if caption_value['type'] != 'Table' and caption_value['type'] != 'E':
                             caption_points = make_points(caption_value['points'])
                             iou = IoU(bbox_points, caption_points)
                             if iou > 0.5:
                                 caption_json_format(caption_value['type'], caption_value, f"{output_dir}/caption_json/{caption_value['type']}/{_id}.json", bbox_filname)
-                                bbox_list.append(bbox_format(_id, caption_value['type'], caption_value['points'], caption_value['캡션 가능한 그래프 수(BBox 내)']))
-                json_format(caption_info_dict['개요(outline)'], caption_info_dict['캡션 가능한 그래프 개수(전체 이미지 내)'], bbox_list, f"{output_dir}/bbox_json/{bbox_filname}.json")
-            
+                                bbox_list.append(bbox_format(_id, bbox_type, _bbox_points, caption_value['캡션 가능한 그래프 수(BBox 내)']))
+                                tf = False
+                        else:
+                            bbox_list.append(bbox_format(_id, bbox_type, _bbox_points, '0'))
+                            tf = False
+                if tf:
+                    bbox_list.append(bbox_format(_id, bbox_type, _bbox_points, '0'))
+                        
+                
+                
+                
+                json_format(caption_info_dict['개요(outline)'], caption_info_dict['캡션 가능한 그래프 개수(전체 이미지 내)'], bbox_list, f"{output_dir}/bbox_json/{bbox_filename}.json")
+
     make_xlsx(error_list, ['error_list'], f"./error_list.xlsx")
+    make_xlsx(result_list, ['img', 'bbox_json', 'tabulization_json', 'type'], f"./result.xlsx")
+    
                     
