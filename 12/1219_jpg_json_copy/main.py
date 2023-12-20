@@ -92,18 +92,21 @@ if __name__ == "__main__":
                 obj_list = []
                 for obj in data['objects']:
                     name = obj['name']
-                    if 'Object' in name or 'contact' in name:
+                    if 'Object' in name or 'contact' in name or 'Void' in name:
+
                         obj_list.append(obj)
                 
                 for json_path in copy_json_path:
                     data = readJson(json_path)
-
-                    for idx, obj in enumerate(data['objects']):
-                        name = obj['name']
-                        if 'Object' in name or 'contact' in name:
-                            
-                            del data['objects'][idx]
                     
+                    for idx, obj in reversed(list(enumerate(data['objects']))):
+                        
+                        name = obj['name']
+                        
+                        if 'Object' in name or 'contact' in name or 'Void' in name:
+
+                            del data['objects'][idx]
+
                     [data['objects'].append(obj) for obj in obj_list]
                     
                     save_file(data, json_path)

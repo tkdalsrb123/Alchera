@@ -285,7 +285,7 @@ if __name__ == '__main__':
                         if caption_value['type'] != 'Table' and caption_value['type'] != 'E':
                             caption_points = make_points(caption_value['points'])
                             iou = IoU(bbox_points, caption_points)
-                            if iou > 0.5:
+                            if iou:
                                 caption_json_format(caption_value['type'], caption_value, f"{output_dir}/caption_json/{caption_value['type']}/{_id}.json", bbox_filname)
                                 bbox_list.append(bbox_format(_id, bbox_type, _bbox_points, caption_value['캡션 가능한 그래프 수(BBox 내)']))
                                 tf = False
