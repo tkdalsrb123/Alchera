@@ -54,6 +54,37 @@ def json_format(filename, contents, output_path):
             "contents":contents}]
     
     saveJson(tree, output_path)
+    
+def revise(text):
+
+    while True:
+        
+        if text[0] != " " and text[0] != "\n":
+            break
+        
+        else:
+            text = text[1:]
+            
+    while True:
+        
+        if text[-1] != " " and text[-1] != "\n":
+            break
+        
+        else:
+            text = text[:-1]
+    
+    i=0
+    while i < len(text)-1:
+        
+        if text[i] == " ":
+            if text[i+1] == "®" or text[i+1] == "\n":
+               
+                text = text[:i] + text[i+1:]
+                
+                i -= 1
+        
+        i += 1
+    return text
 
 if __name__ == "__main__":
     _, input_dir ,output_dir = sys.argv
@@ -75,6 +106,7 @@ if __name__ == "__main__":
         content_list = []
         for o in obj:
             value = o['attributes'][0]['values'][0]['value']
+            value = revise(value)
 
             content_list.append(value)
         
