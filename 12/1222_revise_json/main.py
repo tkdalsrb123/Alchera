@@ -1,4 +1,5 @@
 import os, sys, json, logging
+import pandas as pd
 from tqdm import tqdm
 from collections import defaultdict
 
@@ -38,77 +39,43 @@ def makeOutputPath(file_path, file_dir, output_dir, Ext):
     output_path = os.path.join(output_dir, mid_dir, f"{filename}.{Ext}")
     os.makedirs(os.path.dirname(output_path), exist_ok=True)
 
-    return output_path
+    return output_path  
 
 def readJson(path):
-    with open(path, 'r', encoding='utf-8') as f:
+    with open(path, 'r', encoding='utf-8-sig') as f:
         data = json.load(f)
-    return data
+    return data 
 
 def saveJson(file, path):
     with open(path, 'w', encoding='utf-8') as f:
         json.dump(file, f, indent=2, ensure_ascii=False)
-
-def json_format(filename, contents, output_path):
-    tree = [{"filename":filename,
-            "contents":contents}]
-    
-    saveJson(tree, output_path)
-    
-def revise(text):
-
-    while True:
         
-        if text[0] != " " and text[0] != "\n":
-            break
-        
-        else:
-            text = text[1:]
-            
-    while True:
-        
-        if text[-1] != " " and text[-1] != "\n":
-            break
-        
-        else:
-            text = text[:-1]
-    
-    i=0
-    while i < len(text)-1:
-        
-        if text[i] == " ":
-            if text[i+1] == "®" or text[i+1] == "\n":
-               
-                text = text[:i] + text[i+1:]
-                
-                i -= 1
-        
-        i += 1
-    return text
-
 if __name__ == "__main__":
-    _, input_dir ,output_dir = sys.argv
+    _, input_json_dir, revise_json_dir = sys.argv
     
     logger = make_logger('log.log')
-
-    json_dict = readfiles(input_dir, '.json')
     
+    json_dict = readfiles(input_json_dir, '.json')
+    revise_dict = readfiles(revise_json_dir, '.json')
+
     for filename, json_path in tqdm(json_dict.items()):
-        # filename = f"{filename}.jpg"
-        output_json_path = makeOutputPath(json_path, input_dir, output_dir, 'json')    
-        logger.info(json_path)
-        data = readJson(json_path)
-        
-        imagename = data['info']['imageName']
-        obj = data['objects']
-        if type(obj) == dict:
-            obj = [obj]
+        revise_path = revise_dict.get(filename)
+        if revise_path:
+            logger.info(revise_path)
+            data = readJson(json_path)
+            revise_data = readJson(revise_path)
+            
+            backgrounds = data['backgrounds']
+            
+            std_obj = {}
+            for obj in data['object']:
+                std_obj[obj['id']] = obj['segmentation']
 
-        content_list = []
-        for o in obj:
-            value = o['attributes'][0]['values'][0]['value']
-            value = revise(value)
-
-            content_list.append(value)
-        
-        json_format(imagename, content_list, output_json_path)
+            revise_data['backgrounds'] = backgrounds
+            
+            for idx, obj in enumerate(revise_data['object']):
+                std_seg = std_obj.get(obj['id'])
+                if std_seg:
+                    revise_data['object'][idx]['segmentation'] = std_seg
+                
+            saveJson(revise_data, revise_path)
