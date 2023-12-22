@@ -43,6 +43,12 @@ def makeOutputPath(file_path, file_dir, output_dir):
 
     return output_path
 
+def save_img(img_path, img, ext):
+    result, encoded_img = cv2.imencode(f'.{ext}', img)
+    if result:
+        with open(img_path, mode='w+b') as f:
+            encoded_img.tofile(f)
+            
 def readJson(path):
     with open(path, 'r', encoding='utf-8') as f:
         data = json.load(f)
@@ -59,17 +65,18 @@ def vis(img, margin, text, output_path):
     new_h = h + margin
     new_img = np.zeros((new_h, w, 3), np.uint8)
     new_img.fill(255)
-
-    new_img[:h, :] = img
     
     pillow_img = Image.fromarray(new_img)
     font = ImageFont.truetype('malgunbd.ttf', int(text_size))
     draw = ImageDraw.Draw(pillow_img)
 
     draw.text((10, h), text, font=font, fill='black')
-
-    pillow_img.save(output_path)
-
+    
+    cv2_image = cv2.cvtColor(np.array(pillow_img), cv2.COLOR_RGB2BGR)
+    
+    cv2_image[:h, :] = img
+    save_img(output_path, cv2_image, 'jpg')
+    
 if __name__ == "__main__":
     _, img_dir, json_dir, output_dir, text_size = sys.argv
     
