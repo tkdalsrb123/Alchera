@@ -23,9 +23,11 @@ def readfiles(dir):
     for root, dirs, files in os.walk(dir):
         for file in files:
             filename, ext = os.path.splitext(file)
-        
-            unique = filename[:9] + filename[-13:]
-            
+            if "WIN" not in filename:
+                unique = filename[:9] + filename[-13:]
+            else:
+                unique = filename[:13] + filename[-13:]
+                
             file_path = os.path.join(root, file)
         
             file_dict[unique].append(file_path)
