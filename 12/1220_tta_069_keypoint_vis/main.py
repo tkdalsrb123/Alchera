@@ -75,27 +75,35 @@ def add_margin_to_image(image, margin_color=(255, 255, 255)):
 
     return new_image, margin
 
-def check_duplication(data):
-    point_list = [joint_array['point'] for joint_array in data]
+# def check_duplication(data):
+#     point_list = [joint_array['point'] for joint_array in data]
   
-    set_point = extract_duplicate_points(point_list)
-    return set_point
+#     set_point = extract_duplicate_points(point_list)
+#     return set_point
 
-def extract_duplicate_points(nested_points):
-    point_tuples = [tuple(point) for point in nested_points]
+# def extract_duplicate_points(nested_points):
+#     point_tuples = [tuple(point) for point in nested_points]
 
-    unique_points = set()
-    duplicate_points = set()
+#     unique_points = set()
+#     duplicate_points = set()
 
-    for point_tuple in point_tuples:
-        if point_tuple not in unique_points:
-            unique_points.add(point_tuple)
-        else:
-            duplicate_points.add(point_tuple)
+#     for point_tuple in point_tuples:
+#         if point_tuple not in unique_points:
+#             unique_points.add(point_tuple)
+#         else:
+#             duplicate_points.add(point_tuple)
 
-    duplicate_points = [list(point) for point in duplicate_points]
-    return duplicate_points
+#     duplicate_points = [list(point) for point in duplicate_points]
+#     return duplicate_points
 
+def extract_duplicate_points(data):
+    duplicate_list = []
+    for i in range(len(data)-1):
+        if data[i]['point'] == data[i+1]['point']:
+            duplicate_list.append((data[i], data[i+1]))
+    
+    return duplicate_list
+    
 def get_points(_type, joint_data):
     points_list = []
     for t in _type:
@@ -109,13 +117,12 @@ def get_points(_type, joint_data):
 def vis(image, all_point_list, duplicate_point, margin):
     h, w, _ = image.shape
     w = w - margin
-    duplicate_point =  [[round(p) for p in point] for point in duplicate_point]
-    val = 30
+    # duplicate_point =  [[round(p) for p in point] for point in duplicate_point]
     for point_list in all_point_list:
         
         points = np.array([p[0] for p in point_list], np.int32)
         cv2.polylines(image, [points], isClosed=False, color=(0, 255, 255), thickness=2)
-        
+        # print(point_list)
         for point, occlusion, category in point_list:
             
             if occlusion == 'N':
@@ -123,20 +130,30 @@ def vis(image, all_point_list, duplicate_point, margin):
             else:
                 color = (0, 0, 255)
             
-            if point not in duplicate_point:
-                cv2.circle(image, tuple(point), radius=3, color=color, thickness=-1)
+            # if point not in duplicate_point:
+            cv2.circle(image, tuple(point), radius=3, color=color, thickness=-1)
             
-            else:
+            # else:
+                
+            #     cv2.circle(image, tuple(point), radius=3, color=(255,0,0), thickness=-1)
+            #     cv2.putText(image, f"{category} : {occlusion}", (w, val), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,0), 2)
+            #     val += 30
+                
+    val = 30
+    for point_list in duplicate_point:
+        for info in point_list:
+            point = [round(p) for p in info['point']]
+            occlusion = info['occlusion_yn']
+            category = info['joint_category']
+            cv2.circle(image, tuple(point), radius=3, color=(255,0,0), thickness=-1)
+            cv2.putText(image, f"{category} : {occlusion}", (w, val), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,0), 2)
+            val += 30
 
-                cv2.circle(image, tuple(point), radius=3, color=(255,0,0), thickness=-1)
-                cv2.putText(image, f"{category} : {occlusion}", (w, val), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,0), 2)
-                val += 30
-        
 def visualization(uni1, uni2, data, image, output_path):
     if uni1 == "MOVE":
         image, margin = add_margin_to_image(image)
         joint_dict = {joint_array['joint_id']: joint_array for joint_array in data['horse_move']['joint_array']}
-        duplication_points = check_duplication(data['horse_move']['joint_array'])
+        duplication_points = extract_duplicate_points(data['horse_move']['joint_array'])
         if uni2 == 'REAR':
             points = get_points(rear, joint_dict)
             vis(image, points, duplication_points, margin)
@@ -147,10 +164,14 @@ def visualization(uni1, uni2, data, image, output_path):
             
         elif uni2 == "LEFT":
             points = get_points(left, joint_dict)
+            # print(points)
+            # print(duplication_points)
             vis(image, points, duplication_points, margin)
             
         elif uni2 == 'RIGHT':
             points = get_points(right, joint_dict)
+            # print(points)
+            # print(duplication_points)
             vis(image, points, duplication_points, margin)
                         
     
@@ -167,8 +188,8 @@ def visualization(uni1, uni2, data, image, output_path):
     
 rear = [[71, 69, 67, 63, 65, 61, 60, 62, 66, 64, 68, 70, 72]]
 front = [[40, 41, 42], [51, 49, 47, 44, 45, 43, 46, 48, 50]]
-left = [[1, 2, 3, 4, 5, 6, 7, 9, 10], [4, 12, 11, 14, 16, 18, 20, 22], [5, 24], [5, 25, 27, 29, 31, 33, 35, 37]]
-right = [[1, 2, 3, 4, 5, 6, 8, 9, 10], [4, 13, 11, 15, 17, 19, 21, 23], [5, 24], [5, 26, 28, 30, 32, 34, 36, 38]]
+left = [[1, 2, 3, 4, 5, 6, 7, 9, 10], [4, 12, 11, 14, 16, 18, 20, 22], [5, 24], [5, 25, 27, 29, 31, 33, 35, 37], [17, 19, 21, 23], [32, 34, 36, 38]]
+right = [[1, 2, 3, 4, 5, 6, 8, 9, 10], [4, 13, 11, 15, 17, 19, 21, 23], [5, 24], [5, 26, 28, 30, 32, 34, 36, 38], [16, 18, 20, 22], [31, 33, 35,37]]
 
 hoof_color = {
     'point01': (47, 255, 173),
@@ -184,6 +205,7 @@ if __name__ == "__main__":
     json_dict = readfiles(json_dir, '.json')
 
     for filename, json_path in tqdm(json_dict.items()):
+        
         MH = filename.split('_')[1]
         DREC = filename.split('_')[-2]
         

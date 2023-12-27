@@ -42,7 +42,7 @@ def response(path):
 def matching_img_path(path):
     root, file = os.path.split(path)
     filename, ext = os.path.splitext(file)
-    matching_filename = '-'.join(filename.split('-')[:5])
+    matching_filename = '-'.join(filename.split('-')[3:5])
     root_split = root.split('/')[:4]
     root_split.append('1.원천데이터')
     [root_split.append(i) for i in root.split('/')[-3:]]
