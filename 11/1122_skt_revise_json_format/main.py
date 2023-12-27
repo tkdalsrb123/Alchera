@@ -77,11 +77,45 @@ def revise(text):
     while i < len(text)-1:
         
         if text[i] == " ":
-            if text[i+1] == "®" or text[i+1] == "\n":
-               
+        
+            if text[i+1] in ["®", "\n", "ml", "kcal", "g", "mL",  "mg", "㎍", "%", "㎖", '.']:
+                
                 text = text[:i] + text[i+1:]
                 
                 i -= 1
+        
+            if text[i-1] == '.':
+                
+                text = text[:i] + text[i+1:]
+                
+                i -= 1
+            
+            if text[i-1].isdigit() and text[i+1] == '정':
+
+                text = text[:i] + text[i+1:]
+                
+                i -= 1
+                
+        if text[i] == 'x' or text[i] == 'X':
+            if text[i+1] == " " and text[i-1] == " ":
+                
+                text = text[:i-1] + text[i] + text[i+2]
+                
+                i -= 1
+            
+        if text[i] in [":", "(", "["]:
+            if text[i-1] != " " and text[i-1] != "\"":
+                
+                text = text[:i] + " " + text[i:]
+                
+                i += 1
+        
+        if text[i] == ":":
+            if text[i+1] != " ":
+                
+                text = text[:i] + " " + text[i:]
+                
+                i += 1
         
         i += 1
     return text
